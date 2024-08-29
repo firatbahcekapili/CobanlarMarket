@@ -1,0 +1,310 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "AddProduct";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+<style>
+    .img-pre {
+        position: relative;
+    }
+
+    .img-thumbnail {
+        position: relative;
+        width: 100px; /* Genişlik ihtiyaca göre ayarlanabilir */
+        height: 100px; /* Yükseklik ihtiyaca göre ayarlanabilir */
+    }
+
+        .img-thumbnail .remove-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0.2rem;
+            font-size: 0.8rem;
+        }
+
+   
+</style>
+
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Ürün Ekle</h2>
+
+    <form id="ProductForm">
+        @{
+            CobanlarMarket.Models.products p = new CobanlarMarket.Models.products();
+            CobanlarMarket.Models.products_skus ps = new CobanlarMarket.Models.products_skus();
+        }
+        <div class="row justify-content-center">
+            <!-- Left Column -->
+            <div class="col-md-5 mr-md-5 bg-white p-5">
+                <div class="form-group">
+                    <label for="productName">Ürün Adı *</label>
+                    @*<input type="text" class="form-control" id="productName" placeholder="Ürün Adı Giriniz">*@
+                    @Html.EditorFor(model => p.name, "Ürün Adı", new { htmlAttributes = new { name = "productName", @class = "form-control", placeholder = "Ürün Adı Giriniz", id = "productName" } })
+                    @Html.ValidationMessageFor(model => p.name, "")
+                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="category">Kategori *</label>
+                        <select class="form-control" id="category">
+                            <option>Kategori Seçiniz</option>
+                            <!-- Add categories here -->
+
+
+                            @foreach (var item in Model.categories)
+                            {
+                                <option pid="@item.id">@item.name</option>
+                            }
+                            <option pid="add">Kategori Ekle</option>
+
+                        </select>
+
+
+
+
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="gender">Alt Kategori *</label>
+                        <select class="form-control" id="subCategory" disabled>
+                            <option>Kategori Seçiniz</option>
+
+                            <!-- Add more options here -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Açıklama *</label>
+                    @*<textarea class="form-control" id="description" rows="3"></textarea>*@
+                    @Html.TextAreaFor(model => p.description, new { name = "description", @class = "form-control", placeholder = "Açıklama", id = "description" })
+                    @Html.ValidationMessageFor(model => p.description, "")
+
+                    <small class="form-text text-muted">Do not exceed 100 characters when entering the product name.</small>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="col-md-5 bg-white p-5">
+                <div class="form-group">
+                    <label>Resim Yükle</label>
+
+                    <div class="form-group">
+                        <div class="d-flex img-pre" id="image-container">
+                            <!-- Resimler buraya eklenecek -->
+                        </div>
+
+                        <input type="file" class="form-control" id="productImg" accept=".jpg,.jpeg,.png" multiple aria-describedby="userImg" onchange="dosyaOnizlemeNew(this);">
+
+                    </div>
+                    <small class="form-text text-muted">
+                        En az 4 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Resimler belirli boyutlarda olmalıdır. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                    </small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="size">Boyut Ekle</label>
+                        <select class="form-control" id="size">
+
+                            @foreach (var item in Model.product_attributes.Where(x => x.type == "size"))
+                            {
+                                <option value="@item.id">@item.value</option>
+                            }
+                        </select>
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="size">Renk Ekle</label>
+                        <input type="checkbox" name="" value="" />
+                        <select class="form-control" id="color">
+
+                            @foreach (var item in Model.product_attributes.Where(x => x.type == "color"))
+                            {
+                                <option value="@item.id">@item.value</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="size">Stok Kodu</label>
+                        @Html.EditorFor(model => ps.sku, "Stok Kodu", new { htmlAttributes = new { type = "text", name = "sku", @class = "form-control", placeholder = "Stok Kodu Giriniz", id = "sku" } })
+                        @Html.ValidationMessageFor(model => ps.sku, "")
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="size">Stok Adeti</label>
+                        @Html.EditorFor(model => ps.quantity, "Stok Adeti", new { htmlAttributes = new { type = "number", name = "quantity", @class = "form-control", placeholder = "Stok Adeti Giriniz", id = "quantity" } })
+                        @Html.ValidationMessageFor(model => ps.quantity, "")
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="price">Fiyat *</label>
+                        @Html.EditorFor(model => ps.price, "Fiyat", new { htmlAttributes = new { type = "number", name = "price", @class = "form-control", placeholder = "Fiyatı Giriniz", id = "price" } })
+                        @Html.ValidationMessageFor(model => ps.price, "")
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="old_price">Fiyat *</label>
+                        @Html.EditorFor(model => ps.old_price, "Eski Fiyat", new { htmlAttributes = new { type = "number", name = "old_price", @class = "form-control", placeholder = "Eski Fiyatı Giriniz", id = "old_price" } })
+                        @Html.ValidationMessageFor(model => ps.old_price, "")
+                    </div>
+
+                </div>
+                <button type="submit" id="submitbtn" class="btn btn-primary">Add product</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+<script>
+    var selectedFiles = []; // Seçilen dosyaları saklamak için dizi
+
+    function dosyaOnizlemeNew(input) {
+        var container = $('#image-container');
+        container.empty(); // Eski resimleri temizle
+        selectedFiles = Array.from(input.files); // Seçilen dosyaları diziye ekle
+
+        selectedFiles.forEach(file => {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
+                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                    event.preventDefault(); // Varsayılan davranışı engelle
+                    removeImage(file);
+                });
+                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                container.append(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function removeImage(fileToRemove) {
+        // Dosya verisini base64 formatına dönüştür
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var fileDataURL = e.target.result;
+
+            // Dosyayı seçilen dosyalardan çıkar
+            selectedFiles = selectedFiles.filter(file => file !== fileToRemove);
+
+            // Ekrandaki resmi kaldır
+            $('#image-container img').each(function () {
+                if ($(this).attr('src') === fileDataURL) {
+                    $(this).parent().remove();
+                }
+            });
+
+            // Input dosya listesini güncelle
+            updateFileInput();
+
+        };
+        reader.readAsDataURL(fileToRemove);
+    }
+
+
+    function updateFileInput() {
+        var dataTransfer = new DataTransfer();
+        selectedFiles.forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        $('#productImg')[0].files = dataTransfer.files;
+    }
+
+
+
+    $(document).ready(function () {
+
+        $('#submitbtn').on("click", function (e) {
+            e.preventDefault();
+
+            if ($('#ProductForm').valid()) {
+                var formData = new FormData();
+
+                // Dosya giriş alanından seçilen dosyayı al
+                var img = $('#productImg')[0].files
+                $.each(img, function (i, file) {
+                    formData.append('Imgs', file);
+                });
+
+
+                // Diğer form verilerini al
+                var name = $('#productName').val();
+                var subCategory = $("#subCategory").find('option:selected').val();
+                var description = $('#description').val();
+                var size = $("#size").find('option:selected').val();
+                var color = $("#color").find('option:selected').val();
+                var sku = $('#sku').val();
+                var quantity = $('#quantity').val();
+                var price = $('#price').val();
+                var oldprice = $('#old_price').val();
+
+
+                formData.append('Name', name);
+                formData.append('SubCategory', subCategory);
+                formData.append('Description', description);
+                formData.append('Size', size);
+                formData.append('Color', color);
+                formData.append('Sku', sku);
+                formData.append('Quantity', quantity);
+                formData.append('Price', price);
+                formData.append('OldPrice', oldprice);
+
+
+                // AJAX isteği gönder
+                $.ajax({
+                    url: '/Management/AddProduct/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,  
+                    contentType: false,  
+                    success: function (result) {
+                        // Başarılı olduğunda sayfayı yenile
+                        window.location.reload();
+                    },
+                    error: function (xhr, status, error) {
+                        // Hata durumunda burada işlem yapabilirsiniz
+                        console.error('AJAX Error: ' + error);
+                    }
+                });
+            }
+        });
+
+    });
+    $('#category').on('change', function () {
+        var selectedOption = $(this).find('option:selected');
+        var categoryId = selectedOption.attr('pid');
+        if (categoryId == "add") {
+            window.location = "/Management/AddCategory";
+        }
+        else if (categoryId) {
+            $.ajax({
+                url: '/Management/GetSubCategories', // Metodun URL'si
+                type: 'GET',
+                data: { categoryId: categoryId },
+                success: function (data) {
+                    var subCategorySelect = $('#subCategory');
+                    subCategorySelect.empty();
+                    subCategorySelect.append('<option value="">Alt Kategori Seçin</option>');
+
+                    $.each(data, function (index, subCategory) {
+                        subCategorySelect.append('<option value="' + subCategory.id + '">' + subCategory.name + '</option>');
+                    });
+                    $('#subCategory').prop("disabled", false);
+
+                },
+                error: function () {
+                    alert('Alt kategoriler yüklenirken bir hata oluştu.');
+                }
+            });
+        } else {
+            $('#subCategory').empty();
+            $('#subCategory').append('<option value="">Alt Kategori Seçin</option>');
+
+        }
+    });
+
+</script>

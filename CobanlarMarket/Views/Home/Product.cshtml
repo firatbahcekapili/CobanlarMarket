@@ -1,0 +1,417 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/css/pages/single-product.css" rel="stylesheet" />
+<link href="~/Content/css/main.css" rel="stylesheet" />
+<link href="~/Content/css/components/single-product/product-gallery.css" rel="stylesheet" />
+<link href="~/Content/css/components/single-product/product-info.css" rel="stylesheet" />
+<link href="~/Content/css/components/single-product/product-tabs.css" rel="stylesheet" />
+<!--! single product start  -->
+<section class="single-product">
+    <div class="container">
+        <div class="single-product-wrapper">
+            <!-- breadcrumb start -->
+            <div class="single-topbar">
+                <nav class="breadcrumb">
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Man</a></li>
+                        <li><a href="#">Pants</a></li>
+                        <li>Basic Colored Sweatpants With Elastic Hems</li>
+
+                    </ul>
+                </nav>
+            </div>
+            <!-- breadcrumb end -->
+            <!-- site main start -->
+            <div class="single-content">
+                <main class="site-main">
+                    <div class="slick-slider slick-initialized" dir="ltr" style="max-block-size:500px;max-width:500px">
+                        <button class="glide__arrow glide__arrow--left">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <div class="product-gallery">
+                            @*<div class="single-image-wrapper">
+                            <img src=" @Model.products.FirstOrDefault().cover" alt="">
+                        </div>
+                        <div class="product-thumb">
+                            <ol class="gallery-thumbs">
+
+
+
+
+                                @foreach (var item in Model.products.FirstOrDefault().product_images)
+                                {
+                                    <li>
+                                        <img src="@item.image_path" alt="" class="img-fluid">
+                                    </li>
+                                }
+                            </ol>
+                        </div>*@
+
+
+
+                            @foreach (var item in Model.products.FirstOrDefault().product_images)
+                            {
+                                <div>
+                                    <img src="@item.image_path" alt="" class="img-fluid">
+                                </div>
+                            }
+
+
+                        </div>
+                        <button class="glide__arrow glide__arrow--right">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="product-info">
+                        <h1 class="product-title">
+                            @Model.products.FirstOrDefault().name
+                        </h1>
+                        <div class="product-review">
+                            <ul class="product-star">
+                                <li><i class="bi bi-star-fill"></i></li>
+                                <li><i class="bi bi-star-fill"></i></li>
+                                <li><i class="bi bi-star-fill"></i></li>
+                                <li><i class="bi bi-star-fill"></i></li>
+                                <li><i class="bi bi-star-half"></i></li>
+                            </ul>
+                            <span>2 reviews</span>
+                        </div>
+                        <div class="product-price">
+                            <strong>&#8378;@Model.products.FirstOrDefault().products_skus.FirstOrDefault().price</strong>
+
+                        </div>
+                        <p class="product-description">
+                            @Model.products.FirstOrDefault().description
+                        </p>
+                        <form class="variations-form">
+                            <div class="variations">
+                                @*<div class="colors">
+                                <div class="colors-label">
+                                    <span>Color</span>
+                                </div>
+                                <div class="colors-wrapper">
+                                    <div class="color-wrapper">
+                                        <label class="blue-color">
+                                            <input type="radio" name="product-color">
+                                        </label>
+                                    </div>
+                                    <div class="color-wrapper">
+                                        <label class="red-color">
+                                            <input type="radio" name="product-color">
+                                        </label>
+                                    </div>
+                                    <div class="color-wrapper active">
+                                        <label class="green-color">
+                                            <input type="radio" name="product-color">
+                                        </label>
+                                    </div>
+                                    <div class="color-wrapper">
+                                        <label class="purple-color">
+                                            <input type="radio" name="product-color">
+                                        </label>
+                                    </div>
+
+                                    @foreach (var item in Model.product_attributes.Where(x=>x.type=="color"))
+                                    {
+                                        <label>@item.value</label>
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="values">
+                                <div class="values-label">
+                                    <span>Size</span>
+                                </div>
+                                <div class="values-list">
+                                    <span class="active">XS</span>
+                                    <span>S</span>
+                                    <span>M</span>
+                                    <span>L</span>
+                                    <span>XL</span>
+                                </div>
+                            </div>*@
+                                <div class="cart-button">
+                                    <input type="number" value="1" min="1">
+                                    <a class="btn btn-lg btn-primary" onclick="AddCart(@Model.products.FirstOrDefault().id)">Sepete Ekle</a>
+                                </div>
+                                <div class="product-extra-buttons">
+                                    <a href="#">
+                                        <i class="bi bi-globe"></i>
+                                        <span>Size Guide</span>
+                                    </a>
+                                    <a href="#">
+                                        <i class="bi bi-heart"></i>
+                                        <span>Add to Wislist</span>
+                                    </a>
+                                    <a href="#">
+                                        <i class="bi bi-share"></i>
+                                        <span>Share this Product</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="divider"></div>
+                        <div class="product-meta">
+                            <div class="product-sku">
+                                <span>SKU:</span>
+                                <strong>@Model.products.FirstOrDefault().products_skus.FirstOrDefault().sku</strong>
+
+
+                            </div>
+                            <div class="product-categories">
+                                <span>Categories:</span>
+
+                                @if (Model.products.FirstOrDefault().category_id != null)
+                                {
+
+                                    <strong>
+
+                                        @Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().category_id).parent_id).name.ToString()
+
+
+
+                                    </strong>
+                                    <strong>
+
+                                        / @Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().category_id).name
+
+
+
+                                    </strong>
+
+                                }
+
+
+
+                            </div>
+                            <div class="product-tags">
+                                <span>Tags:</span>
+                                <a href="#">black</a>
+                                ,
+                                <a href="#">white</a>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <!-- site main end -->
+            <style>
+                .tab-content {
+                    display: none !important;
+                }
+
+                    .tab-content.active {
+                        display: block !important;
+                    }
+
+                .tab-button.active {
+                    /* Aktif buton için stiller */
+                }
+            </style>
+            <!-- tabs start -->
+            <div class="single-tabs">
+                <ul class="tab-list">
+                    <li>
+                        <a href="#" class="tab-button active" data-tab="descriptions">Description</a>
+                    </li>
+                    <li>
+                        <a href="#" class="tab-button" data-tab="information">Additional information</a>
+                    </li>
+                    <li>
+                        <a href="#" class="tab-button" data-tab="reviews">Reviews</a>
+                    </li>
+                </ul>
+                <div class="tab-panel">
+                    <div id="descriptions" class="tab-content active">
+                        <p>
+                            Quisque varius diam vel metus mattis, id aliquam diam rhoncus. Proin vitae magna in dui
+                            finibus malesuada et at nulla. Morbi elit ex, viverra vitae ante vel, blandit feugiat
+                            ligula. Fusce fermentum iaculis nibh, at sodales leo maximus a. Nullam ultricies sodales
+                            nunc, in pellentesque lorem mattis quis. Cras imperdiet est in nunc tristique lacinia.
+                            Nullam aliquam mauris eu accumsan tincidunt. Suspendisse velit ex, aliquet vel ornare
+                            vel, dignissim a tortor.
+                        </p>
+                        <br>
+                        <p>
+                            Quisque varius diam vel metus mattis, id aliquam diam rhoncus. Proin vitae magna in dui
+                            finibus malesuada et at nulla. Morbi elit ex, viverra vitae ante vel, blandit feugiat
+                            ligula. Fusce fermentum iaculis nibh, at sodales leo maximus a. Nullam ultricies sodales
+                            nunc, in pellentesque lorem mattis quis. Cras imperdiet est in nunc tristique lacinia.
+                            Nullam aliquam mauris eu accumsan tincidunt. Suspendisse velit ex, aliquet vel ornare
+                            vel, dignissim a tortor.
+                        </p>
+                    </div>
+                    <div id="information" class="tab-content">
+                        <h3>Additional information</h3>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>Color</th>
+                                    <td>
+                                        <p>
+                                            Apple Red, Bio Blue, Sweet Orange, Blue, Green, Pink, Black, White
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Size</th>
+                                    <td>
+                                        <p>
+                                            XXS, XS, S, M, L, XL, XXL
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="reviews" class="tab-content">
+                        <h2>Add a review</h2>
+                        <form class="comment-form">
+                            <p class="comment-notes">
+                                Your email address will not be published. Required fields are marked
+                                <span class="required">*</span>
+                            </p>
+                            <div class="comment-form-rating">
+                                <label>
+                                    Your rating
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="stars">
+                                    <a href="#" class="star">
+                                        <i class="bi bi-star-fill"></i>
+                                    </a>
+                                    <a href="#" class="star">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </a>
+                                    <a href="#" class="star">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </a>
+                                    <a href="#" class="star">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </a>
+                                    <a href="#" class="star">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="comment-form-comment form-comment">
+                                <label for="comment">
+                                    Your review
+                                    <span class="required">*</span>
+                                </label>
+                                <textarea id="comment" cols="50" rows="10"></textarea>
+                            </div>
+                            <div class="comment-form-author form-comment">
+                                <label for="name">
+                                    Name
+                                    <span class="required">*</span>
+                                </label>
+                                <input id="name" type="text">
+                            </div>
+                            <div class="comment-form-email form-comment">
+                                <label for="email">
+                                    Email
+                                    <span class="required">*</span>
+                                </label>
+                                <input id="email" type="email">
+                            </div>
+                            <div class="comment-form-cookies">
+                                <input id="cookies" type="checkbox">
+                                <label for="cookies">
+                                    Save my name, email, and website in this browser for the next time I
+                                    comment.
+                                    <span class="required">*</span>
+                                </label>
+
+                            </div>
+                            <div class="form-submit">
+                                <input type="submit" class="btn submit">
+                            </div>
+                        </form>
+                    </div>
+                    <!-- comment form end -->
+                
+                </div>
+            </div>
+            <!-- tabs end -->
+        </div>
+    </div>
+</section>
+<!--! single product end  -->
+
+
+<script>
+    $('.product-gallery').slick({
+       
+        autoplay: false,
+        autoplaySpeed: 2000,
+
+        nextArrow: '.glide__arrow--right',
+        prevArrow: '.glide__arrow--left',
+        
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const targetTab = this.getAttribute('data-tab');
+
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+    });
+
+
+
+    function AddCart(id) {
+
+        var adet = $(".cart-button input").val();
+        console.log(adet);
+        $.ajax({
+            url: '/Home/AddCart/',
+            type: 'POST',
+            data: { Id: id ,Adet:adet},
+
+            success: function (response) {
+
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#cartItemsList').html(response.cartItemsHtml);
+                    var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
+                    $(".header-cart-count").text(cartCount);
+                } else {
+                    toastr.error(response.message);
+                }
+
+
+            }
+
+        });
+       
+    }
+
+</script>

@@ -1,0 +1,252 @@
+﻿@model CobanlarMarket.Models.categories
+@{
+    ViewBag.Title = "EditCategory";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Kategori Düzenle</h2>
+
+    <form id="categoryForm">
+
+    
+        <div class="row justify-content-center">
+
+            <div class="col-12 bg-white p-5">
+                <div class="form-group">
+                    <label>Resim Yükle</label>
+                    <div class="form-group img-parent">
+                        <div class="d-flex img-pre" id="image-container">
+                            <!-- Resimler buraya eklenecek -->
+
+                            @if (Model.cover != null)
+                            {
+                                <div class="p-2" imgid="@Model.id">
+                                    <img src="@Model.cover" alt="" class="img-thumbnail" style="width:200px" />
+                                    <a class="remove-img-btn btn" onclick="removeImgDatabase(@Model.id)">x</a>
+                                </div>
+                            }
+
+
+
+                        </div>
+                     
+                        <div class="input-div">
+                            <input type="file" class="form-control" id="categoryImg" accept=".jpg,.jpeg,.png" aria-describedby="categoryImg" onchange="dosyaOnizlemeNew(this);">
+
+                        </div>
+
+                    </div>
+                    <small class="form-text text-muted">
+                        1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Resimler belirli boyutlarda olmalıdır. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                    </small>
+                </div>
+
+                    <div class="form-group">
+                        <label for="name">Kategori İsmi *</label>
+                        @*<input type="text" class="form-control" id="name" placeholder="Kategori İsmi">*@
+                        @Html.EditorFor(model => Model.name, "Kategori İsmi", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Kategori İsmi", id = "name" } })
+                        @Html.ValidationMessageFor(model => Model.name, "")
+
+
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Kategori Açıklaması *</label>
+                        @*<input type="text" class="form-control" id="description" placeholder="Kategori Açıklaması">*@
+                        @Html.EditorFor(model => Model.description, "Kategori Açıklaması", new { htmlAttributes = new { name = "description", @class = "form-control", placeholder = "Kategori Açıklaması", id = "description" } })
+                        @Html.ValidationMessageFor(model => Model.description, "")
+
+
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
+                    </div>
+                </div>
+
+            </div>
+
+    </form>
+</div>
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+        $('#submitbtn').on("click", function (e) {
+            e.preventDefault();
+
+            var img = $('#categoryImg')[0].files[0];
+            var name = $('#name').val();
+            var description = $('#description').val();
+            var id = @Model.id;
+
+
+            var formData = new FormData();
+            formData.append("Id", id);
+            formData.append("Img", img);
+
+            formData.append("Name", name);
+            formData.append("Description", description);
+            if ($('#categoryForm').valid()) {
+
+                $.ajax({
+                    url: '/Management/EditCategory/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            $("#image-container").empty();
+                            $("#image-container").append("<div class='p-2' imgid='" + response.category[0].id + "'><img src='" + response.category[0].cover + "' alt='' class='img-thumbnail' style='width:200px' /><a class='remove-img-btn btn' onclick='removeImgDatabase(" + response.category[0].id + ")'>x</a></div>");
+                        } else {
+                            toastr.error(response.message);
+                        }
+                      
+                      
+                    }, error: function (e) {
+                        toastr.error('Kategori Düzenlenirken Bir Hata Oluştu', 'Hata');
+                        console.log(e);
+
+                    }
+
+                });
+
+
+            }
+
+
+        });
+
+
+        //$('#subsubmitbtn').on("click", function (e) {
+        //    e.preventDefault();
+        //    var name = $('#subname').val();
+        //    var description = $('#subdescription').val();
+        //    var selectedOption = $("#category").find('option:selected');
+        //    var categoryId = parseInt(selectedOption.attr('pid'));;
+        //    console.log(categoryId);
+        //    if ($('#subCategoryForm').valid()) {
+
+        //        $.ajax({
+        //            url: '/Management/AddSubCategory/',
+        //            type: 'POST',
+        //            data: { ParentId: categoryId, Name: name, Description: description },
+        //            success: function (result) {
+        //                toastr.success('Alt Kategori Başarıyla Eklendi', 'Başarılı');
+        //                $('#subname').val("");
+        //                $('#subdescription').val("");
+
+        //            }, error: function (e) {
+        //                toastr.error('Alt Kategori Eklenirken Bir Hata Oluştu', 'Hata');
+
+        //            }
+
+        //        });
+
+
+        //    }
+
+
+                //    });
+
+    });
+    // Ekrandaki resmi kaldır ve selectedFiles dizisini güncelle
+    function removeImage(fileToRemove) {
+        // Dosya verisini base64 formatına dönüştür
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var fileDataURL = e.target.result;
+
+            // Dosyayı seçilen dosyalardan çıkar
+            selectedFiles = selectedFiles.filter(file => file !== fileToRemove);
+
+            // Ekrandaki resmi kaldır
+            $('#image-container img').each(function () {
+                if ($(this).attr('src') === fileDataURL) {
+                    $(this).parent().remove();
+                }
+            });
+
+            // Input dosya listesini güncelle
+
+
+            $("#categoryImg").remove();
+            $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>")
+
+
+
+        };
+        reader.readAsDataURL(fileToRemove);
+    }
+
+
+
+    function removeImgDatabase(id) {
+
+
+        $.ajax({
+            url: '/Management/RemoveCategoryImg/',
+            type: 'POST',
+            data: { Id: id },
+            success: function (data) {
+                $("#image-container").empty();
+                $("#categoryImg").remove();
+                $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>")
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+
+    function updateImageContainer(files) {
+        var container = $('#image-container');
+        container.empty();
+
+        files.forEach(filePath => {
+            var img = $('<img>').attr('src', filePath).addClass('img-thumbnail');
+            var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                event.preventDefault();
+                // Dosyayı sunucudan kaldır ve UI'dan sil
+                removeImgDatabase(filePath);
+            });
+            var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+            container.append(wrapper);
+        });
+    }
+
+    var selectedFiles = []; // Seçilen dosyaları saklamak için dizi
+
+
+    function dosyaOnizlemeNew(input) {
+        var container = $('#image-container');
+        container.empty(); // Eski resimleri temizle
+        selectedFiles = Array.from(input.files); // Seçilen dosyaları diziye ekle
+
+        selectedFiles.forEach(file => {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail').css("width", "200px");
+                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                    event.preventDefault(); // Varsayılan davranışı engelle
+                    removeImage(file);
+                });
+                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                container.append(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+</script>

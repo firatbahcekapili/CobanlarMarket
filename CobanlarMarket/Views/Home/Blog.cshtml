@@ -1,0 +1,95 @@
+﻿
+@{
+    ViewBag.Title = "Blog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+<link href="~/Content/css/main.css" rel="stylesheet" />
+<body cz-shortcut-listen="true">
+    <div id="root">
+        <div>
+            <div class="main-layout">
+                <div class="modal-dialog ">
+                    <div class=" modal-content">
+                        :<button class="modal-close"><i class="bi bi-x"></i></button>
+                        <div class="modal-image"><img src="/img/modal-dialog.jpg" alt=""></div>
+                        <div class="popup-wrapper">
+                            <div class="popup-content">
+                                <div class="popup-title">
+                                    <h3>YENİ ÜRÜNLER</h3>
+                                </div>
+                                <p class="popup-text">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum,
+                                    voluptates.
+                                </p>
+                                <form class="popup-form">
+                                    <input type="text"
+                                           placeholder="Enter Email Adress Here"><button class="btn btn-lg btn-red">
+                                        ABONE
+                                        OL
+                                    </button><label>
+                                        <input type="checkbox"><span>
+                                            Lorem ipsum dolor
+                                            sit.
+                                        </span>
+                                    </label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-overlay"></div>
+                </div>
+            
+                <section class="blogs blog-page">
+                    <div class="container">
+                        <div class="section-title">
+                            <h2>Blog</h2>
+                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+                        </div>
+                        <ul class="blog-list">
+                            <li class="blog-item">
+                                <a href="#" class="blog-image">
+                                    <img src="/img/blogs/blog1.jpg"
+                                         alt="">
+                                </a>
+                                <div class="blog-info">
+                                    <div class="blog-info-top"><span>25 Feb,2024</span>-<span>0 Comment</span></div>
+                                    <div class="blog-info-center"><a href="#">Lorem ipsum dolor sit.</a></div>
+                                    <div class="blog-info-bottom"><a href="#">Read More</a></div>
+                                </div>
+                            </li>
+                            <li class="blog-item">
+                                <a href="#" class="blog-image">
+                                    <img src="/img/blogs/blog1.jpg"
+                                         alt="">
+                                </a>
+                                <div class="blog-info">
+                                    <div class="blog-info-top"><span>25 Feb,2024</span>-<span>0 Comment</span></div>
+                                    <div class="blog-info-center"><a href="#">Lorem ipsum dolor sit.</a></div>
+                                    <div class="blog-info-bottom"><a href="#">Read More</a></div>
+                                </div>
+                            </li>
+                            <li class="blog-item">
+                                <a href="#" class="blog-image">
+                                    <img src="/img/blogs/blog1.jpg"
+                                         alt="">
+                                </a>
+                                <div class="blog-info">
+                                    <div class="blog-info-top"><span>25 Feb,2024</span>-<span>0 Comment</span></div>
+                                    <div class="blog-info-center"><a href="#">Lorem ipsum dolor sit.</a></div>
+                                    <div class="blog-info-bottom"><a href="#">Read More</a></div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+            
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+
+
+</body>
+

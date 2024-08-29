@@ -1,0 +1,139 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "UserList";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+<style>
+    .mdi {
+        font-size: 22px;
+        margin: 0 5px 0 5px;
+    }
+</style>
+<div class=" mt-5 ml-5 mr-5">
+    <h2>UserList</h2>
+
+
+    <!-- Table Product -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Kullanıcı Listesi</h2>
+                    <div class="dropdown">
+                        <a href="/Management/AddUser" class="btn btn-outline-primary">Kullanıcı Ekle</a>
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="userTable" class="table table-hover table-product" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Kullanıcı</th>
+                                <th>Telefon No</th>
+                                <th>E-mail</th>
+                                <th>Toplam Harcama</th>
+                                <th>Üye Olma Tarihi</th>
+                                <th>İşlem</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int i = 1;
+                            }
+                            @foreach (var item in Model.users.Where(x=>x.status==true))
+                            {
+                                <tr>
+                                    <td class="py-0">
+                                        <img src="@item.avatar" alt="Product Image">
+                                    </td>
+                                    <td>@item.first_name @item.last_name</td>
+                                    <td>@item.phone_number</td>
+                                    <td>@item.email</td>
+                                    <td>Eklenecek</td>
+                                    <td>@item.created_at</td>
+                                  
+                                    <td>
+                                        <a href="#">
+                                            <span class="mdi mdi-eye text-primary "></span>
+
+                                        </a>
+                                        <a href="/Management/EditUser/@item.id">
+                                            <span class="mdi mdi-pen text-success"></span>
+
+                                        </a>
+                                        <a onclick="Remove(@item.id)">
+                                            <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                        </a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+
+
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+
+    function Remove(Id) {
+
+        $.ajax({
+            url: '/Management/RemoveUser/',
+            type: 'Post',
+            data: { Id: Id },
+            success: function (response) {
+
+
+                toastr.success('Kullanıcı Başarıyla Silindi', 'Başarılı');
+
+
+                var tbody = $("#userTable tbody");
+                tbody.empty();
+
+                response.forEach(function (user) {
+                    var row = "<tr>" +
+                        "<td class='py-0'><img src='" + user.avatar + "' alt='Product Image'></td>" +
+                        "<td>" + user.first_name + " " + user.last_name + "</td>" +
+                        "<td>" + user.phone_number + "</td>" +
+                        "<td>" + user.email + "</td>" +
+                        "<td>Eklenecek</td>" +
+                        "<td>" + user.created_at + "</td>" +
+                        "<td>" +
+                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
+                        "<a  href='/Management/EditUser/"+user.id+"><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a onclick='Remove(" + user.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
+                        "</td>" +
+                        "</tr>";
+                    tbody.append(row);
+                });
+            }, error: function (e) {
+                console.log(e)
+                toastr.error('Kullanıcı Silinirken Bir Hata Oluştu', 'Hata');
+
+            }
+
+
+
+        });
+
+    }
+
+
+
+
+</script>

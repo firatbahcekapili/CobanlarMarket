@@ -1,0 +1,252 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "CategoryList";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+<style>
+    .mdi {
+        font-size: 22px;
+        margin: 0 5px 0 5px;
+    }
+</style>
+<div class=" mt-5 ml-5 mr-5">
+
+    <!-- Table Product -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Kategori Listesi</h2>
+
+                    <div class="dropdown">
+                        <a href="/Management/AddCategory" class="btn btn-outline-primary">Kategori Ekle</a>
+                    </div>
+                    <div class="card-body">
+                        <table id="categoryTable" class="table table-hover table-product" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Resim</th>
+                                    <th>Kategori Adı</th>
+                                    <th>Açıklama</th>
+                                    <th>Oluşturulma Tarihi</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int i = 1;
+                                }
+                                @foreach (var item in Model.categories)
+                                {
+                                    <tr>
+                                        <td>@item.id</td>
+                                        <td>
+                                            @if (item.cover != null)
+                                            {
+                                                <img src="@item.cover"
+                                                     alt=""
+                                                     class="img1"  />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Content/theme/images/empty.png"
+                                                     alt=""
+                                                     class="img1" -/>
+                                            }
+                                        </td>
+                                        <td>@item.name</td>
+                                        <td>@item.description</td>
+                                        <td>@item.created_at</td>
+
+                                        <td>
+                                            <a href="#">
+                                                <span class="mdi mdi-eye text-primary "></span>
+
+                                            </a>
+                                            <a href="/Management/EditCategory/@item.id">
+                                                <span class="mdi mdi-pen text-success"></span>
+
+                                            </a>
+                                            <a onclick="Remove(@item.id)">
+                                                <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+    <!-- Table Product -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Alt Kategori Listesi</h2>
+
+                    <div class="dropdown">
+                        <a href="/Management/AddCategory" class="btn btn-outline-primary">Alt Kategori Ekle</a>
+                    </div>
+                    <div class="card-body">
+                        <table id="subCategoryTable" class="table table-hover table-product" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Kategori Adı</th>
+                                    <th>Açıklama</th>
+                                    <th>Üst Kategori</th>
+                                    <th>Oluşturulma Tarihi</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                           
+                                @foreach (var item in Model.sub_categories)
+                                {
+                                    <tr>
+                                        <td>@item.id</td>
+
+                                        <td>@item.name</td>
+                                        <td>@item.description</td>
+                                        <td>@(Model.categories.FirstOrDefault(x=>x.id==item.parent_id) == null ?"Kategori yok": Model.categories.FirstOrDefault(x => x.id == item.parent_id).name )</td>
+                                        <td>@item.created_at</td>
+
+                                        <td>
+                                            <a href="#">
+                                                <span class="mdi mdi-eye text-primary "></span>
+
+                                            </a>
+                                            <a href="/Management/EditSubCategory/@item.id">
+                                                <span class="mdi mdi-pen text-success"></span>
+
+                                            </a>
+                                            <a onclick="RemoveSub(@item.id)">
+                                                <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                            </a>
+                                        </td>
+                                    </tr>
+                                  
+                                }
+
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+</div>
+
+
+<script>
+    function Remove(id) {
+
+        $.ajax({
+            url: '/Management/RemoveCategory/',
+            type: 'POST',
+            data: { Id: id },
+            success: function (result) {
+                console.log("success");
+                toastr.success('Kategori Başarıyla Silindi', 'Başarılı');
+
+
+                var tbody = $("#categoryTable tbody");
+                tbody.empty();
+
+
+                result.forEach(function (category) {
+                    var row = "<tr>" +
+                        "<td>" + category.id + "</td>" +
+                        "<td>" + category.name + "</td>" +
+                        "<td>" + category.description + "</td>" +
+
+                        "<td>" + category.created_at + "</td>" +
+                        "<td>" +
+                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
+                        "<a href='/Management/EditCategory/" + category.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a onclick='Remove(" + category.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
+                        "</td>" +
+                        "</tr>";
+                    tbody.append(row);
+                });
+
+
+
+
+            }
+
+
+        });
+
+
+    }
+    function RemoveSub(id) {
+
+        $.ajax({
+            url: '/Management/RemoveSubCategory/',
+            type: 'POST',
+            data: { Id: id },
+            success: function (result) {
+                console.log("success");
+                toastr.success('Alt Kategori Başarıyla Silindi', 'Başarılı');
+
+
+                var tbody = $("#subCategoryTable tbody");
+                tbody.empty();
+
+
+                result.forEach(function (category) {
+                    var row = "<tr>" +
+                        "<td>" + category.id + "</td>" +
+                        "<td>" + category.name + "</td>" +
+                        "<td>" + category.description + "</td>" +
+                       
+                        "<td>" + category.parentCategory + "</td>" +
+                        "<td>" + category.created_at + "</td>" +
+                        "<td>" +
+                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
+                        "<a href='/Management/EditSubCategory/" + category.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a onclick='RemoveSub(" + category.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
+                        "</td>" +
+                        "</tr>";
+                    tbody.append(row);
+                });
+
+
+
+
+            }
+
+
+        });
+
+
+    }
+</script>

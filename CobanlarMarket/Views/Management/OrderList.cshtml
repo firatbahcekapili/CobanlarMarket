@@ -1,0 +1,139 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "OrderList";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+
+<style>
+    .mdi {
+        font-size: 22px;
+        margin: 0 5px 0 5px;
+    }
+</style>
+<div class=" mt-5 ml-5 mr-5">
+
+    <!-- Table Product -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Sipariş Listesi</h2>
+
+                    <div class="dropdown">
+                        <a href="/Management/AddOrder" class="btn btn-outline-primary">Sipariş Ekle</a>
+                    </div>
+                    <div class="card-body">
+                        <table id="orderTable" class="table table-hover table-product" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Id</th>
+                                    <th>Sipariş Id</th>
+                                    <th>Kullanıcı Adı</th>
+                                    <th>Ürün Adı</th>
+                                    <th>Adet</th>
+                                    <th>Toplam Tutar</th>
+                                    <th>Sipariş Tarihi</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int i = 1;
+                                }
+                                @foreach (var item in Model.order_item)
+                                {
+                                    <tr>
+                                        <td class="py-0">
+                                            <img src="@item.products.cover" alt="Alternate Text" />
+                                        </td>
+                                        <td>@item.id</td>
+                                        <td>@item.order_id</td>
+                                        <td>@item.order_details.users.username</td>
+                                        <td>@item.products.name</td>
+                                        <td>@item.quantity</td>
+                                        <td>@(Model.products_skus.FirstOrDefault(p=>p.product_id==item.product_id).price * item.quantity)</td>
+                                        <td>@item.created_at</td>
+
+
+                                        <td>
+                                            <a href="#">
+                                                <span class="mdi mdi-eye text-primary "></span>
+
+                                            </a>
+                                            <a href="/Management/EditProduct/@item.id">
+                                                <span class="mdi mdi-pen text-success"></span>
+
+                                            </a>
+                                            <a onclick="Remove(@item.id)">
+                                                <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+
+    function Remove(id) {
+
+        $.ajax({
+            url: '/Management/RemoveProduct/',
+            type: 'POST',
+            data: { Id: id },
+            success: function (result) {
+                console.log("success");
+                toastr.success('Ürün Başarıyla Silindi', 'Başarılı');
+
+
+                var tbody = $("#orderTable tbody");
+                tbody.empty();
+                var i = 1;
+                result.forEach(function (product) {
+                    var row = "<tr>" + "<td class='py-0'> <img src='" + product.cover + "' alt='Product Image'></td>" +
+                        "<td>" + product.name + "</td>" +
+                        "<td>" + product.id + "</td>" +
+                        "<td>1</td>" +
+                        "<td>" + product.product_skus_count + "</td>" +
+                        "<td>2</td>" +
+                        "<td> <div id='tbl-chart-0" + i + "'></div></td> " +
+                        "<td>4</td>" +
+                        "<td>" + product.product_sku_quantity + "</td>" +
+                        "<td>" +
+                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
+                        "<a href='/Management/EditAttribute/" + product.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a onclick='Remove(" + product.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
+                        "</td>" +
+                        "</tr>";
+                    tbody.append(row);
+                    i++;
+                });
+
+
+
+
+            }
+
+
+        });
+
+
+    }
+
+
+</script>

@@ -1,0 +1,201 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "Auth";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+
+<link href="~/Content/css/main.css" rel="stylesheet" />
+<body cz-shortcut-listen="true">
+  
+    <div id="root">
+        <div>
+            <div class="main-layout">
+                <div class="modal-dialog ">
+                    <div class=" modal-content">
+                        :<button class="modal-close"><i class="bi bi-x"></i></button>
+                        <div class="modal-image"><img src="/img/modal-dialog.jpg" alt=""></div>
+                        <div class="popup-wrapper">
+                            <div class="popup-content">
+                                <div class="popup-title">
+                                    <h3>YENİ ÜRÜNLER</h3>
+                                </div>
+                                <p class="popup-text">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum,
+                                    voluptates.
+                                </p>
+                                <form class="popup-form">
+                                    <input type="text"
+                                           placeholder="Enter Email Adress Here"><button class="btn btn-lg btn-red">
+                                        ABONE
+                                        OL
+                                    </button><label>
+                                        <input type="checkbox"><span>
+                                            Lorem ipsum dolor
+                                            sit.
+                                        </span>
+                                    </label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-overlay"></div>
+                </div>
+
+                <section class="account-page">
+                    <div class="container">
+                        <div class="account-wrapper">
+                            <div class="account-column">
+                                <h2>Login</h2>
+
+                                @*<form>
+                                        <div>
+                                            <label>
+                                                <span>
+                                                    Username or email adres <span class="required">*</span>
+                                                </span><input type="text"
+                                                              name="email">
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label>
+                                                <span>Password <span class="required">*</span></span><input type="password" name="password">
+                                            </label>
+                                        </div>
+                                        <p class="remember">
+                                            <label>
+                                                <input type="checkbox"><span>
+                                                    Remember
+                                                    me
+                                                </span>
+                                            </label><button class="btn btn-sm btn-red">Login</button>
+                                        </p><a href="#" class="form-link">Lost your password?</a>
+                                    </form>*@
+
+
+                                @using (Ajax.BeginForm("Giris", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "GirisSuccess" }, new { @class = "ajax-form w-100", id = "GirisForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    CobanlarMarket.Models.users u = new CobanlarMarket.Models.users();
+
+
+                                
+                                    <div class="form-group">
+                                        <span>
+                                            Username or email adres <span class="required">*</span>
+                                        </span><br />
+                                        @Html.EditorFor(model => u.username, new { htmlAttributes = new { @class = "form-control", placeholder = "Kullanıcı Adı", required = "required", id = "username" } })
+                                        @Html.ValidationMessageFor(model => u.username, "", new { @class = "text-danger" })
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>
+                                            <span>Password <span class="required">*</span></span>
+                                        </label>
+                                        @Html.EditorFor(model => u.password, new { htmlAttributes = new { @class = "form-control", placeholder = "Şifre", required = "required", id = "password" } })
+                                        @Html.ValidationMessageFor(model => u.password, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-sm btn-red">Giriş</button>
+                                    </div>
+                                }
+
+
+                            </div>
+                            <div class="account-column">
+                                <h2>Register</h2>
+                                <form>
+                                    <div>
+                                        <label>
+                                            <span>Username <span class="required">*</span></span><input type="text"
+                                                                                                        name="username">
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label>
+                                            <span>Email Adress <span class="required">*</span></span><input type="email" name="email">
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label>
+                                            <span>Password <span class="required">*</span></span><input type="password" name="password">
+                                        </label>
+                                    </div>
+                                    <div class="privacy-policy-text remember">
+                                        <p>
+                                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deserunt
+                                            dignissimos exercitationem molestias provident <a href="#">
+                                                distinctio
+                                                quis.
+                                            </a>
+                                        </p><button class="btn btn-sm btn-red">Register</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#GirisForm').submit(function (e) {
+
+                e.preventDefault();
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+
+
+                // FormData nesnesi oluştur
+                var formData = new FormData();
+
+                formData.append('username', username);
+                formData.append('password', password);
+
+                console.log(username + password);
+
+
+                if ($('#GirisForm').valid()) {
+
+                    console.log("valid");
+                    $.ajax({
+                        url: '/Home/Auth/',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            if (result.redirectUrl) {
+                                window.location.href = result.redirectUrl;
+                            }
+
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+
+
+
+
+
+                    });
+                }
+
+
+
+            });
+
+        });
+
+
+
+
+    </script>
+</body>

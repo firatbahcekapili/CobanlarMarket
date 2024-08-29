@@ -1,0 +1,124 @@
+﻿@model List<CobanlarMarket.Models.cart_item>
+@{
+    decimal? toplam = 0;
+    var kisi = Session["user"];
+    if (kisi != null)
+    {
+        CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
+        toplam = 0;
+
+        <section class="cart-page">
+            <div class="container">
+                <div class="cart-page-wrapper">
+                    <form class="cart-form">
+                        <div class="free-progress-bar">
+                            <p class="progress-bar-title">
+                                Lorem ipsum <strong>$130.00</strong> sit amet
+                                consectetur adipisicing elit. Maiores, qui.
+                            </p>
+                            <div class="progress-bar"><span class="progress"></span></div>
+                        </div>
+                        <div class="shop-table-wrapper">
+
+
+                            <table class="shop-table">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">&nbsp;</th>
+                                        <th class="product-thumbnail">&nbsp;</th>
+                                        <th class="product-name">Ürün</th>
+                                        <th class="product-price">Fiyat</th>
+                                        <th class="product-quantity">Adet</th>
+                                        <th class="product-subtotal">Toplam Tutar</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="cart-wrapper">
+
+
+
+
+
+                                    @foreach (var cartItem in Model)
+                                    {
+                                        <tr class="cart-item" id="@cartItem.id">
+                                            <td></td>
+                                            <td class="cart-image">
+                                                <img src="@cartItem.products.cover" alt=""><i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
+                                            </td>
+                                            <td>@cartItem.products.name</td>
+                                            <td>&#8378;@cartItem.products.products_skus.FirstOrDefault().price</td>
+                                            <td class="product-quantity d-flex justify-content-center align-items-center">
+
+                                                <div class="qty-input">
+                                                    <button class="qty-count qty-count--minus" data-action="minus" type="button">-</button>
+                                                    <input class="product-qty" type="number" name="product-qty" min="-1" max="15" step="1" value="@cartItem.quantity">
+                                                    <button class="qty-count qty-count--add" data-action="add" type="button">+</button>
+                                                </div>
+
+                                            </td>
+                                            <td class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
+                                        </tr>
+
+
+                                        toplam += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
+                                    }
+
+
+                                </tbody>
+                            </table>
+                            <div class="actions-wrapper">
+                                <div class="coupon">
+                                    <input type="text " class="input-text"
+                                           placeholder="Coupon code"><button class="btn btn-black">
+                                        Appyl
+                                        Coupon
+                                    </button>
+                                </div>
+                                <div class="update-cart"><button class="btn btn-red">Update Cart</button></div>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="cart-collaterals">
+                        <div class="cart-totals">
+                            <h2>Cart Totals</h2>
+                            <table>
+                                <tbody>
+                                    <tr class="cart-subtotal">
+                                        <th>Subtotal</th>
+                                        <td><span id="subtotal">&#8378;@toplam</span></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Shiping</th>
+                                        <td>
+                                            <ul>
+                                                <li>
+                                                    <label>
+                                                        Fast Cargo:  &#8378;15:00<input type="checkbox"
+                                                                                        id="fast-cargo">
+                                                    </label>
+                                                </li>
+                                                <li><a href="#">Change Address</a></li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total</th>
+                                        <td><strong id="cart-total">&#8378;@toplam</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                            <div class="checkout">
+                                <button class="btn btn-lg btn-red">
+                                    Proceed to
+                                    checkout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+}

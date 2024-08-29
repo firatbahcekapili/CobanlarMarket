@@ -1,0 +1,375 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "CampaingDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .categorylist li.active > a {
+        color: red !important;
+    }
+    .campaigns .campaign-item {
+  padding: 70px 35px;
+  background-size: cover;
+  background-position: center;
+  flex: 1;
+  color: white;
+}
+
+.campaigns .campaign-item .campaign-title {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 30px;
+}
+
+.campaigns .campaign-item .campaign-desc {
+  margin: 40px 0;
+  font-size: 14px;
+}
+
+
+
+
+
+</style>
+
+<link href="~/Content/css/shoppage/style.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css" integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://kit.fontawesome.com/00c5ff292c.js" crossorigin="anonymous"></script>
+<link href="~/Content/css/shoppage/jquery-ui.min.css" rel="stylesheet" />
+<link href="~/Content/css/shoppage/nice-select.css" rel="stylesheet" />
+<link href="~/Content/css/shoppage/owl.carousel.min.css" rel="stylesheet" />
+<link href="~/Content/css/shoppage/jquery-ui.min.css" rel="stylesheet" />
+
+
+
+<!-- Product Section Begin -->
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <div class="sidebar">
+                    <div class="sidebar__item">
+                        <h4>Kategoriler</h4>
+                        <ul class="categorylist">
+                            <li class="active" categoryid="-1">  <a href="#category--1" onclick="filterCategory(-1,0,this)">Tüm Kategoriler</a> </li>
+                            @foreach (var item in Model.categories)
+                            {
+
+                                <li categoryid="@item.id" categorytype="0">
+                                    <a href="#category-@item.id" onclick="filterCategory(@item.id,0,this)">@item.name</a> @*kategori 0, subcategory 1*@
+                                    @if (Model.sub_categories.Any(x => x.parent_id == item.id))
+                                    {<ul>
+
+
+                                            @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == item.id))
+                                            {
+                                                <li style="padding-left:8px;" categoryid="@subcategory.id" categorytype="1">
+                                                    <a href="#subcategory-@subcategory.id" onclick="filterCategory(@subcategory.id,1,this)">@subcategory.name</a>
+                                                </li>
+                                            }
+                                        </ul>
+
+
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="sidebar__item">
+                        <h4>Fiyat</h4>
+                        <div class="price-range-wrap">
+                            <div id="price-range-campaign" class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                 data-min="@Math.Round((decimal)Model.products_skus.Min(x => x.price))" data-max="@Math.Round((decimal)Model.products_skus.Max(x => x.price))">
+                                <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                            </div>
+                            <div class="range-slider">
+                                <div class="price-input">
+                                    &#8378;<input type="text" id="minamount">
+                                    &#8378;<input type="text" id="maxamount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar__item">
+                        <div class="latest-product__text">
+                            <h4>Son Eklenen Ürünler</h4>
+                            <div class="latest-product__slider owl-carousel">
+
+
+
+                                @{
+                                    var list = Model.products.OrderBy(x => x.id).Take(6).ToArray();
+
+                                }
+
+
+
+                                @{
+                                    int a = 0;
+                                }
+                                @for (int d = 0; d < 2; d++)
+                                {
+                                    <div class="latest-product__slider__item">
+                                        @for (int j = 0; j < 3; j++)
+                                        {
+                                            if (a >= list.Count())
+                                            {
+                                                break;
+                                            }
+
+                                            <a href="#" class="latest-product__item">
+                                                <div class="latest-product__item__pic">
+                                                    <img src="@(list[a].cover != null ? list[a].cover : Url.Content("~/Content/theme/images/empty.png"))" alt="">
+                                                </div>
+                                                <div class="latest-product__item__text">
+                                                    <h6>@list[a].name</h6>
+                                                    <span>&#8378;@list[a].products_skus.FirstOrDefault().price</span>
+                                                </div>
+                                            </a>
+
+                                            a++;
+                                        }
+                                    </div>
+                                }
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-7">
+
+                <section class="campaigns">
+                    <div class="container">
+                        <div class="campaigns-wrapper ">
+
+
+                            <div class="campaign-item " style="background-image:url(@Model.campaigns.FirstOrDefault().campaign_cover)">
+                                <h3 class="campaign-title">
+                                    @Model.campaigns.FirstOrDefault().campaign_title
+                                </h3>
+                                <p class="campaign-desc">
+                                    @Model.campaigns.FirstOrDefault().campaign_start_date.ToString("M") - @Model.campaigns.FirstOrDefault().campaign_end_date.ToString("M")
+                                </p>
+                                <a href="/Home/CampaingDetails/@Model.campaigns.FirstOrDefault().id" class="btn btn-red">
+                                    İNCELE<i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    </section>
+                    <div class="productsContainer">
+                        @Html.Action("GetCampaignProductsPartial", "Home", new { CampaignId = Model.campaigns.FirstOrDefault().id, CategoryId = -1, PriceRange = "All", PageNumber = 1 })
+                    </div>
+
+
+
+</div>
+            </div>
+    </div>
+</section>
+<!-- Product Section End -->
+<script src="~/Content/css/shoppage/js/bootstrap.min.js"></script>
+
+<script src="~/Content/css/shoppage/js/jquery.nice-select.min.js"></script>
+<script src="~/Content/css/shoppage/js/jquery.slicknav.js"></script>
+<script src="~/Content/css/shoppage/js/mixitup.min.js"></script>
+<script src="~/Content/css/shoppage/js/owl.carousel.min.js"></script>
+<script src="~/Content/css/shoppage/js/main.js"></script>
+
+
+<script src="~/Scripts/jquery-3.7.1.js"></script>
+<script src="~/Content/css/shoppage/js/jquery-ui.min.js"></script>
+
+<script>
+
+
+
+
+    function AddCart(id) {
+        $.ajax({
+            url: '/Home/AddCart/',
+            type: 'POST',
+            data: { Id: id, Adet: 1 },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    $('#cartItemsList').html(response.cartItemsHtml);
+                    var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
+                    $(".header-cart-count").text(cartCount);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                toastr.error("Bir hata oluştu: " + error);
+            }
+        });
+    }
+
+
+    $(document).on("click", ".product__pagination a", function (event) {
+        event.preventDefault();
+        var campaignId = '@Model.campaigns.FirstOrDefault().id';
+        var categoryId = $(this).attr('categoryId');
+        var priceRange = $('#minamount').val() + "-" + $('#maxamount').val();
+        var pageNumber = $(this).attr("pn");
+
+        console.log(categoryId);
+        console.log(pageNumber);
+
+        $.ajax({
+            url: '/Home/GetCampaignProductsPartial/',
+            type: 'POST',
+            data: { CampaignId: parseInt(campaignId), CategoryId: parseInt(categoryId), PriceRange: priceRange, PageNumber: parseInt(pageNumber) },
+            success: function (response) {
+                $('.productsContainer').fadeOut(300, function () {
+                    $(this).empty();
+
+                    $(this).fadeIn(300, function () {
+                        $('html, body').animate({
+                            scrollTop: $(".productsContainer").offset().top
+                        }, 300);
+                    });
+                    $(this).html(response);
+                    $('.set-bg').each(function () {
+                        var bg = $(this).data('setbg');
+                        $(this).css('background-image', 'url(' + bg + ')');
+                    });
+                });
+            },
+            error: function (xhr, status, error) {
+                // Hata durumunu ele alabilirsiniz
+            }
+        });
+    });
+
+
+    function filterCategory(categoryId, categoryType, element) {
+        var priceRange = $('#minamount').val() + "-" + $('#maxamount').val();
+        var campaignId='@Model.campaigns.FirstOrDefault().id'
+        $.ajax({
+            url: '/Home/GetCampaignProductsPartial/',
+            type: 'POST',
+            data: { CampaignId: parseInt(campaignId), CategoryId: parseInt(categoryId), CategoryType: categoryType, PriceRange: priceRange, PageNumber: 1 },
+            success: function (response) {
+                $('.productsContainer').fadeOut(300, function () {
+                    $(this).empty();
+                    $(this).html(response);
+
+                    // Background resimleri ayarla
+                    $('.set-bg').each(function () {
+                        var bg = $(this).data('setbg');
+                        $(this).css('background-image', 'url(' + bg + ')');
+                    });
+
+                    $(this).fadeIn(300, function () {
+                        $('html, body').animate({
+                            scrollTop: $(".productsContainer").offset().top
+                        }, 300);
+                    });
+                });
+
+                // Aktif sınıfını güncelle
+                $('.sidebar__item ul li').removeClass('active'); // Tüm li'lerden active sınıfını kaldır
+
+                // Aktif olan öğeye active sınıfını ekle
+                $(element).closest('li').addClass('active');
+                $('.sidebar__item ul [categoryid="' + categoryId + '"][categorytype="' + categoryType + '"]').addClass('active');
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", error);
+            }
+        });
+    }
+
+    /*-----------------------
+    Price Range Slider
+------------------------ */
+    var rangeSlider = $("#price-range-campaign"),
+        minamount = $("#minamount"),
+        maxamount = $("#maxamount"),
+        minPrice = rangeSlider.data('min'),
+        maxPrice = rangeSlider.data('max');
+    rangeSlider.slider({
+        range: true,
+        min: minPrice,
+        max: maxPrice,
+        values: [minPrice, maxPrice],
+        slide: function (event, ui) {
+            minamount.val(ui.values[0]);
+            maxamount.val(ui.values[1]);
+        }, stop: function (event, ui) {
+            var categoryId = $(".sidebar__item ul li.active").attr('categoryid');
+            var categorytype = $(".sidebar__item ul li.active").attr('categorytype');
+
+            var pageNumber = 1; // Yeni aramayı ilk sayfadan başlat
+            var priceRange = $('#minamount').val() + "-" + $('#maxamount').val();
+            var campaignId = '@Model.campaigns.FirstOrDefault().id';
+
+            $.ajax({
+                url: '/Home/GetCampaignProductsPartial/',
+                type: 'POST',
+                data: { CampaignId: parseInt(campaignId), CategoryId: parseInt(categoryId), PriceRange: priceRange, PageNumber: 1, CategoryType: categorytype },
+                success: function (response) {
+                    $('.productsContainer').fadeOut(300, function () {
+                        $(this).empty();
+
+                        $(this).fadeIn(300, function () {
+                            $('html, body').animate({
+                                scrollTop: $(".productsContainer").offset().top
+                            }, 300);
+                        });
+                        $(this).html(response);
+                        $('.set-bg').each(function () {
+                            var bg = $(this).data('setbg');
+                            $(this).css('background-image', 'url(' + bg + ')');
+                        });
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+    });
+    minamount.val(rangeSlider.slider("values", 0));
+    maxamount.val(rangeSlider.slider("values", 1));
+
+    function checkHashAndFilter() {
+        var hash = window.location.hash.substring(1);
+        if (hash) {
+            var parts = hash.split('-');
+            if (parts.length === 2) {
+                var type = parts[0];
+                var id = parseInt(parts[1]);
+                if (!isNaN(id)) {
+                    var categoryType = (type === 'category') ? 0 : 1;
+                    filterCategory(id, categoryType);
+
+                }
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        // Sayfa yüklendiğinde hash'i kontrol et
+        checkHashAndFilter();
+
+        // Hash değiştiğinde hash'i kontrol et
+        $(window).on('hashchange', function () {
+            checkHashAndFilter();
+        });
+    });
+
+
+</script>

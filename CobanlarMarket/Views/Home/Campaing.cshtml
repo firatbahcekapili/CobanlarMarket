@@ -1,0 +1,104 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "Campaing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+<link href="~/Content/css/main.css" rel="stylesheet" />
+
+<body cz-shortcut-listen="true">
+    <div id="root">
+        <div>
+            <div class="main-layout">
+                <div class="modal-dialog ">
+                    <div class=" modal-content">
+                        :<button class="modal-close"><i class="bi bi-x"></i></button>
+                        <div class="modal-image"><img src="/img/modal-dialog.jpg" alt=""></div>
+                        <div class="popup-wrapper">
+                            <div class="popup-content">
+                                <div class="popup-title">
+                                    <h3>YENİ ÜRÜNLER</h3>
+                                </div>
+                                <p class="popup-text">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum,
+                                    voluptates.
+                                </p>
+                                <form class="popup-form">
+                                    <input type="text"
+                                           placeholder="Enter Email Adress Here"><button class="btn btn-lg btn-red">
+                                        ABONE
+                                        OL
+                                    </button><label>
+                                        <input type="checkbox"><span>
+                                            Lorem ipsum dolor
+                                            sit.
+                                        </span>
+                                    </label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-overlay"></div>
+                </div>
+
+                <div class="section-title">
+                    <h2>Kampanyalar</h2>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+                </div>
+                <section class="campaigns">
+                    <div class="container">
+                        @{
+                            var list = Model.campaigns.ToArray();
+                            int sira = 0;
+                        }
+                        @for (int d = 0; d <= decimal.Ceiling(Model.campaigns.Count() / 2); d++)
+                        {
+
+
+                            <div class="campaigns-wrapper ">
+
+
+                                @for (int c = 0; c < 2; c++)
+                                {
+
+                                    if (sira >= Model.campaigns.Count())
+                                    {
+                                        break;
+                                    }
+                                    <div class="campaign-item " style="background-image:url(@list[sira].campaign_cover)">
+                                        <h3 class="campaign-title">
+                                            @list[sira].campaign_title
+                                        </h3>
+                                        <p class="campaign-desc">
+                                            @list[sira].campaign_start_date.ToString("M") - @list[sira].campaign_end_date.ToString("M")
+                                        </p>
+                                        <a href="/Home/CampaingDetails/@list[sira].id" class="btn btn-red">
+                                            İNCELE<i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                    sira++;
+                                }
+
+
+                            </div>
+
+                        }
+                    </div>
+                </section>
+                <section class="campaing-single">
+                    <div class="container">
+                        <div class="campaing-wrapper">
+                            <h2>New Season Better</h2><strong>40% INDIRIM</strong><span></span><a href="#"
+                                                                                                  class="btn btn-lg btn-red">ALIŞVERIS YAP<i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+
+
+</body>

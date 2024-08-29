@@ -1,0 +1,13 @@
+﻿@model List<CobanlarMarket.Models.products>
+@foreach (var item in Model)
+{
+    <a href="#" class="result-item">
+        <img src="@item.cover"
+             class="search-thumb"
+             alt="" />
+        <div class="search-info">
+            <h4>@item.name</h4>
+            <span class="search-sky"></span><span class="search-price">&#8378;@item.products_skus.FirstOrDefault().price</span>
+        </div>
+    </a>
+}

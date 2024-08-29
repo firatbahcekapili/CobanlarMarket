@@ -1,0 +1,208 @@
+﻿
+@{
+    ViewBag.Title = "AddCampaign";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
+<link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
+
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Kampanya Ekle</h2>
+
+    <form id="campaignForm">
+
+        @{
+            CobanlarMarket.Models.campaigns c = new CobanlarMarket.Models.campaigns();
+        }
+        <div class="row justify-content-center">
+
+            <div class="col-12 bg-white p-5">
+
+                <div class="form-group">
+                    <label>Resim Yükle</label>
+
+                    <div class="form-group img-parent">
+                        <div class="d-flex img-pre" id="image-container">
+                            <!-- Resimler buraya eklenecek -->
+                        </div>
+
+                        <input type="file" class="form-control" id="campaignImg" accept=".jpg,.jpeg,.png" aria-describedby="campaignImg" onchange="dosyaOnizlemeNew(this);">
+
+                    </div>
+                    <small class="form-text text-muted">
+                        1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Resimler belirli boyutlarda olmalıdır. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="title">Kampanya Başlığı *</label>
+                    @*<input type="text" class="form-control" id="name" placeholder="Kategori İsmi">*@
+                    @Html.EditorFor(model => c.campaign_title, "Kampanya Başlığı", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Kampanya Başlığı", id = "title" } })
+                    @Html.ValidationMessageFor(model => c.campaign_title, "")
+
+
+                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="startdate">Başlangıç Tarihi</label>
+
+                        @Html.EditorFor(model => c.campaign_start_date, "Başlangıç Tarihi", new { htmlAttributes = new { type = "date", name = "startdate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "startdate" } })
+                        @Html.ValidationMessageFor(model => c.campaign_start_date, "", new { @class = "text-danger" })
+
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="enddate">Bitiş Tarihi</label>
+
+                        @Html.EditorFor(model => c.campaign_end_date, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate" } })
+                        @Html.ValidationMessageFor(model => c.campaign_end_date, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label>Kampanya Ürünleri</label>
+
+                    <select class="label ui selection fluid dropdown   " id="products" multiple>
+
+                        @foreach (var item in Model.products)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        var element = document.getElementById('products');
+        var products = new Choices('#products', {
+            removeItemButton: true,
+        });
+
+
+
+        $('#submitbtn').on("click", function (e) {
+            e.preventDefault();
+
+            var img = $('#campaignImg')[0].files[0];
+            var title = $('#title').val();
+            var startdate = $('#startdate').val();
+            var enddate = $('#enddate').val();
+
+
+
+            var formData = new FormData();
+            formData.append("Img", img);
+
+            formData.append("Title", title);
+            formData.append("StartDate", startdate);
+            formData.append("EndDate", enddate);
+            var selectedProducts = products.getValue(true);
+            formData.append("Products", selectedProducts);
+
+            if ($('#campaignForm').valid()) {
+
+                $.ajax({
+                    url: '/Management/AddCampaign/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+
+                            document.getElementById("campaignForm").reset();
+                            // Ekrandaki resmi kaldır
+                            $('#image-container').empty();
+                            // Input dosya listesini güncelle
+
+                            $("#campaignImg").remove();
+                            $(".img-parent").append("  <input type='file' class='form-control' id='campaignImg' accept='.jpg,.jpeg,.png' aria-describedby='campaignImg' onchange='dosyaOnizlemeNew(this);'>")
+
+                        } else {
+                            toastr.error(response.message);
+                        }
+
+                    }, error: function (e) {
+
+
+                    }
+
+                });
+
+
+            }
+
+
+        });
+
+
+
+
+
+
+    });
+
+    var selectedFiles = []; // Seçilen dosyaları saklamak için dizi
+
+    function dosyaOnizlemeNew(input) {
+        var container = $('#image-container');
+        container.empty(); // Eski resimleri temizle
+        selectedFiles = Array.from(input.files); // Seçilen dosyaları diziye ekle
+
+        selectedFiles.forEach(file => {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail').css("width", "200px");
+                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                    event.preventDefault(); // Varsayılan davranışı engelle
+                    removeImage(file);
+                });
+                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                container.append(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    function removeImage(fileToRemove) {
+        // Dosya verisini base64 formatına dönüştür
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var fileDataURL = e.target.result;
+
+            // Dosyayı seçilen dosyalardan çıkar
+            selectedFiles = selectedFiles.filter(file => file !== fileToRemove);
+
+            // Ekrandaki resmi kaldır
+            $('#image-container img').each(function () {
+                if ($(this).attr('src') === fileDataURL) {
+                    $(this).parent().remove();
+                }
+            });
+
+            // Input dosya listesini güncelle
+
+            $("#campaignImg").remove();
+            $(".img-parent").append("  <input type='file' class='form-control' id='campaignImg' accept='.jpg,.jpeg,.png' aria-describedby='campaignImg' onchange='dosyaOnizlemeNew(this);'>")
+
+
+        };
+        reader.readAsDataURL(fileToRemove);
+    }
+
+</script>

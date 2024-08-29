@@ -1,0 +1,371 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    decimal? toplam = 0;
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+<link href="~/Content/css/main.css" rel="stylesheet" />
+<body cz-shortcut-listen="true">
+    <div id="root">
+        <div>
+            <div class="main-layout">
+                <div class="modal-dialog ">
+                    <div class=" modal-content">
+                        :<button class="modal-close"><i class="bi bi-x"></i></button>
+                        <div class="modal-image"><img src="/img/modal-dialog.jpg" alt=""></div>
+                        <div class="popup-wrapper">
+                            <div class="popup-content">
+                                <div class="popup-title">
+                                    <h3>YENİ ÜRÜNLER</h3>
+                                </div>
+                                <p class="popup-text">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum,
+                                    voluptates.
+                                </p>
+                                <form class="popup-form">
+                                    <input type="text"
+                                           placeholder="Enter Email Adress Here"><button class="btn btn-lg btn-red">
+                                        ABONE
+                                        OL
+                                    </button><label>
+                                        <input type="checkbox"><span>
+                                            Lorem ipsum dolor
+                                            sit.
+                                        </span>
+                                    </label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-overlay"></div>
+                </div>
+                @{
+
+                    var kisi = Session["user"];
+                    if (kisi != null)
+                    {
+                        CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
+
+                         toplam = 0;
+                        <section class="cart-page">
+                            <div class="container">
+                                <div class="cart-page-wrapper">
+                                    <form class="cart-form">
+                                        <div class="free-progress-bar">
+                                            <p class="progress-bar-title">
+                                                Lorem ipsum <strong>$130.00</strong> sit amet
+                                                consectetur adipisicing elit. Maiores, qui.
+                                            </p>
+                                            <div class="progress-bar"><span class="progress"></span></div>
+                                        </div>
+                                        <div class="shop-table-wrapper">
+
+
+                                            <table class="shop-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="product-thumbnail">&nbsp;</th>
+                                                        <th class="product-thumbnail">&nbsp;</th>
+                                                        <th class="product-name">Ürün</th>
+                                                        <th class="product-price">Fiyat</th>
+                                                        <th class="product-quantity">Adet</th>
+                                                        <th class="product-subtotal">Toplam Tutar</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="cart-wrapper">
+
+
+
+
+
+                                                    @foreach (var cartItem in Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item)
+                                                    {
+                                                        <tr class="cart-item" id="@cartItem.id">
+                                                            <td></td>
+                                                            <td class="cart-image">
+                                                                <img src="@cartItem.products.cover" alt=""><i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
+                                                            </td>
+                                                            <td>@cartItem.products.name</td>
+                                                            <td>&#8378;@cartItem.products.products_skus.FirstOrDefault().price</td>
+                                                            <td class="product-quantity d-flex justify-content-center align-items-center">
+
+                                                                <div class="qty-input">
+                                                                    <button class="qty-count qty-count--minus" data-action="minus" type="button">-</button>
+                                                                    <input class="product-qty" type="number" name="product-qty" min="-1" max="15" step="1" value="@cartItem.quantity">
+                                                                    <button class="qty-count qty-count--add" data-action="add" type="button">+</button>
+                                                                </div>
+
+                                                            </td>
+                                                            <td class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
+                                                        </tr>
+
+
+                                                        toplam += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
+
+                                                      
+                                                    }
+
+
+                                                </tbody>
+                                            </table>
+                                            <div class="actions-wrapper">
+                                                <div class="coupon">
+                                                    <input type="text" class="input-text"
+                                                           placeholder="Kupon Kodu" id="couponCode">
+                                                    <button class="btn btn-black" id="addCoupon">
+                                                        Ekle
+                                                    </button>
+                                                </div>
+                                                <div class="update-cart">
+                                                <button class="btn btn-red">Sepeti Güncelle</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="cart-collaterals">
+                                        <div class="cart-totals">
+                                            <h2>Sepet Toplamı</h2>
+                                            <table id="cartTotalTable">
+                                                <tbody>
+                                                    <tr class="cart-subtotal">
+                                                        <th>Ürün Toplamı</th>
+                                                        <td><span id="subtotal">&#8378;@toplam</span></td>
+                                                    </tr>
+                                                    <tr id="address">
+                                                        <th>Adres</th>
+                                                        <td>
+                                                            <ul>
+
+                                                                <li><a href="#">Change Address</a></li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Toplam</th>
+                                                        <td><strong id="cart-total">&#8378;@toplam</strong></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+
+                                            <div class="checkout">
+                                                <button class="btn btn-lg btn-red btn-order">
+                                                    Sipariş Ver
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    }
+                    else
+                    {
+                <section class="text-center m-5">
+                    <h2>Sepeti kullanabilmek için giriş yapmalısınız</h2>
+                    <a href="/Home/Auth">Giriş Yap</a>
+                </section>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.jsx"></script>
+
+
+
+</body>
+
+<script>
+
+
+    function removeItemInCart(id) {
+        $.ajax({
+            url: '/Home/removeItemInCart/',
+            type: 'POST',
+            data: { Id: id },
+            success: function (result) {
+                console.log(result);
+                var table = $(result).find(".shop-table tbody tr");
+                $('.cart-wrapper').empty().append(table);
+                var total = $(result).find("#cart-total").text();
+                $("#cart-total").text(total);
+                $("#subtotal").text(total);
+
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+
+        $('.cart-wrapper').on('click', '.qty-count--minus', function () {
+            var tr = $(this).closest('tr');
+            var id = tr.attr('id');
+            $.ajax({
+                url: '/Home/minusItemInCart/',
+                type: 'POST',
+                data: { Id: id },
+                success: function (result) {
+                    console.log(result);
+                    var table = $(result).find(".shop-table tbody tr");
+                    $('.cart-wrapper').empty().append(table);
+                    var total = $(result).find("#cart-total").text();
+                    $("#cart-total").text(total);
+                    $("#subtotal").text(total);
+                    var cartCount = $(result).find(".cart-item").length;
+
+                    $(".header-cart-count").text(cartCount);
+
+                }
+            });
+        });
+
+        $('.cart-wrapper').on('click', '.qty-count--add', function () {
+            var tr = $(this).closest('tr');
+            var id = tr.attr('id');
+            $.ajax({
+                url: '/Home/increaseItemInCart/',
+                type: 'POST',
+                data: { Id: id },
+                success: function (result) {
+                    console.log(result);
+                    var table = $(result).find(".shop-table tbody tr");
+                    $('.cart-wrapper').empty().append(table);
+                    var total = $(result).find("#cart-total").text();
+                    $("#cart-total").text(total);
+                    $("#subtotal").text(total);
+
+
+                }
+            });
+        });
+
+
+        $('.checkout').on('click', '.btn-order', function () {
+
+            $.ajax({
+                url: '/Home/Order/',
+                type: 'POST',
+
+                success: function (result) {
+                    console.log(result.message);
+                    toastr.success(result.message);
+
+                }
+            });
+        });
+
+
+        $('.actions-wrapper').on('click', '#addCoupon', function (e) {
+            e.preventDefault();
+            var couponCode = $('#couponCode').val();
+
+            $.ajax({
+                url: '/Home/UseCoupon/',
+                type: 'POST',
+                data: {CouponCode:couponCode},
+
+                success: function (result) {
+                    if (result.success) {
+                        toastr.success(result.message);
+                        $('.couponadded').remove();
+                        $('#address').after(
+
+                            "   <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>  <tr class='couponadded'>   <th>Kupon Kodu Uygulandı:<strong>" + result.coupon + "</strong></th>  <td>İndirim </br>-&#8378;" + result.discount +"</td>  </tr> "
+                        );
+
+
+                        var total = '@(toplam.ToString().Replace(",","."))';
+                        console.log('@toplam');
+                        console.log(total);
+
+                        console.log(parseFloat(total));
+                        console.log(parseFloat(result.discount.replace(',', '.')));
+
+                        $('#cart-total').text("₺"+(parseFloat(total) - parseFloat(result.discount.replace(',','.'))));
+                    } else {
+                        toastr.error(result.message);
+                    }
+
+                }
+            });
+        });
+
+
+    });
+
+
+</script>
+
+
+<script>
+
+    var QtyInput = (function () {
+        var $qtyInputs = $(".qty-input");
+
+        if (!$qtyInputs.length) {
+            return;
+        }
+
+        var $inputs = $qtyInputs.find(".product-qty");
+        var $countBtn = $qtyInputs.find(".qty-count");
+        var qtyMin = parseInt($inputs.attr("min"));
+        var qtyMax = parseInt($inputs.attr("max"));
+
+        $inputs.change(function () {
+            var $this = $(this);
+            var $minusBtn = $this.siblings(".qty-count--minus");
+            var $addBtn = $this.siblings(".qty-count--add");
+            var qty = parseInt($this.val());
+
+            if (isNaN(qty) || qty <= qtyMin) {
+                $this.val(qtyMin);
+                $minusBtn.attr("disabled", true);
+            } else {
+                $minusBtn.attr("disabled", false);
+
+                if (qty >= qtyMax) {
+                    $this.val(qtyMax);
+                    $addBtn.attr('disabled', true);
+                } else {
+                    $this.val(qty);
+                    $addBtn.attr('disabled', false);
+                }
+            }
+        });
+
+        $countBtn.click(function () {
+            var operator = this.dataset.action;
+            var $this = $(this);
+            var $input = $this.siblings(".product-qty");
+            var qty = parseInt($input.val());
+
+            if (operator == "add") {
+                qty += 1;
+                if (qty >= qtyMin + 1) {
+                    $this.siblings(".qty-count--minus").attr("disabled", false);
+                }
+
+                if (qty >= qtyMax) {
+                    $this.attr("disabled", true);
+                }
+            } else {
+                qty = qty <= qtyMin ? qtyMin : (qty -= 1);
+
+                if (qty == qtyMin) {
+                    $this.attr("disabled", true);
+                }
+
+                if (qty < qtyMax) {
+                    $this.siblings(".qty-count--add").attr("disabled", false);
+                }
+            }
+
+            $input.val(qty);
+        });
+    })();
+</script>

@@ -1,0 +1,109 @@
+﻿@model CobanlarMarket.Models.sub_categories
+@{
+    ViewBag.Title = "EditSubCategory";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Alt Kategori Ekle</h2>
+
+    <form id="subCategoryForm">
+        <div class="row justify-content-center">
+            <div class="col-12 bg-white p-5">
+                <div class="form-group">
+                    <label for="parentcategory">Kategori *</label>
+                    <select class="form-control" id="category">
+                        <option>Kategori Seçiniz</option>
+                        <!-- Add categories here -->
+
+
+                      
+
+                    </select>
+                </div>
+
+                <div class="form-row ">
+                    <div class="form-group col-md-6">
+                        <label for="subname">Alt Kategori İsmi *</label>
+                        @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
+                        @Html.EditorFor(model => Model.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subname", @class = "form-control", placeholder = "Alt Kategori İsmi", id = "subname" } })
+                        @Html.ValidationMessageFor(model => Model.name, "")
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="subdescription">Alt Kategori Açıklaması *</label>
+                        @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
+                        @Html.EditorFor(model => Model.name, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subdescription" } })
+                        @Html.ValidationMessageFor(model => Model.name, "")
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <button class="btn btn-outline-primary float-right" id="subsubmitbtn">Kaydet</button>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Management/GetCategories/',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (data.error) {
+                    console.error(data.error);
+                    alert('Failed to retrieve categories: ' + data.error);
+                } else {
+                    var $categories = $('#category');
+                    $.each(data, function (i, item) {
+                        $categories.append($('<option>', {
+                            value: item.id,
+                            text: item.name,
+                            pid: item.id
+                        }));
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+                alert('Failed to retrieve categories. Error: ' + xhr.responseText);
+            }
+        });
+    });
+
+    $('#subsubmitbtn').on("click", function (e) {
+        e.preventDefault();
+        var name = $('#subname').val();
+        var description = $('#subdescription').val();
+        var selectedOption = $("#category").find('option:selected');
+        var categoryId = parseInt(selectedOption.attr('pid'));
+        var id =@Model.id;
+        console.log('Selected Category ID:', categoryId);
+
+        if ($('#subCategoryForm').valid()) {
+            $.ajax({
+                url: '/Management/EditSubCategory/',
+                type: 'POST',
+                data: {Id:id, ParentId: categoryId, Name: name, Description: description },
+                success: function (result) {
+                    toastr.success('Alt Kategori Başarıyla Düzenlendi', 'Başarılı');
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                    toastr.error('Alt Kategori Düzenlenirken Bir Hata Oluştu: ' + xhr.responseText, 'Hata');
+                }
+            });
+        }
+    });
+</script>

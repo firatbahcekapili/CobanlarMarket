@@ -1,0 +1,77 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    var totalProduct = ViewBag.totalProcuct;
+    var pageSize = ViewBag.pageSize;
+    var categoryId = ViewBag.categoryId;
+}
+
+<div class="filter__item">
+    <div class="row">
+        <div class="col-lg-4 col-md-5">
+            <div class="filter__sort">
+                <span>Sırala</span>
+                <select>
+                    <option value="0">Default</option>
+                    <option value="0">Default</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4">
+            <div class="filter__found">
+                <h6><span>@totalProduct</span> Ürün Bulundu</h6>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-3">
+            <div class="filter__option">
+                <span class="icon_grid-2x2"><i class="bi bi-grid-fill"></i></span>
+                <span class="icon_ul"><i class="bi bi-list-ul"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+
+    @foreach (var product in Model.products)
+    {
+        <div class="col-lg-4 col-md-6 col-sm-6">
+            <div class="product__item" >
+                <div class="product__item__pic set-bg" onclick="location.href = '/Home/Product/@product.id';" data-setbg="@(product.cover != null ? product.cover : Url.Content("~/Content/theme/images/empty.png"))" style="z-index:1">
+                    <ul class="product__item__pic__hover" style="z-index:2">
+                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation();"><i class="bi bi-heart-fill"></i></a></li>
+                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation();"><i class="bi bi-share-fill"></i></a></li>
+                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation(); AddCart(@product.id)"><i class="bi bi-cart3"></i></a></li>
+
+                    </ul>
+                </div>
+                <div class="product__item__text">
+                    <h6><a href="#">@product.name</a></h6>
+                    <h5>&#8378;@product.products_skus.FirstOrDefault().price</h5>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+@{
+    var page = (int)Math.Ceiling((double)totalProduct / pageSize);
+
+}
+@if (Model.products.Any() && page>1)
+{
+   
+    <div class="product__pagination">
+
+        @for (int i = 1; i <= page % 12; i++)
+        {
+            <a href="#@i" categoryId="@categoryId" pn="@i">@i</a>
+        }
+
+        <a href="#"><i class="bi bi-arrow-right"></i></a>
+    </div>
+}
+<script src="~/Content/css/shoppage/js/jquery.nice-select.min.js"></script>
+<script>
+    $("select").niceSelect();
+
+</script>

@@ -1,0 +1,125 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "AttributeList";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+<style>
+    .mdi{
+        font-size:22px;
+        margin:0 5px 0 5px;
+    }
+</style>
+<div class=" mt-5 ml-5 mr-5">
+
+    <!-- Table Product -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Özellik Listesi</h2>
+
+                    <div class="dropdown">
+                        <a  href="/Management/AddAttribute" class="btn btn-outline-primary">Özellik Ekle</a>
+                    </div>
+                    <div class="card-body">
+                        <table id="attributesTable" class="table table-hover table-product" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Özellik Adı</th>
+                                    <th>Tip</th>
+                                    <th>Oluşturulma Tarihi</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int i = 1;
+                                }
+                                @foreach (var item in Model.product_attributes)
+                                {
+                                    <tr>
+                                        <td>@item.id</td>
+
+                                        <td>@item.value</td>
+                                        <td>@item.type</td>
+                                        <td>@item.created_at</td>
+
+                                        <td>
+                                            <a href="#">
+                                                <span class="mdi mdi-eye text-primary "></span>
+
+                                            </a>
+                                            <a href="/Management/EditAttribute/@item.id">
+                                                <span class="mdi mdi-pen text-success"></span>
+
+                                            </a>
+                                            <a onclick="Remove(@item.id)">
+                                                <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    i++;
+                                }
+
+
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    function Remove(id) {
+
+        $.ajax({
+            url: '/Management/RemoveAttribute/',
+            type: 'POST',
+            data: { Id: id },
+            success: function (result) {
+                console.log("success");
+                toastr.success('Özellik Başarıyla Silindi', 'Başarılı');
+
+
+                var tbody = $("#attributesTable tbody");
+                tbody.empty();
+
+
+                result.forEach(function (attr) {
+                    var row = "<tr>" +
+                        "<td>"+attr.id+"</td>" +
+                        "<td>" + attr.value+ "</td>" +
+                        "<td>" + attr.type + "</td>" +
+
+                        "<td>" + attr.created_at + "</td>" +
+                        "<td>" +
+                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
+                        "<a href='/Management/EditAttribute/"+attr.id+"'><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a onclick='Remove(" + attr.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
+                        "</td>" +
+                        "</tr>";
+                    tbody.append(row);
+                });
+
+
+
+
+            }
+
+
+        });
+
+
+    }
+
+
+</script>

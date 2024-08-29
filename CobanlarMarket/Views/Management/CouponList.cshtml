@@ -1,0 +1,162 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "CouponList";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+
+<style>
+    .mdi {
+        font-size: 22px;
+        margin: 0 5px 0 5px;
+    }
+    .couponTable  th,.couponTable td{
+        font-size:13px;
+    }
+  
+</style>
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Kupon Listesi</h2>
+
+
+    <!-- Table Product -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>Kupon Listesi</h2>
+                    <div class="dropdown">
+                        <a href="/Management/AddCoupon" class="btn btn-outline-primary">Kupon Ekle</a>
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="couponTable" class="table table-hover table-product couponTable" style="width:100%">
+                        <thead>
+                            <tr >
+                                <th>Kupon Kodu</th>
+                                <th>İndirim Türü</th>
+                                <th>İndirim Miktarı</th>
+                                <th>Min Tutar</th>
+                                <th>Max İndirim Tutarı</th>
+                                <th>Başlangıç Tarihi</th>
+                                <th>Bitiş Tarihi</th>
+                                <th>Oluşturulma Tarihi</th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int i = 1;
+                            }
+                            @foreach (var item in Model.coupons.Where(x => x.IsActive == true))
+                            {
+                                <tr>
+                                    <td class="">
+                                        @item.Code
+                                    </td>
+                                    <td>
+                                        @item.DiscountType
+                                    </td>
+                                    <td>@item.DiscountValue</td>
+                                    <td>@item.MinimumSpend</td>
+                                    <td>@item.MaxDiscountAmount</td>
+                                    <td>@item.StartDate</td>
+                                    <td>@item.EndDate</td>
+                                    <td>@item.CreatedAt</td>
+
+                                    <td>
+                                        <a href="#">
+                                            <span class="mdi mdi-eye text-primary "></span>
+
+                                        </a>
+                                        <a href="/Management/EditCoupon/@item.Id">
+                                            <span class="mdi mdi-pen text-success"></span>
+
+                                        </a>
+                                        <a onclick="Remove(@item.Id)">
+                                            <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                        </a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+
+
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+
+    function Remove(Id) {
+
+        $.ajax({
+            url: '/Management/RemoveCoupon/',
+            type: 'Post',
+            data: { Id: Id },
+            success: function (response) {
+
+
+                if (response.success) {
+                    toastr.success(response.message);
+
+                    var tbody = $("#couponTable tbody");
+                    tbody.empty();
+
+                    response.coupons.forEach(function (coupon) {
+                        var row = "<tr>" +
+                            "<td >" + coupon.Code + "</td>" +
+                            "<td>" + coupon.DiscountType + "</td>" +
+                            "<td>" + coupon.DiscountValue + "</td>" +
+                            "<td>" + coupon.MinimumSpend + "</td>" +
+                            "<td>" + coupon.MaxDiscountAmount + "</td>" +
+                            "<td>" + coupon.StartDate + "</td>" +
+                            "<td>" + coupon.EndDate + "</td>" +
+                            "<td>" + coupon.CreatedAt + "</td>" +
+                            "<td>" +
+                            "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
+                            "<a  href='/Management/EditCoupon/" + coupon.Id + "><span class='mdi mdi-pen text-success'></span></a>" +
+                            "<a onclick='Remove(" + coupon.Id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
+                            "</td>" +
+                            "</tr>";
+                        tbody.append(row);
+                    });
+
+
+
+
+                } else {
+                    toastr.error(response.message);
+                }
+               
+            
+
+            }, error: function (e) {
+                console.log(e)
+                toastr.error('Kupon Silinirken Bir Hata Oluştu', 'Hata');
+
+            }
+
+
+
+        });
+
+    }
+
+
+
+
+</script>

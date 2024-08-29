@@ -1,0 +1,545 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="~/Content/css/All.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+
+    <link href="~/Content/css/slick.css" rel="stylesheet" />
+
+    <link href="~/Content/css/slick-theme.css" rel="stylesheet" />
+    <script src="~/Content/scripts/slick.js"></script>
+
+
+
+    <style>
+
+        .dropbtn {
+            background-color: transparent;
+            color: black;
+            padding: 16px;
+            font-size: 16px;
+            border: none;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+            .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+                .dropdown-content a:hover {
+                    background-color: red;
+                    color: white;
+                }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .dropbtn {
+            background-color: red;
+            color: white;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="toaster"></div>
+
+    <header>
+        <div class="global-notification">
+            <p>
+                ÖZEL ÜRÜNLERDE YAZ İNDİRİMİ VE ÜCRETSİZ EKSPRES ULUSLARARASI
+                ŞARKÜTERİ 50% İNDİRİM!<a href="#">ALİSVERİS YAP</a>
+            </p>
+        </div>
+        <div class="header-row">
+            <div class="container" style="width:90%;">
+                <div class="header-wrapper">
+                    <div class="header-mobile">
+                        <i class="bi bi-list" id="btn-menu"></i>
+                    </div>
+                    <div class="header-left">
+                        <a class="logo" href="/">LOGO</a>
+                    </div>
+                    <div class="header-center" id="sidebar">
+                        <nav class="navigation">
+                            <ul class="menu-list">
+                                <li class="menu-list-item">
+                                    <a class="menu-link active" href="~/Home/Index">Ana Sayfa</a>
+                                </li>
+                                <li class="menu-list-item megamenu-wrapper">
+                                    <a class="menu-link false" href="~/Home/Shop">
+                                        Alişveriş<i class="bi bi-chevron-down"></i>
+                                    </a>
+                                    <div class="menu-dropdown-wrapper">
+                                        <div class="menu-dropdown-megamenu">
+                                            <div class="megamenu-links"></div>
+                                            <div class="megamenu-single">
+                                                <a href="#">
+                                                    <img src="~/img/mega-menu.jpg" alt="" />
+                                                </a>
+                                                <h3 class="megamenu-single-title">
+                                                    JOİN THE LAYERİNG GANG
+                                                </h3>
+                                                <h4 class="megamenu-single-subtitle">
+                                                    böyle bi paragfar bar baba boyle olamasi
+                                                </h4>
+                                                <a href="/Home/Shop"
+                                                   class="megamenu-single-button btn btn-sm">Shop Now</a>
+                                            </div>
+                                            <div class="megamenu-products">
+                                                <h4 class="megamenu-products-title">
+                                                    Kategoriler
+                                                </h4>
+                                                <ul id="categoryList" class="categorylist">
+                                                    <!-- Kategoriler buraya eklenecek -->
+                                                </ul>
+                                            </div>
+                                            <div class="megamenu-products">
+                                                <h4 class="megamenu-products-title">
+                                                    Filter Layout
+                                                </h4>
+                                                <ul class="megamenu-menu-list">
+                                                    <li><a href="#">Side Bar</a></li>
+                                                    <li><a href="#">Filter Side Out</a></li>
+                                                    <li><a href="#">Filter Dropdown</a></li>
+                                                    <li><a href="#">Filter Drawes</a></li>
+                                                </ul>
+                                            </div>
+                                            <div class="megamenu-products">
+                                                <h4 class="megamenu-products-title">
+                                                    Shop Loader
+                                                </h4>
+                                                <ul class="megamenu-menu-list">
+                                                    <li><a href="#">Shop Panigation</a></li>
+                                                    <li><a href="#">Shop İnfinity</a></li>
+                                                    <li><a href="#">Shop Load More</a></li>
+                                                    <li><a href="#">Cart Modal</a></li>
+                                                    <li><a href="#">Cart Drawer</a></li>
+                                                    <li><a href="#">Cart Page</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="menu-list-item">
+                                    <a class="menu-link false" href="~/Home/Campaing">Kampanyalar</a>
+                                </li>
+                                @*<li class="menu-list-item">
+                                    <a class="menu-link false" href="~/Home/Blog">Blog</a>
+                                </li>*@
+                                <li class="menu-list-item">
+                                    <a class="menu-link false" href="~/Home/Contact">İletişim</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <i class="bi-x-circle" id="close-sidebar"></i>
+                    </div>
+                    @{
+                        var kisi = Session["user"];
+                        if (kisi != null)
+                        {
+                            CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
+                            <div class="header-right">
+                                <div class="header-right-links">
+                                    @*<a class="header-account" href="~/Home/Auth">
+
+
+
+
+
+
+
+
+
+
+
+                                        </a>*@
+
+
+
+
+                                    <div class="dropdown">
+                                        <button class="dropbtn" style="display:flex ">
+                                            <i class="bi bi-person"></i><span>@user.first_name</span>
+
+                                        </button>
+                                        <div class="dropdown-content">
+                                            <a href="#">Hesabım</a>
+                                            @Html.ActionLink("Çıkış Yap", "LogOut", "Home")
+                                        </div>
+                                    </div>
+
+
+
+                                    <button class="search-button">
+
+
+
+                                        <i class="bi bi-search"></i>
+                                    </button>
+
+                                    <a href="/Home/Whishlist">
+                                        <i class="bi bi-heart"></i>
+                                    </a>
+
+                                    <div class="header-cart">
+                                        <a class="header-cart-link" href="~/Home/Cart">
+                                            <i class="bi bi-bag"></i><span class="header-cart-count">@Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item.Count()</span>
+                                        </a>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="header-right">
+                                <div class="header-right-links">
+                                    <a class="header-account" href="~/Home/Auth">
+
+
+
+                                        <i class="bi bi-person"></i>
+                                    </a>
+                                    <button class="search-button">
+                                        <i class="bi bi-search"></i>
+                                    </button>
+                                    <a onclick="toastr.error('Önce Giriş Yapmalısınız.');">
+                                        <i class="bi bi-heart"></i>
+                                    </a>
+                                    <div class="header-cart">
+                                        <a class="header-cart-link" href="~/Home/Cart">
+                                            <i class="bi bi-bag"></i><span class="header-cart-count">0</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="modal-search">
+        <div class="modal-wrapper">
+            <h3 class="modal-title">Search for products</h3>
+            <p class="modal-text">
+                Start typing to see products are looking for.
+            </p>
+            <form class="search-form">
+                <input type="text" id="search-product" placeholder="Search a products" /><button>
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+            <div class="search-result">
+                <div class="search-heading"><h3>RESULT FROM PRODUCT</h3></div>
+                <div class="result">
+
+                </div>
+            </div>
+            <button class="close-search"><i class="bi bi-x-circle" id="close-search"></i></button>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+
+    @RenderBody()
+
+    <footer class="footer">
+        <div class="subscribe-row">
+            <div class="container">
+                <div class="footer-row-wrapper">
+                    <div class="footer-subscribe-wrapper">
+                        <div class="footer-subscribe">
+                            <div class="footer-subscribe-top">
+                                <h3 class="subscribe-title">
+                                    Get our emails for info on new items, sales and more
+                                </h3>
+                                <p class="subscribe-desc">
+                                    Yeni ürünler, indirimler ve daha fazlası hakkında
+                                    bilgi almak için
+                                </p>
+                            </div>
+                            <div class="footer-subscribe-buttom">
+                                <form>
+                                    <input type="text"
+                                           placeholder="Enter Your email adres." /><button class="btn btn-red">Subscribe</button>
+                                </form>
+                                <div class="privacy-text">
+                                    <p>
+                                        yeni ürünler, indirimler ve daha
+                                        <a href="#"> Kanunlara buradan göz atabilirsiniz</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-contact-wrapper">
+                        <div class="footer-contact-top">
+                            <h3 class="contact-title">
+                                Need help? <br />(+90) 545 260 00 00
+                            </h3>
+                            <p class="contact-desc">We are eveliby 08:00 - 07:00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="widgets-row">
+            <div class="container">
+                <div class="footer-widgets">
+                    <div class="brand-info">
+                        <div class="footer-logo">
+                            <a href="#" class="logo">LOGO</a>
+                        </div>
+                        <div class="footer-desc">
+                            <p>
+                                Lorem ipsum dolor sit, amet consectetur adipisicing
+                                elit. Ab, officiis?
+                            </p>
+                        </div>
+                        <div class="footer-contact">
+                            <p>
+                                <a href="tel:555 555 55 55">(+800) 1234 5478 90</a><a href="mailto:info@gmail.com">info@gmail.com</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="widget-nav-menu">
+                        <h4>Information</h4>
+                        <ul class="menu-list">
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget-nav-menu">
+                        <h4>Information</h4>
+                        <ul class="menu-list">
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget-nav-menu">
+                        <h4>Information</h4>
+                        <ul class="menu-list">
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                        </ul>
+                    </div>
+                    <div class="widget-nav-menu">
+                        <h4>Information</h4>
+                        <ul class="menu-list">
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="#">Yazilacak</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright-row">
+            <div class="container">
+                <div class="footer-copyright">
+                    <div class="site-copyright">
+                        <p>
+                            © 2020 CARDİN - Tüm haklari saklidir. Hazirlayan Gökhan
+                            Kadi
+                        </p>
+                    </div>
+                    <a href="#"><img src="img/footer/cards.png" alt="" /></a>
+                    <div class="footer-menu">
+                        <ul class="footer-menu-list">
+                            <li class="list-item"><a href="#">Privacy Policy</a></li>
+                            <li class="list-item">
+                                <a href="#">Terms and Conditions</a>
+                            </li>
+                            <li class="list-item"><a href="#">Returns Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Content/scripts/search-modal.js"></script>
+    <script src="~/Content/theme/plugins/toaster/toastr.min.js"></script>
+
+    <link href="~/Content/theme/plugins/toaster/toastr.min.css" rel="stylesheet" />
+
+
+    <script>
+
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+
+
+        $('#search-product').on('input', function (e) {
+
+            var word = $('#search-product').val();
+
+            $.ajax({
+                url: '/Home/Search/',
+                type: 'POST',
+                data: { Word: word },
+
+                success: function (result) {
+
+                    console.log(result);
+                    $('.result').empty();
+                    $('.result').html(result);
+
+
+                }
+
+            });
+
+
+
+        });
+
+
+
+        $(document).ready(function () {
+            // Kategorileri getir ve listele
+            $.ajax({
+                url: '/Home/GetCategories',
+                type: 'GET',
+                success: function (categories) {
+                    var categoryList = $('#categoryList');
+                    categoryList.empty(); // Önce mevcut listeyi temizle
+                    categoryList.append('<li  categoryid="-1" categorytype="0"><a href="/Home/Shop#category--1" onclick="filterCategory(-1, 0, this)">Tüm Kategoriler</a></li>');
+
+                    categories.forEach(function (category) {
+
+                        var listItem = $('<li></li>').attr('categoryid', category.id).attr('categorytype', 0);
+                        var link = $('<a></a>')
+                            .attr('href', '/Home/Shop#category-' + category.id)
+                            .text(category.name)
+                            .attr('onclick', 'filterCategory(' + category.id + ', 0, this)');
+                        listItem.append(link);
+
+                        // Alt kategorileri getir ve ekle
+                        $.ajax({
+                            url: '/Home/GetSubCategories',
+                            type: 'GET',
+                            data: { categoryId: category.id },
+                            success: function (subCategories) {
+                                if (subCategories.length > 0) {
+                                    var subCategoryList = $('<ul></ul>');
+                                    subCategories.forEach(function (subCategory) {
+                                        var subListItem = $('<li></li>')
+                                            .css('padding-left', '8px')
+                                            .attr('categoryid', subCategory.id)
+                                            .attr('categorytype', 1);
+                                        var subLink = $('<a></a>')
+                                            .attr('href', '/Home/Shop#subcategory-' + subCategory.id)
+                                            .text(subCategory.name)
+                                            .attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)');
+                                        subListItem.append(subLink);
+                                        subCategoryList.append(subListItem);
+                                    });
+                                    listItem.append(subCategoryList);
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                            }
+                        });
+
+                        categoryList.append(listItem);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $("#btn-menu").click(function (event) {
+                event.stopPropagation(); // Olayın menü dışına taşmasını engeller
+                $("#sidebar").toggleClass("open");
+            });
+
+            $("#close-sidebar").click(function (event) {
+                event.stopPropagation();
+                $("#sidebar").removeClass("open");
+            });
+
+            // Menüyü dışarı tıkladığınızda kapatmak için
+            $(document).click(function () {
+                $("#sidebar").removeClass("open");
+            });
+
+            // Menünün içindeyken kapanmasını engellemek için
+            $("#sidebar").click(function (event) {
+                event.stopPropagation();
+            });
+        });
+
+    </script>
+
+</body>
+</html>

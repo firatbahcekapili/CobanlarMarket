@@ -1,0 +1,270 @@
+﻿
+@{
+    ViewBag.Title = "AddCategory";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Kategori Ekle</h2>
+
+    <form id="categoryForm">
+
+        @{
+            CobanlarMarket.Models.categories c = new CobanlarMarket.Models.categories();
+        }
+        <div class="row justify-content-center">
+
+            <div class="col-12 bg-white p-5">
+
+                <div class="form-group">
+                    <label>Resim Yükle</label>
+
+                    <div class="form-group img-parent">
+                        <div class="d-flex img-pre" id="image-container">
+                            <!-- Resimler buraya eklenecek -->
+                        </div>
+
+                        <input type="file" class="form-control" id="categoryImg" accept=".jpg,.jpeg,.png" aria-describedby="categoryImg" onchange="dosyaOnizlemeNew(this);">
+
+                    </div>
+                    <small class="form-text text-muted">
+                        1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Resimler belirli boyutlarda olmalıdır. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="name">Kategori İsmi *</label>
+                    @*<input type="text" class="form-control" id="name" placeholder="Kategori İsmi">*@
+                    @Html.EditorFor(model => c.name, "Kategori İsmi", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Kategori İsmi", id = "name" } })
+                    @Html.ValidationMessageFor(model => c.name, "")
+
+
+                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                </div>
+                <div class="form-group">
+                    <label for="description">Kategori Açıklaması *</label>
+                    @*<input type="text" class="form-control" id="description" placeholder="Kategori Açıklaması">*@
+                    @Html.EditorFor(model => c.description, "Kategori Açıklaması", new { htmlAttributes = new { name = "description", @class = "form-control", placeholder = "Kategori Açıklaması", id = "description" } })
+                    @Html.ValidationMessageFor(model => c.description, "")
+
+
+                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                </div>
+
+
+                <div class="form-group">
+                    <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+
+<div class=" mt-5 ml-5 mr-5">
+    <h2>Alt Kategori Ekle</h2>
+
+    <form id="subCategoryForm">
+        <div class="row justify-content-center">
+            <div class="col-12 bg-white p-5">
+                <div class="form-group">
+                    <label for="parentcategory">Kategori *</label>
+                    <select class="form-control" id="category">
+                        <option>Kategori Seçiniz</option>
+                        <!-- Add categories here -->
+
+
+                        @foreach (var item in Model.categories)
+                        {
+                            <option pid="@item.id">@item.name</option>
+                        }
+
+                    </select>
+                </div>
+
+                <div class="form-row ">
+                    <div class="form-group col-md-6">
+                        <label for="subname">Alt Kategori İsmi *</label>
+                        @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
+                        @Html.EditorFor(model => c.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subname", @class = "form-control", placeholder = "Alt Kategori İsmi", id = "subname" } })
+                        @Html.ValidationMessageFor(model => c.name, "")
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="subdescription">Alt Kategori Açıklaması *</label>
+                        @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
+                        @Html.EditorFor(model => c.name, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subdescription" } })
+                        @Html.ValidationMessageFor(model => c.name, "")
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <button class="btn btn-outline-primary float-right" id="subsubmitbtn">Kaydet</button>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#submitbtn').on("click", function (e) {
+            e.preventDefault();
+
+            var img = $('#categoryImg')[0].files[0];
+
+            var name = $('#name').val();
+            var description = $('#description').val();
+
+
+
+            var formData = new FormData();
+            formData.append("Img", img);
+
+            formData.append("Name", name);
+            formData.append("Description", description);
+
+
+            if ($('#categoryForm').valid()) {
+
+                $.ajax({
+                    url: '/Management/AddCategory/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                          
+
+                            $('#name').val("");
+                            $('#description').val("");
+                            var select = $("#category");
+                            select.empty();
+
+                            response.list.forEach(function (category) {
+                                var option = "<option pid=" + category.id + ">" + category.name + "</option>"
+                                select.append(option);
+                            });
+
+                            $('#image-container').empty();
+
+                            // Input dosya listesini güncelle
+
+                            $("#categoryImg").remove();
+                            $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>")
+
+                        } else {
+                            toastr.error(response.message);
+                        }
+
+                    }, error: function (e) {
+
+
+                    }
+
+                });
+
+
+            }
+
+
+        });
+
+
+
+
+
+        $('#subsubmitbtn').on("click", function (e) {
+            e.preventDefault();
+            var name = $('#subname').val();
+            var description = $('#subdescription').val();
+            var selectedOption = $("#category").find('option:selected');
+            var categoryId = parseInt(selectedOption.attr('pid'));;
+            console.log(categoryId);
+            if ($('#subCategoryForm').valid()) {
+
+                $.ajax({
+                    url: '/Management/AddSubCategory/',
+                    type: 'POST',
+                    data: { ParentId: categoryId, Name: name, Description: description },
+                    success: function (result) {
+                        toastr.success('Alt Kategori Başarıyla Eklendi', 'Başarılı');
+                        $('#subname').val("");
+                        $('#subdescription').val("");
+
+                    }, error: function (e) {
+                        toastr.error('Alt Kategori Eklenirken Bir Hata Oluştu', 'Hata');
+
+                    }
+
+                });
+
+
+            }
+
+
+        });
+
+    });
+
+    var selectedFiles = []; // Seçilen dosyaları saklamak için dizi
+
+    function dosyaOnizlemeNew(input) {
+        var container = $('#image-container');
+        container.empty(); // Eski resimleri temizle
+        selectedFiles = Array.from(input.files); // Seçilen dosyaları diziye ekle
+
+        selectedFiles.forEach(file => {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail').css("width", "200px");
+                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                    event.preventDefault(); // Varsayılan davranışı engelle
+                    removeImage(file);
+                });
+                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                container.append(wrapper);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    function removeImage(fileToRemove) {
+        // Dosya verisini base64 formatına dönüştür
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var fileDataURL = e.target.result;
+
+            // Dosyayı seçilen dosyalardan çıkar
+            selectedFiles = selectedFiles.filter(file => file !== fileToRemove);
+
+            // Ekrandaki resmi kaldır
+            $('#image-container img').each(function () {
+                if ($(this).attr('src') === fileDataURL) {
+                    $(this).parent().remove();
+                }
+            });
+
+            // Input dosya listesini güncelle
+
+            $("#categoryImg").remove();
+            $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png'  aria-describedby='categoryImg' onchange='dosyaOnizlemeNew(this);'>")
+
+
+        };
+        reader.readAsDataURL(fileToRemove);
+    }
+
+</script>
