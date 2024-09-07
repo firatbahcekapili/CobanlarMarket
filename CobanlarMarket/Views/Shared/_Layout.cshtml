@@ -74,7 +74,7 @@
         <div class="global-notification">
             <p>
                 ÖZEL ÜRÜNLERDE YAZ İNDİRİMİ VE ÜCRETSİZ EKSPRES ULUSLARARASI
-                ŞARKÜTERİ 50% İNDİRİM!<a href="#">ALİSVERİS YAP</a>
+                ŞARKÜTERİ 50% İNDİRİM!<a href="/Home/Shop">ALİSVERİS YAP</a>
             </p>
         </div>
         <div class="header-row">
@@ -151,8 +151,8 @@
                                     <a class="menu-link false" href="~/Home/Campaing">Kampanyalar</a>
                                 </li>
                                 @*<li class="menu-list-item">
-                                    <a class="menu-link false" href="~/Home/Blog">Blog</a>
-                                </li>*@
+                                        <a class="menu-link false" href="~/Home/Blog">Blog</a>
+                                    </li>*@
                                 <li class="menu-list-item">
                                     <a class="menu-link false" href="~/Home/Contact">İletişim</a>
                                 </li>
@@ -204,9 +204,9 @@
                                         <i class="bi bi-search"></i>
                                     </button>
 
-                                    <a href="/Home/Whishlist">
+                                    @*<a href="/Home/Whishlist">
                                         <i class="bi bi-heart"></i>
-                                    </a>
+                                    </a>*@
 
                                     <div class="header-cart">
                                         <a class="header-cart-link" href="~/Home/Cart">
@@ -232,9 +232,9 @@
                                     <button class="search-button">
                                         <i class="bi bi-search"></i>
                                     </button>
-                                    <a onclick="toastr.error('Önce Giriş Yapmalısınız.');">
+                                    @*<a onclick="toastr.error('Önce Giriş Yapmalısınız.');">
                                         <i class="bi bi-heart"></i>
-                                    </a>
+                                    </a>*@
                                     <div class="header-cart">
                                         <a class="header-cart-link" href="~/Home/Cart">
                                             <i class="bi bi-bag"></i><span class="header-cart-count">0</span>
@@ -539,7 +539,32 @@
             });
         });
 
-    </script>
+        document.querySelectorAll('.shareBtn').forEach(button => {
+            button.addEventListener('click', event => {
 
+                var data = event.currentTarget.getAttribute("link");
+                if (navigator.share) {
+                    navigator.share({
+
+                        title: 'Paylaş',
+                        url: data
+                    }).then(() => {
+
+                    }).catch(err => {
+
+
+                        console.log(
+                            "Error while using Web share API:");
+                        console.log(err);
+                    });
+                } else {
+
+
+                    alert("Browser doesn't support this API !");
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>

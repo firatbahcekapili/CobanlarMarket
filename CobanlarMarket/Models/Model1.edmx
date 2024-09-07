@@ -11,9 +11,10 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="user_id" Type="int" />
+          <Property Name="name" Type="varchar" MaxLength="50" />
+          <Property Name="surname" Type="varchar" MaxLength="50" />
           <Property Name="title" Type="varchar" MaxLength="255" />
-          <Property Name="address_line_1" Type="varchar" MaxLength="255" />
-          <Property Name="address_line_2" Type="varchar" MaxLength="255" />
+          <Property Name="address" Type="varchar" MaxLength="255" />
           <Property Name="country" Type="varchar" MaxLength="255" />
           <Property Name="city" Type="varchar" MaxLength="255" />
           <Property Name="postal_code" Type="varchar" MaxLength="255" />
@@ -49,6 +50,8 @@
           <Property Name="total" Type="decimal" Precision="10" Scale="2" />
           <Property Name="created_at" Type="datetime" />
           <Property Name="updated_at" Type="datetime" />
+          <Property Name="coupon_id" Type="int" />
+          <Property Name="discount_value" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="cart_item">
           <Key>
@@ -261,6 +264,18 @@
             </Principal>
             <Dependent Role="campaign_products">
               <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_cart_coupons">
+          <End Role="coupons" Type="Self.coupons" Multiplicity="0..1" />
+          <End Role="cart" Type="Self.cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="coupons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="cart">
+              <PropertyRef Name="coupon_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -579,6 +594,10 @@
             <End Role="products" EntitySet="products" />
             <End Role="campaign_products" EntitySet="campaign_products" />
           </AssociationSet>
+          <AssociationSet Name="FK_cart_coupons" Association="Self.FK_cart_coupons">
+            <End Role="coupons" EntitySet="coupons" />
+            <End Role="cart" EntitySet="cart" />
+          </AssociationSet>
           <AssociationSet Name="FK_cart_item_cart_id" Association="Self.FK_cart_item_cart_id">
             <End Role="cart" EntitySet="cart" />
             <End Role="cart_item" EntitySet="cart_item" />
@@ -699,8 +718,6 @@
             <Parameter Name="new_diagramname" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
-          <EntitySet Name="addresses" EntityType="CobanlarMarketModel.addresses" />
-          <EntitySet Name="cart" EntityType="CobanlarMarketModel.cart" />
           <EntitySet Name="cart_item" EntityType="CobanlarMarketModel.cart_item" />
           <EntitySet Name="categories" EntityType="CobanlarMarketModel.categories" />
           <EntitySet Name="order_details" EntityType="CobanlarMarketModel.order_details" />
@@ -713,18 +730,6 @@
           <EntitySet Name="sub_categories" EntityType="CobanlarMarketModel.sub_categories" />
           <EntitySet Name="users" EntityType="CobanlarMarketModel.users" />
           <EntitySet Name="wishlist" EntityType="CobanlarMarketModel.wishlist" />
-          <AssociationSet Name="FK_addresses_user_id" Association="CobanlarMarketModel.FK_addresses_user_id">
-            <End Role="users" EntitySet="users" />
-            <End Role="addresses" EntitySet="addresses" />
-          </AssociationSet>
-          <AssociationSet Name="FK_cart_item_cart_id" Association="CobanlarMarketModel.FK_cart_item_cart_id">
-            <End Role="cart" EntitySet="cart" />
-            <End Role="cart_item" EntitySet="cart_item" />
-          </AssociationSet>
-          <AssociationSet Name="FK_cart_user_id" Association="CobanlarMarketModel.FK_cart_user_id">
-            <End Role="users" EntitySet="users" />
-            <End Role="cart" EntitySet="cart" />
-          </AssociationSet>
           <AssociationSet Name="FK_cart_item_product_id" Association="CobanlarMarketModel.FK_cart_item_product_id">
             <End Role="products" EntitySet="products" />
             <End Role="cart_item" EntitySet="cart_item" />
@@ -818,6 +823,24 @@
             <End Role="coupons" EntitySet="coupons" />
             <End Role="order_details" EntitySet="order_details" />
           </AssociationSet>
+          <EntitySet Name="addresses" EntityType="CobanlarMarketModel.addresses" />
+          <AssociationSet Name="FK_addresses_user_id" Association="CobanlarMarketModel.FK_addresses_user_id">
+            <End Role="users" EntitySet="users" />
+            <End Role="addresses" EntitySet="addresses" />
+          </AssociationSet>
+          <EntitySet Name="cart" EntityType="CobanlarMarketModel.cart" />
+          <AssociationSet Name="FK_cart_coupons" Association="CobanlarMarketModel.FK_cart_coupons">
+            <End Role="coupons" EntitySet="coupons" />
+            <End Role="cart" EntitySet="cart" />
+          </AssociationSet>
+          <AssociationSet Name="FK_cart_item_cart_id" Association="CobanlarMarketModel.FK_cart_item_cart_id">
+            <End Role="cart" EntitySet="cart" />
+            <End Role="cart_item" EntitySet="cart_item" />
+          </AssociationSet>
+          <AssociationSet Name="FK_cart_user_id" Association="CobanlarMarketModel.FK_cart_user_id">
+            <End Role="users" EntitySet="users" />
+            <End Role="cart" EntitySet="cart" />
+          </AssociationSet>
           </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -830,36 +853,6 @@
           <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
           <Property Type="Int32" Name="OwnerID" Nullable="false" />
         </ComplexType>
-        <EntityType Name="addresses">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="user_id" Type="Int32" />
-          <Property Name="title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="address_line_1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="address_line_2" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="country" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="city" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="postal_code" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="landmark" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="phone_number" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="created_at" Type="DateTime" Precision="3" />
-          <Property Name="deleted_at" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="users" Relationship="CobanlarMarketModel.FK_addresses_user_id" FromRole="addresses" ToRole="users" />
-        </EntityType>
-        <EntityType Name="cart">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="user_id" Type="Int32" />
-          <Property Name="total" Type="Decimal" Precision="10" Scale="2" />
-          <Property Name="created_at" Type="DateTime" Precision="3" />
-          <Property Name="updated_at" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="cart_item" Relationship="CobanlarMarketModel.FK_cart_item_cart_id" FromRole="cart" ToRole="cart_item" />
-          <NavigationProperty Name="users" Relationship="CobanlarMarketModel.FK_cart_user_id" FromRole="cart" ToRole="users" />
-        </EntityType>
         <EntityType Name="cart_item">
           <Key>
             <PropertyRef Name="id" />
@@ -871,9 +864,9 @@
           <Property Name="quantity" Type="Int32" />
           <Property Name="created_at" Type="DateTime" Precision="3" />
           <Property Name="updated_at" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="cart" Relationship="CobanlarMarketModel.FK_cart_item_cart_id" FromRole="cart_item" ToRole="cart" />
           <NavigationProperty Name="products" Relationship="CobanlarMarketModel.FK_cart_item_product_id" FromRole="cart_item" ToRole="products" />
           <NavigationProperty Name="products_skus" Relationship="CobanlarMarketModel.FK_cart_item_products_sku_id" FromRole="cart_item" ToRole="products_skus" />
+          <NavigationProperty Name="cart" Relationship="CobanlarMarketModel.FK_cart_item_cart_id" FromRole="cart_item" ToRole="cart" />
         </EntityType>
         <EntityType Name="categories">
           <Key>
@@ -1022,10 +1015,10 @@
           <Property Name="deleted_at" Type="DateTime" Precision="3" />
           <Property Name="role" Type="Boolean" />
           <Property Name="status" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="addresses" Relationship="CobanlarMarketModel.FK_addresses_user_id" FromRole="users" ToRole="addresses" />
-          <NavigationProperty Name="cart" Relationship="CobanlarMarketModel.FK_cart_user_id" FromRole="users" ToRole="cart" />
           <NavigationProperty Name="order_details" Relationship="CobanlarMarketModel.FK_order_details_user_id" FromRole="users" ToRole="order_details" />
           <NavigationProperty Name="wishlist" Relationship="CobanlarMarketModel.FK_wishlist_user_id" FromRole="users" ToRole="wishlist" />
+          <NavigationProperty Name="addresses" Relationship="CobanlarMarketModel.FK_addresses_user_id" FromRole="users" ToRole="addresses" />
+          <NavigationProperty Name="cart" Relationship="CobanlarMarketModel.FK_cart_user_id" FromRole="users" ToRole="cart" />
         </EntityType>
         <EntityType Name="wishlist">
           <Key>
@@ -1039,42 +1032,6 @@
           <NavigationProperty Name="products" Relationship="CobanlarMarketModel.FK_wishlist_product_id" FromRole="wishlist" ToRole="products" />
           <NavigationProperty Name="users" Relationship="CobanlarMarketModel.FK_wishlist_user_id" FromRole="wishlist" ToRole="users" />
         </EntityType>
-        <Association Name="FK_addresses_user_id">
-          <End Type="CobanlarMarketModel.users" Role="users" Multiplicity="0..1" />
-          <End Type="CobanlarMarketModel.addresses" Role="addresses" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="addresses">
-              <PropertyRef Name="user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_cart_item_cart_id">
-          <End Type="CobanlarMarketModel.cart" Role="cart" Multiplicity="0..1" />
-          <End Type="CobanlarMarketModel.cart_item" Role="cart_item" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="cart">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="cart_item">
-              <PropertyRef Name="cart_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_cart_user_id">
-          <End Type="CobanlarMarketModel.users" Role="users" Multiplicity="0..1" />
-          <End Type="CobanlarMarketModel.cart" Role="cart" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="cart">
-              <PropertyRef Name="user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_cart_item_product_id">
           <End Type="CobanlarMarketModel.products" Role="products" Multiplicity="0..1" />
           <End Type="CobanlarMarketModel.cart_item" Role="cart_item" Multiplicity="*" />
@@ -1259,6 +1216,7 @@
           <NavigationProperty Name="coupon_products" Relationship="CobanlarMarketModel.FK_coupon_products_coupons" FromRole="coupons" ToRole="coupon_products" />
           <NavigationProperty Name="coupon_categories" Relationship="CobanlarMarketModel.FK_coupon_categories_coupon_categories1" FromRole="coupons" ToRole="coupon_categories" />
           <NavigationProperty Name="order_details" Relationship="CobanlarMarketModel.FK_order_details_coupons" FromRole="coupons" ToRole="order_details" />
+          <NavigationProperty Name="cart" Relationship="CobanlarMarketModel.FK_cart_coupons" FromRole="coupons" ToRole="cart" />
         </EntityType>
         <Association Name="FK_coupon_products_coupons">
           <End Type="CobanlarMarketModel.coupons" Role="coupons" Multiplicity="1" />
@@ -1403,6 +1361,88 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="addresses">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="surname" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="title" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="address" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="country" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="city" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="postal_code" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="landmark" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="phone_number" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <Property Name="deleted_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="users" Relationship="CobanlarMarketModel.FK_addresses_user_id" FromRole="addresses" ToRole="users" />
+        </EntityType>
+        <Association Name="FK_addresses_user_id">
+          <End Type="CobanlarMarketModel.users" Role="users" Multiplicity="0..1" />
+          <End Type="CobanlarMarketModel.addresses" Role="addresses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="addresses">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="cart">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="user_id" Type="Int32" />
+          <Property Name="total" Type="Decimal" Precision="10" Scale="2" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <Property Name="updated_at" Type="DateTime" Precision="3" />
+          <Property Name="coupon_id" Type="Int32" />
+          <Property Name="discount_value" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="coupons" Relationship="CobanlarMarketModel.FK_cart_coupons" FromRole="cart" ToRole="coupons" />
+          <NavigationProperty Name="cart_item" Relationship="CobanlarMarketModel.FK_cart_item_cart_id" FromRole="cart" ToRole="cart_item" />
+          <NavigationProperty Name="users" Relationship="CobanlarMarketModel.FK_cart_user_id" FromRole="cart" ToRole="users" />
+        </EntityType>
+        <Association Name="FK_cart_coupons">
+          <End Type="CobanlarMarketModel.coupons" Role="coupons" Multiplicity="0..1" />
+          <End Type="CobanlarMarketModel.cart" Role="cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="coupons">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="cart">
+              <PropertyRef Name="coupon_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_cart_item_cart_id">
+          <End Type="CobanlarMarketModel.cart" Role="cart" Multiplicity="0..1" />
+          <End Type="CobanlarMarketModel.cart_item" Role="cart_item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="cart">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="cart_item">
+              <PropertyRef Name="cart_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_cart_user_id">
+          <End Type="CobanlarMarketModel.users" Role="users" Multiplicity="0..1" />
+          <End Type="CobanlarMarketModel.cart" Role="cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="cart">
+              <PropertyRef Name="user_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1433,35 +1473,6 @@
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="CobanlarMarketModel.Store.sp_renamediagram" />
           <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="CobanlarMarketModel.Store.sp_upgraddiagrams" />
-          <EntitySetMapping Name="addresses">
-            <EntityTypeMapping TypeName="CobanlarMarketModel.addresses">
-              <MappingFragment StoreEntitySet="addresses">
-                <ScalarProperty Name="deleted_at" ColumnName="deleted_at" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="phone_number" ColumnName="phone_number" />
-                <ScalarProperty Name="landmark" ColumnName="landmark" />
-                <ScalarProperty Name="postal_code" ColumnName="postal_code" />
-                <ScalarProperty Name="city" ColumnName="city" />
-                <ScalarProperty Name="country" ColumnName="country" />
-                <ScalarProperty Name="address_line_2" ColumnName="address_line_2" />
-                <ScalarProperty Name="address_line_1" ColumnName="address_line_1" />
-                <ScalarProperty Name="title" ColumnName="title" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="cart">
-            <EntityTypeMapping TypeName="CobanlarMarketModel.cart">
-              <MappingFragment StoreEntitySet="cart">
-                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="total" ColumnName="total" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="cart_item">
             <EntityTypeMapping TypeName="CobanlarMarketModel.cart_item">
               <MappingFragment StoreEntitySet="cart_item">
@@ -1671,6 +1682,38 @@
                 <ScalarProperty Name="campaign_end_date" ColumnName="campaign_end_date" />
                 <ScalarProperty Name="campaign_start_date" ColumnName="campaign_start_date" />
                 <ScalarProperty Name="campaign_title" ColumnName="campaign_title" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="addresses">
+            <EntityTypeMapping TypeName="CobanlarMarketModel.addresses">
+              <MappingFragment StoreEntitySet="addresses">
+                <ScalarProperty Name="deleted_at" ColumnName="deleted_at" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="phone_number" ColumnName="phone_number" />
+                <ScalarProperty Name="landmark" ColumnName="landmark" />
+                <ScalarProperty Name="postal_code" ColumnName="postal_code" />
+                <ScalarProperty Name="city" ColumnName="city" />
+                <ScalarProperty Name="country" ColumnName="country" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="surname" ColumnName="surname" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="cart">
+            <EntityTypeMapping TypeName="CobanlarMarketModel.cart">
+              <MappingFragment StoreEntitySet="cart">
+                <ScalarProperty Name="discount_value" ColumnName="discount_value" />
+                <ScalarProperty Name="coupon_id" ColumnName="coupon_id" />
+                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="total" ColumnName="total" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

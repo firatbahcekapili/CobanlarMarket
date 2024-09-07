@@ -22,8 +22,8 @@ namespace CobanlarMarket.Models
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> updated_at { get; set; }
     
-        public virtual cart cart { get; set; }
         public virtual products products { get; set; }
         public virtual products_skus products_skus { get; set; }
+        public virtual cart cart { get; set; }
     }
 }

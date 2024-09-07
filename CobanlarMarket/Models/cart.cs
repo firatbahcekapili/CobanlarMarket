@@ -25,7 +25,10 @@ namespace CobanlarMarket.Models
         public Nullable<decimal> total { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> updated_at { get; set; }
+        public Nullable<int> coupon_id { get; set; }
+        public string discount_value { get; set; }
     
+        public virtual coupons coupons { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<cart_item> cart_item { get; set; }
         public virtual users users { get; set; }

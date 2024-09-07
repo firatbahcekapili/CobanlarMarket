@@ -6,18 +6,14 @@
     {
         CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
         toplam = 0;
+        var kargo = 30;
+        decimal? couponDiscount = 0;
 
         <section class="cart-page">
             <div class="container">
                 <div class="cart-page-wrapper">
                     <form class="cart-form">
-                        <div class="free-progress-bar">
-                            <p class="progress-bar-title">
-                                Lorem ipsum <strong>$130.00</strong> sit amet
-                                consectetur adipisicing elit. Maiores, qui.
-                            </p>
-                            <div class="progress-bar"><span class="progress"></span></div>
-                        </div>
+                      
                         <div class="shop-table-wrapper">
 
 
@@ -66,6 +62,27 @@
 
                                 </tbody>
                             </table>
+                            <div class="free-progress-bar">
+                                <p class="progress-bar-title">
+                                    @{
+                                        if (toplam <= 300)
+                                        {
+                                            decimal bar = (toplam.HasValue) ? (toplam.Value / 300 * 100) : 0;
+                                            string formattedBar = bar.ToString("F2").Replace(',', '.');
+                                            <strong>@(300 - toplam)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
+                                            <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
+                                        }
+                                        else
+                                        {
+                                            <span>Kargo Ücretsiz!</span>
+                                            <div class="progress-bar"><span class="progress" style="width:100%;"></span></div>
+
+                                        }
+
+                                    }
+                                </p>
+                               
+                            </div>
                             <div class="actions-wrapper">
                                 <div class="coupon">
                                     <input type="text " class="input-text"
@@ -80,43 +97,104 @@
                     </form>
                     <div class="cart-collaterals">
                         <div class="cart-totals">
-                            <h2>Cart Totals</h2>
-                            <table>
+                            <h2>Sepet Toplamı</h2>
+                            <table id="cartTotalTable">
                                 <tbody>
                                     <tr class="cart-subtotal">
-                                        <th>Subtotal</th>
+                                        <th>Ürün Toplamı</th>
                                         <td><span id="subtotal">&#8378;@toplam</span></td>
                                     </tr>
-                                    <tr>
-                                        <th>Shiping</th>
+                                    <tr id="address">
+                                        <th>Adres</th>
                                         <td>
                                             <ul>
-                                                <li>
-                                                    <label>
-                                                        Fast Cargo:  &#8378;15:00<input type="checkbox"
-                                                                                        id="fast-cargo">
-                                                    </label>
+
+                                                <li id="cartAddress">
+
+
+
+
+                                                    <a href="#Adres" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+                                                        Adres Değiştir/Ekle
+                                                    </a>
+
                                                 </li>
-                                                <li><a href="#">Change Address</a></li>
                                             </ul>
+
+
                                         </td>
+
                                     </tr>
-                                    <tr>
-                                        <th>Total</th>
-                                        <td><strong id="cart-total">&#8378;@toplam</strong></td>
+                                    @if (Session["CartsForPartial"] != null && Session["CouponsForPartial"] != null)
+                                                {
+                                                    var carts = Session["CartsForPartial"] as List<CobanlarMarket.Models.cart>;
+                                                    var coupons = Session["CouponsForPartial"] as List<CobanlarMarket.Models.coupons>;
+            
+                                                    if (carts.FirstOrDefault(x => x.user_id == user.id).coupon_id.HasValue)
+                                                    {
+                                                        if (coupons.FirstOrDefault(x => x.Id == carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code != null)
+                                                        {
+                                                <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>
+                                                <tr class='couponadded'>
+                                                    <th>
+                                                        Kupon Kodu Uygulandı:<strong>  @coupons.FirstOrDefault(x => x.Id == carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code   </strong>
+                                                    </th>
+                                                    <td> İndirim -&#8378; @carts.FirstOrDefault(x => x.user_id == user.id).discount_value </td>
+
+
+                                                </tr>
+
+
+
+                                                string discountValue = carts.FirstOrDefault(x => x.user_id == user.id).discount_value;
+
+                                                // "en-US" kültürüne göre decimal parse işlemi
+                                                couponDiscount = decimal.Parse(discountValue, new System.Globalization.CultureInfo("en-US"));
+
+                                            }
+                                        }
+
+                                    }
+
+
+
+                                    @{
+                                        if (toplam >= 300)
+                                        {
+                                            <tr class="cargo">
+                                                <th>Kargo</th>
+                                                <td><del>₺@kargo</del> <strong>0₺</strong></td>
+                                            </tr>
+                                            kargo = 0;
+
+                                        }
+                                        else
+                                        {
+                                            <tr class="cargo">
+                                                <th>Kargo</th>
+                                                <td>₺@kargo</td>
+                                            </tr>
+                                        }
+                                    }
+
+
+
+                                    <tr class="lasttotal">
+                                        <th>Toplam</th>
+                                        <td><strong id="cart-total">&#8378;@(toplam+kargo-couponDiscount)</strong></td>
                                     </tr>
                                 </tbody>
                             </table>
 
 
                             <div class="checkout">
-                                <button class="btn btn-lg btn-red">
-                                    Proceed to
-                                    checkout
+                                <button class="btn btn-lg btn-red btn-order">
+                                    Sipariş Ver
                                 </button>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>

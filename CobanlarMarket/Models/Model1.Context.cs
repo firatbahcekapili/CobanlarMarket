@@ -27,8 +27,6 @@ namespace CobanlarMarket.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<addresses> addresses { get; set; }
-        public virtual DbSet<cart> cart { get; set; }
         public virtual DbSet<cart_item> cart_item { get; set; }
         public virtual DbSet<categories> categories { get; set; }
         public virtual DbSet<order_details> order_details { get; set; }
@@ -46,6 +44,8 @@ namespace CobanlarMarket.Models
         public virtual DbSet<coupon_categories> coupon_categories { get; set; }
         public virtual DbSet<campaign_products> campaign_products { get; set; }
         public virtual DbSet<campaigns> campaigns { get; set; }
+        public virtual DbSet<addresses> addresses { get; set; }
+        public virtual DbSet<cart> cart { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

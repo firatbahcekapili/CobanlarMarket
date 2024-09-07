@@ -366,14 +366,16 @@ $(document).ready(function () {
     }
 
     /*======== 13. PROGRESS BAR ========*/
-    NProgress.done();
 
     /*======== 14. DATA TABLE ========*/
     var productsTable = $("#productsTable");
     if (productsTable.length != 0) {
         productsTable.DataTable({
+            a
             info: false,
             lengthChange: false,
+            responsive: true,
+
             lengthMenu: [
                 [5, 10, 15, -1],
                 [5, 10, 15, "All"],
@@ -397,6 +399,8 @@ $(document).ready(function () {
         attributeTable.DataTable({
             info: false,
             lengthChange: false,
+            responsive: true,
+
 
             scrollX: true,
             order: [[1, "asc"]],
@@ -417,6 +421,8 @@ $(document).ready(function () {
         categoryTable.DataTable({
             info: false,
             lengthChange: false,
+            responsive: true,
+
 
             scrollX: true,
             order: [[1, "asc"]],
@@ -437,7 +443,7 @@ $(document).ready(function () {
         subCategoryTable.DataTable({
             info: false,
             lengthChange: false,
-
+            responsive: true,
             scrollX: true,
             order: [[1, "asc"]],
             columnDefs: [
@@ -457,6 +463,7 @@ $(document).ready(function () {
         userTable.DataTable({
             info: false,
             lengthChange: false,
+            responsive: true,
 
             scrollX: true,
             order: [[1, "asc"]],
@@ -483,6 +490,8 @@ $(document).ready(function () {
             ], rowGroup: {
                 dataSrc: 2
             },
+            responsive: true,
+
             info: false,
 
             lengthChange: false,
@@ -506,10 +515,12 @@ $(document).ready(function () {
         couponTable.DataTable({
             order: [
                 [2, 'desc']
-            ], 
+            ],
             info: false,
 
             lengthChange: false,
+            responsive: true,
+
 
             scrollX: true,
 
@@ -525,7 +536,7 @@ $(document).ready(function () {
             },
         });
     }
-    
+
     var campaignTable = $("#campaignTable");
     if (campaignTable.length != 0) {
         campaignTable.DataTable({
@@ -535,9 +546,10 @@ $(document).ready(function () {
             info: false,
 
             lengthChange: false,
+            responsive: true,
+
 
             scrollX: true,
-
             columnDefs: [
                 {
                     orderable: false,
@@ -555,9 +567,11 @@ $(document).ready(function () {
     if (productSale.length != 0) {
         productSale.DataTable({
             info: false,
-            paging: false,
-            searching: false,
-            scrollX: true,
+            paging: true,
+            searching: true,
+            responsive: true,
+
+            scrollX: false,
             order: [[2, "desc"]],
             columnDefs: [
                 {

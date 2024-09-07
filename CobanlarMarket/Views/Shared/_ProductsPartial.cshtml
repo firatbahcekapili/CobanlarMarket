@@ -3,28 +3,52 @@
     var totalProduct = ViewBag.totalProcuct;
     var pageSize = ViewBag.pageSize;
     var categoryId = ViewBag.categoryId;
+    var pageNumber = ViewBag.pageNumber;
+    var orderType = ViewBag.orderType;
 }
+@*<link href="~/Content/css/shoppage/nice-select.css" rel="stylesheet" />*@
 
 <div class="filter__item">
     <div class="row">
-        <div class="col-lg-4 col-md-5">
-            <div class="filter__sort">
-                <span>Sırala</span>
-                <select>
-                    <option value="0">Default</option>
-                    <option value="0">Default</option>
-                </select>
+      
+
+
+        <div class="col-lg-4 col-md-5 d-flex justify-content-lg-start justify-content-center mb-2 mb-md-0">
+            @*<div class="filter__sort">
+            <span>Sırala</span>
+            <select>
+                <option disabled selected> Sıralama Seçiniz</option>
+                <option orderType="price_desc">Artan Fiyat</option>
+                <option orderType="price_asc">Azalan Fiyat</option>
+            </select>
+        </div>*@
+
+
+
+
+            <div class="selectdiv">
+                <label>
+                    <select id="sortSelect">
+                        <option selected disabled hidden> Sıralama Tipi </option>
+                        <option orderType="price_asc" @(orderType == "price_asc" ? "selected" : "")>Artan Fiyat</option>
+                        <option orderType="price_desc" @(orderType == "price_desc" ? "selected" : "")>Azalan Fiyat</option>
+                        <option orderType="A-Z" @(orderType == "A-Z" ? "selected" : "")>Alfabetik A-Z</option>
+                        <option orderType="Z-A" @(orderType == "Z-A" ? "selected" : "")>Alfabetik Z-A</option>
+
+                    </select>
+                </label>
             </div>
+
         </div>
-        <div class="col-lg-4 col-md-4">
-            <div class="filter__found">
+        <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center mb-2 mb-md-0">
+            <div class="filter__found  m-0">
                 <h6><span>@totalProduct</span> Ürün Bulundu</h6>
             </div>
         </div>
-        <div class="col-lg-4 col-md-3">
-            <div class="filter__option">
+        <div class="col-lg-4 col-md-3 d-flex align-items-center  justify-content-lg-end justify-content-center mb-2 mb-md-0">
+            <div class="filter__option m-0">
                 <span class="icon_grid-2x2"><i class="bi bi-grid-fill"></i></span>
-                <span class="icon_ul"><i class="bi bi-list-ul"></i></span>
+                @*<span class="icon_ul"><i class="bi bi-list-ul"></i></span>*@
             </div>
         </div>
     </div>
@@ -35,12 +59,23 @@
     @foreach (var product in Model.products)
     {
         <div class="col-lg-4 col-md-6 col-sm-6">
-            <div class="product__item" >
+            <div class="product__item">
                 <div class="product__item__pic set-bg" onclick="location.href = '/Home/Product/@product.id';" data-setbg="@(product.cover != null ? product.cover : Url.Content("~/Content/theme/images/empty.png"))" style="z-index:1">
                     <ul class="product__item__pic__hover" style="z-index:2">
-                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation();"><i class="bi bi-heart-fill"></i></a></li>
-                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation();"><i class="bi bi-share-fill"></i></a></li>
-                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation(); AddCart(@product.id)"><i class="bi bi-cart3"></i></a></li>
+                        @*<li><a href="#" onclick="event.preventDefault(); event.stopPropagation();"><i class="fa fa-heart"></i></a></li>*@
+
+
+                        @{
+                            // Mevcut protokol ve domaini al
+                            string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                            // Ürün yolunu dinamik olarak oluştur
+                            string productPath = Url.Action("Product", "Home", new { id = product.id });
+                            // Domain ile yolu birleştir
+                            string fullUrl = $"{domain}{productPath}";
+                        }
+
+                        <li><a class="shareBtn" link="@fullUrl" onclick="event.preventDefault(); event.stopPropagation();"><i class="fa fa-share-alt"></i></a></li>
+                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation(); AddCart(@product.id)"><i class="fa fa-shopping-cart"></i></a></li>
 
                     </ul>
                 </div>
@@ -57,21 +92,57 @@
     var page = (int)Math.Ceiling((double)totalProduct / pageSize);
 
 }
-@if (Model.products.Any() && page>1)
+@if (Model.products.Any() && page > 1)
 {
-   
+
+
+
     <div class="product__pagination">
+
+        @if (pageNumber > 1)
+        {
+            <a href="#@(pageNumber-1)" categoryId="@categoryId" pn="@(pageNumber-1)"><i class="bi bi-arrow-left "></i></a>
+
+        }
 
         @for (int i = 1; i <= page % 12; i++)
         {
-            <a href="#@i" categoryId="@categoryId" pn="@i">@i</a>
+            <a href="#@i" categoryId="@categoryId" pn="@i" style="@( i==pageNumber? "background:red; color:white; border:none;":"")">@i</a>
         }
+        @if (page > pageNumber)
+        {
+            <a href="#@(pageNumber+1)" categoryId="@categoryId" pn="@(pageNumber+1)"><i class="bi bi-arrow-right "></i></a>
 
-        <a href="#"><i class="bi bi-arrow-right"></i></a>
+        }
     </div>
 }
-<script src="~/Content/css/shoppage/js/jquery.nice-select.min.js"></script>
-<script>
-    $("select").niceSelect();
+@*<script src="~/Content/css/shoppage/js/jquery.nice-select.min.js"></script>*@
 
+
+<script>
+    document.querySelectorAll('.shareBtn').forEach(button => {
+        button.addEventListener('click', event => {
+
+            var data = event.currentTarget.getAttribute("link");
+            if (navigator.share) {
+                navigator.share({
+
+                    title: 'Paylaş',
+                    url: data
+                }).then(() => {
+
+                }).catch(err => {
+
+
+                    console.log(
+                        "Error while using Web share API:");
+                    console.log(err);
+                });
+            } else {
+
+
+                alert("Browser doesn't support this API !");
+            }
+        });
+    });
 </script>

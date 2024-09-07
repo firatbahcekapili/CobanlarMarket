@@ -14,7 +14,7 @@
     <div class="container">
         <div class="single-product-wrapper">
             <!-- breadcrumb start -->
-            <div class="single-topbar">
+            @*<div class="single-topbar">
                 <nav class="breadcrumb">
                     <ul>
                         <li><a href="#">Home</a></li>
@@ -24,7 +24,7 @@
 
                     </ul>
                 </nav>
-            </div>
+            </div>*@
             <!-- breadcrumb end -->
             <!-- site main start -->
             <div class="single-content">
@@ -35,24 +35,24 @@
                         </button>
                         <div class="product-gallery">
                             @*<div class="single-image-wrapper">
-                            <img src=" @Model.products.FirstOrDefault().cover" alt="">
-                        </div>
-                        <div class="product-thumb">
-                            <ol class="gallery-thumbs">
+            <img src=" @Model.products.FirstOrDefault().cover" alt="">
+        </div>
+        <div class="product-thumb">
+            <ol class="gallery-thumbs">
 
 
 
 
-                                @foreach (var item in Model.products.FirstOrDefault().product_images)
-                                {
-                                    <li>
-                                        <img src="@item.image_path" alt="" class="img-fluid">
-                                    </li>
-                                }
-                            </ol>
-                        </div>*@
+                @foreach (var item in Model.products.FirstOrDefault().product_images)
+                {
+                    <li>
+                        <img src="@item.image_path" alt="" class="img-fluid">
+                    </li>
+                }
+            </ol>
+        </div>*@
 
-
+                               
 
                             @foreach (var item in Model.products.FirstOrDefault().product_images)
                             {
@@ -140,17 +140,25 @@
                                     <a class="btn btn-lg btn-primary" onclick="AddCart(@Model.products.FirstOrDefault().id)">Sepete Ekle</a>
                                 </div>
                                 <div class="product-extra-buttons">
-                                    <a href="#">
-                                        <i class="bi bi-globe"></i>
-                                        <span>Size Guide</span>
-                                    </a>
-                                    <a href="#">
-                                        <i class="bi bi-heart"></i>
-                                        <span>Add to Wislist</span>
-                                    </a>
-                                    <a href="#">
+                                    @*<a href="#">
+            <i class="bi bi-globe"></i>
+            <span>Size Guide</span>
+        </a>
+        <a href="#">
+            <i class="bi bi-heart"></i>
+            <span>Add to Wislist</span>
+        </a>*@
+                                    @{
+                                        // Mevcut protokol ve domaini al
+                                        string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                                        // Ürün yolunu dinamik olarak oluştur
+                                        string productPath = Url.Action("Product", "Home", new { id = Model.products.FirstOrDefault().id });
+                                        // Domain ile yolu birleştir
+                                        string fullUrl = $"{domain}{productPath}";
+                                    }
+                                    <a class="shareBtn" link="@fullUrl">
                                         <i class="bi bi-share"></i>
-                                        <span>Share this Product</span>
+                                        <span>Bu ürünü paylaş</span>
                                     </a>
                                 </div>
                             </div>
@@ -189,12 +197,12 @@
 
 
                             </div>
-                            <div class="product-tags">
+                            @*<div class="product-tags">
                                 <span>Tags:</span>
                                 <a href="#">black</a>
                                 ,
                                 <a href="#">white</a>
-                            </div>
+                            </div>*@
                         </div>
                     </div>
                 </main>

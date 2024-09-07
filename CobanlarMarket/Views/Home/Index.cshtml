@@ -9,8 +9,7 @@
 
 
 <body cz-shortcut-listen="true">
-
-
+    
 
     <div id="root">
         <div>
@@ -102,8 +101,7 @@
                                     }
                                     @foreach (var product in Model.products)
                                     {
-                                        <div 
-                                             style="width: 450px">
+                                        <div style="width: 450px">
                                             <div>
                                                 <div class="product-item ">
                                                     <div class="product-image">
@@ -143,17 +141,27 @@
                                                                 <span>-%@(100-Math.Round((decimal)discount))</span>
                                                             </span>
                                                         }
-                                                        <div class="product-links">
-                                                            <a onclick="AddCart(@product.id)">
-                                                                <i class="bi bi-basket-fill"></i>
-                                                            </a>
-                                                            <a onclick="AddWishlist(@product.id)">
-                                                                <i class="bi bi-heart-fill"></i>
-                                                            </a>
-                                                            <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a><a href="#">
-                                                                <i class="bi bi-share-fill"></i>
-                                                            </a>
-                                                        </div>
+                                                    <div class="product-links">
+                                                        <a onclick="AddCart(@product.id)">
+                                                            <i class="bi bi-basket-fill"></i>
+                                                        </a>
+                                                        @*<a onclick="AddWishlist(@product.id)">
+                                                            <i class="bi bi-heart-fill"></i>
+                                                        </a>*@
+                                                        <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a>
+                                                        @{
+                                                            // Mevcut protokol ve domaini al
+                                                            string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                                                            // Ürün yolunu dinamik olarak oluştur
+                                                            string productPath = Url.Action("Product", "Home", new { id = product.id });
+                                                            // Domain ile yolu birleştir
+                                                            string fullUrl = $"{domain}{productPath}";
+                                                        }
+                                                        <a class="shareBtn" link="@fullUrl">
+                                                            <i class="bi bi-share-fill"></i>
+                                                        </a>
+
+                                                    </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -298,11 +306,11 @@
                 </div>
                 <section class="campaigns">
                     <div class="container">
-                        @{ 
+                        @{
                             var list = Model.campaigns.ToArray();
                             int sira = 0;
                         }
-                        @for (int d = 0; d <= decimal.Ceiling(Model.campaigns.Count()/2); d++)
+                        @for (int d = 0; d <= decimal.Ceiling(Model.campaigns.Count() / 2); d++)
                         {
 
 
@@ -310,18 +318,18 @@
 
 
                                 @for (int c = 0; c < 2; c++)
-                                    {
+                                {
 
-                                        if (sira>= Model.campaigns.Count())
-                                         {
+                                    if (sira >= Model.campaigns.Count())
+                                    {
                                         break;
-                                         }
+                                    }
                                     <div class="campaign-item " style="background-image:url(@list[sira].campaign_cover)">
                                         <h3 class="campaign-title">
                                             @list[sira].campaign_title
                                         </h3>
                                         <p class="campaign-desc">
-                                           @list[sira].campaign_start_date.ToString("M") - @list[sira].campaign_end_date.ToString("M")
+                                            @list[sira].campaign_start_date.ToString("M") - @list[sira].campaign_end_date.ToString("M")
                                         </p>
                                         <a href="/Home/CampaingDetails/@list[sira].id" class="btn btn-red">
                                             İNCELE<i class="bi bi-arrow-right"></i>
@@ -336,64 +344,65 @@
                         }
                     </div>
                 </section>
+
                 @*<section class="blogs blog-page">
-                    <div class="container">
-                        <div class="section-title">
-                            <h2>Blog</h2>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+                        <div class="container">
+                            <div class="section-title">
+                                <h2>Blog</h2>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+                            </div>
+                            <ul class="blog-list">
+                                <li class="blog-item">
+                                    <a href="#" class="blog-image">
+                                        <img src="~/img/blogs/blog1.jpg" alt="" />
+                                    </a>
+                                    <div class="blog-info">
+                                        <div class="blog-info-top">
+                                            <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                        </div>
+                                        <div class="blog-info-center">
+                                            <a href="#">Lorem ipsum dolor sit.</a>
+                                        </div>
+                                        <div class="blog-info-bottom">
+                                            <a href="#">Read More</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="blog-item">
+                                    <a href="#" class="blog-image">
+                                        <img src="~/img/blogs/blog1.jpg" alt="" />
+                                    </a>
+                                    <div class="blog-info">
+                                        <div class="blog-info-top">
+                                            <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                        </div>
+                                        <div class="blog-info-center">
+                                            <a href="#">Lorem ipsum dolor sit.</a>
+                                        </div>
+                                        <div class="blog-info-bottom">
+                                            <a href="#">Read More</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="blog-item">
+                                    <a href="#" class="blog-image">
+                                        <img src="~/img/blogs/blog1.jpg" alt="" />
+                                    </a>
+                                    <div class="blog-info">
+                                        <div class="blog-info-top">
+                                            <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                        </div>
+                                        <div class="blog-info-center">
+                                            <a href="#">Lorem ipsum dolor sit.</a>
+                                        </div>
+                                        <div class="blog-info-bottom">
+                                            <a href="#">Read More</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <ul class="blog-list">
-                            <li class="blog-item">
-                                <a href="#" class="blog-image">
-                                    <img src="~/img/blogs/blog1.jpg" alt="" />
-                                </a>
-                                <div class="blog-info">
-                                    <div class="blog-info-top">
-                                        <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                    </div>
-                                    <div class="blog-info-center">
-                                        <a href="#">Lorem ipsum dolor sit.</a>
-                                    </div>
-                                    <div class="blog-info-bottom">
-                                        <a href="#">Read More</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="blog-item">
-                                <a href="#" class="blog-image">
-                                    <img src="~/img/blogs/blog1.jpg" alt="" />
-                                </a>
-                                <div class="blog-info">
-                                    <div class="blog-info-top">
-                                        <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                    </div>
-                                    <div class="blog-info-center">
-                                        <a href="#">Lorem ipsum dolor sit.</a>
-                                    </div>
-                                    <div class="blog-info-bottom">
-                                        <a href="#">Read More</a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="blog-item">
-                                <a href="#" class="blog-image">
-                                    <img src="~/img/blogs/blog1.jpg" alt="" />
-                                </a>
-                                <div class="blog-info">
-                                    <div class="blog-info-top">
-                                        <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                    </div>
-                                    <div class="blog-info-center">
-                                        <a href="#">Lorem ipsum dolor sit.</a>
-                                    </div>
-                                    <div class="blog-info-bottom">
-                                        <a href="#">Read More</a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </section>*@
+                    </section>*@
                 <section class="campaing-single">
                     <div class="container">
                         <div class="campaing-wrapper">

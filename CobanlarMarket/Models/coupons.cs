@@ -20,6 +20,7 @@ namespace CobanlarMarket.Models
             this.coupon_products = new HashSet<coupon_products>();
             this.coupon_categories = new HashSet<coupon_categories>();
             this.order_details = new HashSet<order_details>();
+            this.cart = new HashSet<cart>();
         }
     
         public int Id { get; set; }
@@ -40,5 +41,7 @@ namespace CobanlarMarket.Models
         public virtual ICollection<coupon_categories> coupon_categories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order_details> order_details { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<cart> cart { get; set; }
     }
 }

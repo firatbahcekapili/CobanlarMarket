@@ -5,8 +5,6 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="75d6537cb5134f41b0d76c458442aeef" Name="Diagram1" ZoomLevel="77">
-        <EntityTypeShape EntityType="CobanlarMarketModel.addresses" Width="1.5" PointX="7.5" PointY="3.875" />
-        <EntityTypeShape EntityType="CobanlarMarketModel.cart" Width="1.5" PointX="7.5" PointY="16.875" />
         <EntityTypeShape EntityType="CobanlarMarketModel.cart_item" Width="1.5" PointX="9.75" PointY="16.5" />
         <EntityTypeShape EntityType="CobanlarMarketModel.categories" Width="1.5" PointX="0.75" PointY="11" />
         <EntityTypeShape EntityType="CobanlarMarketModel.order_details" Width="1.5" PointX="10.5" PointY="12.625" />
@@ -19,9 +17,6 @@
         <EntityTypeShape EntityType="CobanlarMarketModel.sub_categories" Width="1.5" PointX="3" PointY="13.125" />
         <EntityTypeShape EntityType="CobanlarMarketModel.users" Width="1.5" PointX="5.25" PointY="5.125" />
         <EntityTypeShape EntityType="CobanlarMarketModel.wishlist" Width="1.5" PointX="7.5" PointY="9.125" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_addresses_user_id" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_cart_id" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_cart_user_id" />
         <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_product_id" />
         <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_products_sku_id" />
         <AssociationConnector Association="CobanlarMarketModel.FK_sub_categories_parent_id" />
@@ -49,6 +44,12 @@
         <EntityTypeShape EntityType="CobanlarMarketModel.campaigns" Width="1.5" PointX="14" PointY="4.125" />
         <AssociationConnector Association="CobanlarMarketModel.FK_campaign_products_campaign1" />
         <AssociationConnector Association="CobanlarMarketModel.FK_order_details_coupons" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.addresses" Width="1.5" PointX="7.5" PointY="4.375" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_addresses_user_id" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.cart" Width="1.5" PointX="12.625" PointY="0.75" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_cart_coupons" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_cart_id" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_cart_user_id" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -51,8 +51,8 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="category">Kategori *</label>
-                        <select class="form-control" id="category">
-                            <option>Kategori Seçiniz</option>
+                        <select class="form-control" id="category" required>
+                            <option disabled selected>Kategori Seçiniz</option>
                             <!-- Add categories here -->
 
 
@@ -71,8 +71,8 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="gender">Alt Kategori *</label>
-                        <select class="form-control" id="subCategory" disabled>
-                            <option>Kategori Seçiniz</option>
+                        <select class="form-control" id="subCategory" disabled required>
+                            <option disabled selected>Kategori Seçiniz</option>
 
                             <!-- Add more options here -->
                         </select>
@@ -288,7 +288,7 @@
                 success: function (data) {
                     var subCategorySelect = $('#subCategory');
                     subCategorySelect.empty();
-                    subCategorySelect.append('<option value="">Alt Kategori Seçin</option>');
+                    subCategorySelect.append('<option value="" selected disabled>Alt Kategori Seçin</option>');
 
                     $.each(data, function (index, subCategory) {
                         subCategorySelect.append('<option value="' + subCategory.id + '">' + subCategory.name + '</option>');

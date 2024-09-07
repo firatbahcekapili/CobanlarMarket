@@ -20,6 +20,7 @@ namespace CobanlarMarket.Models
         public List<order_item> order_item;
         public List<coupons> coupons;
         public List<campaigns> campaigns;
+        public List<addresses> addresses;
 
 
 

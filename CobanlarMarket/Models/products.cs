@@ -11,7 +11,8 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class products
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -25,17 +26,19 @@ namespace CobanlarMarket.Models
             this.coupon_products = new HashSet<coupon_products>();
             this.campaign_products = new HashSet<campaign_products>();
         }
-    
+
         public int id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
         public string summary { get; set; }
         public string cover { get; set; }
+        [Required]
+
         public Nullable<int> category_id { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> deleted_at { get; set; }
         public Nullable<bool> status { get; set; }
-    
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<cart_item> cart_item { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

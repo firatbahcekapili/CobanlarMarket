@@ -5,13 +5,91 @@
 
     decimal? toplam = 0;
 }
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
+@Html.Raw(TempData["Iyzico"])
+
+<style>
+   
+    /* Geçersiz numara girildiğinde input alanını kırmızı yapar */
+    #phone {
+        border-color:goldenrod;
+    }
+    #phone.error {
+        border-color: red;
+    }
+    #phone.valid {
+        border-color: green;
+    }
+  
+    /* Hata mesajı stili */
+    #error-msg {
+        color: red;
+        margin-top: 5px;
+        font-size: 14px;
+    }
+
+    /* Geçerli numara stili */
+    #valid-msg {
+        color: green;
+        margin-top: 5px;
+        font-size: 14px;
+        display: none;
+    }
+
+    /* Mesajları gizlemek için kullanılan sınıf */
+    .hide {
+        display: none;
+    }
+
+    /* Mesajları göstermek için kullanılan sınıf */
+    .show {
+        display: block;
+    }
+
+    /* Buton stili */
+    #btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+        /* Buton hover efekti */
+        #btn:hover {
+            background-color: #0056b3;
+        }
+    .offcanvas-backdrop {
+        opacity: 0.6 !important; /* Son opaklık seviyesi */
+    }
+
+        .offcanvas-backdrop.show {
+            opacity: 0.6 !important; /* Açıldığında son opaklık seviyesi */
+        }
+
+    .address-card{
+        max-width:200px;
+        max-height:200px;
+        overflow:auto;
+    }
+
+</style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <link href="~/Content/css/main.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/css/intlTelInput.css" integrity="sha512-tagom4p++vFNtgZ4S8pIVdKkPIH9jKvBT9velKm57KkVicjjNzVtSdTI0Yu1QrWZoP7tnIkB1y9Rmwkz2oWfMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/js/intlTelInput.js" integrity="sha512-vny9j2GDMbTV//GY4S0kQogKJ7fK5fhSje76Z/eEodHaWIBisFm2RlsJGQVi3fxHr+wb2uJ80TJj4na722XnUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <body cz-shortcut-listen="true">
     <div id="root">
         <div>
             <div class="main-layout">
+
+
+                <div id="iyzipay-checkout-form" class="popup" style="width:500px"></div>
+
+
                 <div class="modal-dialog ">
                     <div class=" modal-content">
                         :<button class="modal-close"><i class="bi bi-x"></i></button>
@@ -49,17 +127,51 @@
                     {
                         CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
 
-                         toplam = 0;
+                        toplam = 0;
+                        decimal? totalForBar = 0;
+                        var kargo = 30;
+                        decimal? couponDiscount = 0;
+
+
+                        foreach (var cartItem in Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item)
+                        {
+
+
+
+                            totalForBar += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
+
+
+                        }
+
+
+
                         <section class="cart-page">
                             <div class="container">
                                 <div class="cart-page-wrapper">
                                     <form class="cart-form">
                                         <div class="free-progress-bar">
-                                            <p class="progress-bar-title">
-                                                Lorem ipsum <strong>$130.00</strong> sit amet
-                                                consectetur adipisicing elit. Maiores, qui.
-                                            </p>
-                                            <div class="progress-bar"><span class="progress"></span></div>
+
+
+
+                                            @{
+                                                if (totalForBar <= 300)
+                                                {
+                                                    decimal bar = (totalForBar.HasValue) ? (totalForBar.Value / 300 * 100) : 0;
+                                                    string formattedBar = bar.ToString("F2").Replace(',', '.');
+                                                    <p class="progress-bar-title">
+                                                        <strong>@(300 - totalForBar)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
+                                                    </p>
+                                                    <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
+                                                }
+                                                else
+                                                {
+                                                    <span>Kargo Ücretsiz!</span>
+                                                    <div class="progress-bar"><span class="progress" style="width:100%;"></span></div>
+
+                                                }
+
+                                            }
+
                                         </div>
                                         <div class="shop-table-wrapper">
 
@@ -105,7 +217,7 @@
 
                                                         toplam += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
 
-                                                      
+
                                                     }
 
 
@@ -120,7 +232,7 @@
                                                     </button>
                                                 </div>
                                                 <div class="update-cart">
-                                                <button class="btn btn-red">Sepeti Güncelle</button>
+                                                    <button class="btn btn-red">Sepeti Güncelle</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -139,13 +251,91 @@
                                                         <td>
                                                             <ul>
 
-                                                                <li><a href="#">Change Address</a></li>
+                                                                <li id="cartAddress">
+
+                                                                    @{
+
+                                                                        var item = Model.addresses.FirstOrDefault(x => x.user_id == user.id);
+                                                                        if (item != null)
+                                                                        {
+                                                                            <div class="col-12 ">
+                                                                                <div class="card mb-2 text-start address-card" addressId="@item.id">
+                                                                                    <div class="card-body">
+                                                                                        <h5 class="card-title">@item.title</h5>
+                                                                                        <h6 class="card-subtitle mb-2 text-body-secondary">@item.name @item.surname</h6>
+                                                                                        <p class="card-text">@item.address.</p>
+
+
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                    }
+
+
+                                                                    <a href="#Adres" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+                                                                        Adres Değiştir/Ekle
+                                                                    </a>
+
+                                                                </li>
                                                             </ul>
+
+
                                                         </td>
+
                                                     </tr>
-                                                    <tr>
+                                                    @if (Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id.HasValue)
+                                                    {
+                                                        if (Model.coupons.FirstOrDefault(x => x.Id == Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code != null)
+                                                        {
+                                                            <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>
+                                                            <tr class='couponadded'>
+                                                                <th>
+                                                                    Kupon Kodu Uygulandı:<strong>  @Model.coupons.FirstOrDefault(x => x.Id == Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code   </strong>
+                                                                </th>
+                                                                <td> İndirim -&#8378; @Model.carts.FirstOrDefault(x => x.user_id == user.id).discount_value </td>
+
+
+                                                            </tr>
+
+
+                                                            string discountValue = Model.carts.FirstOrDefault(x => x.user_id == user.id).discount_value;
+
+                                                            // "en-US" kültürüne göre decimal parse işlemi
+                                                            couponDiscount = decimal.Parse(discountValue, new System.Globalization.CultureInfo("en-US"));
+
+
+
+                                                        }
+                                                    }
+
+
+                                                    @{
+                                                        if (toplam >= 300)
+                                                        {
+                                                            <tr class="cargo">
+                                                                <th>Kargo</th>
+                                                                <td><del>₺@kargo</del> <strong>0₺</strong></td>
+                                                            </tr>
+                                                            kargo = 0;
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr class="cargo">
+                                                                <th>Kargo</th>
+                                                                <td>₺@kargo</td>
+                                                            </tr>
+                                                        }
+
+
+                                                      
+                                                    }
+
+
+                                                    <tr class="lasttotal">
                                                         <th>Toplam</th>
-                                                        <td><strong id="cart-total">&#8378;@toplam</strong></td>
+                                                        <td><strong id="cart-total">&#8378;@(toplam+kargo-couponDiscount)</strong></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -164,10 +354,10 @@
                     }
                     else
                     {
-                <section class="text-center m-5">
-                    <h2>Sepeti kullanabilmek için giriş yapmalısınız</h2>
-                    <a href="/Home/Auth">Giriş Yap</a>
-                </section>
+                        <section class="text-center m-5">
+                            <h2>Sepeti kullanabilmek için giriş yapmalısınız</h2>
+                            <a href="/Home/Auth">Giriş Yap</a>
+                        </section>
                     }
                 }
             </div>
@@ -177,9 +367,340 @@
 
 
 
+    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+        <div class="offcanvas-header">
+            <button type="button" class="btn-close m-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="row mb-2">
+                <div class="col-6  d-flex align-items-center">
+                    <h3>Adreslerim</h3>
+                </div>
+                <div class="col-6 d-flex justify-content-end ">
+
+                    
+
+                    <a href="#Adres" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#addAddress" aria-controls="addAddress">
+                        Yeni Adres
+                    </a>
+                </div>
+            </div>
+
+
+            <div class="row " id="address-cards">
+
+                @if (Session["User"] != null)
+                {
+                    var user = Session["User"] as CobanlarMarket.Models.users;
+                    foreach (var item in Model.addresses.Where(x => x.user_id == user.id))
+                    {
+                        <div class="col-12 ">
+                            <div class="card mb-2" >
+                                <div class="card-body">
+                                    <h5 class="card-title">@item.title</h5>
+                                    <h6 class="card-subtitle mb-2 text-body-secondary">@item.name @item.surname</h6>
+                                    <p class="card-text">@item.address.</p>
+                                    <a href="#" class="card-link">Düzenle</a>
+                                    <a onclick="RemoveAddress(@item.id)" class="card-link">Sil</a>
+                                    <a onclick="SelectAddress(@item.id)" class="card-link">Seç</a>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                }
+
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        .form-group{
+            margin-bottom:20px;
+        }
+    </style>
+
+    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="addAddress" aria-labelledby="addAddressLabel">
+        <div class="offcanvas-header">
+            <a href="#Adres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+
+            </a>
+        </div>
+        <div class="offcanvas-body">
+            <div class="row">
+                @{
+                    var u = Session["User"] as CobanlarMarket.Models.users;
+                    var a = new CobanlarMarket.Models.addresses();
+                }
+
+                <form id="AddressForm"></form>
+                <div class="form-row row">
+                    <div class="form-label text-primary">
+                        Teslim alacak kişinin bilgileri
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="name">Ad *</label>
+                        @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
+                        @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "name" } })
+                        @Html.ValidationMessageFor(model => u.first_name, "")
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="surname">Soyad*</label>
+                        @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
+                        @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "surname" } })
+                        @Html.ValidationMessageFor(model => u.last_name, "")
+
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="tel">Telefon Numarası *</label>
+                        <input class="form-control shadow-none" id="phone" type="tel"><br />
+                        <span id="valid-msg" class="hide" >✓</span>
+                        <span id="error-msg" class="hide"></span>
+                        @*<input type="tel" class="form-control" id="tel" />*@
+                        @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
+                        @Html.ValidationMessageFor(model => u.phone_number, "")
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Adres Başlığı</label>
+                        @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "title" } })
+                        @Html.ValidationMessageFor(model => a.title, "")
+                    </div>
+                    <div class="form-row row">
+                        <div class="form-group col-md-6">
+                            <label>İl</label>
+                            <select class="form-control" disabled>
+                                <option value="Trabzon">Trabzon</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>İlçe</label>
+                            <select class="form-control" disabled>
+                                <option value="Maçka">Maçka</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-12 ">
+                        <label for="address"></label>
+                        @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "addres",rows="4" })
+                        @Html.ValidationMessageFor(model => a.address, "")
+                    </div>
+                    <div class="form-group">
+                        <a href="#" id="submitbtn" class="btn btn-primary">Adresi Kaydet</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </body>
+<script src="~/Scripts/jquery-3.7.1.js"></script>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
 
 <script>
+
+
+    $(document).ready(function () {
+
+        $('#submitbtn').on("click", function (e) {
+            e.preventDefault();
+
+            if ($('#AddressForm').valid()) {
+                var formData = new FormData();
+
+
+                var name = $('#name').val();
+                var surname = $('#surname').val();
+                var phone = $('#phone').val();
+                var title = $('#title').val();
+                var address = $('#addres').val();
+                console.log(address);
+
+                formData.append('Name', name);
+                formData.append('Surname', surname);
+                formData.append('Phone', phone);
+                formData.append('Title', title);
+                formData.append('Address', address);
+
+                // AJAX isteği gönder
+                $.ajax({
+                    url: '/Home/AddAdress/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message);
+
+
+
+
+                            var addresscards = $("#address-cards");
+                            addresscards.empty();
+                            var i = 1;
+                            result.adressList.forEach(function (address) {
+                                var card = " <div class='col-12'><div class='card mb-2'><div class='card-body'><h5 class='card-title'>" + address.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + address.name + " " + address.surname + "</h6><p class='card-text'>" + address.address + "</p> <a href='#' class='card-link'>Düzenle</a> <a onclick='RemoveAddress(" + address.id + ")' class='card-link'>Sil</a>   <a onclick='SelectAddress(" + address.id +")' class='card-link'>Seç</a> </div></div></div>";
+
+                                    addresscards.append(card);
+                                    i++;
+                            });
+
+
+
+
+                        } else {
+                            toastr.error(result.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error: ' + error);
+                    }
+                });
+            }
+        });
+
+    });
+    //const phoneInputField = document.querySelector("#phone");
+    //const phoneInput = window.intlTelInput(phoneInputField, {
+
+
+    //    onlyCountries: ["tr"],
+    //    allowDropdown: false,
+    //    strictMode: true,
+    //    separateDialCode: true,
+    //    showFlags: true,
+    //    utilsScript:
+    //        "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+    //});
+
+    const input = document.querySelector("#phone");
+    const errorMsg = document.querySelector("#error-msg");
+    const validMsg = document.querySelector("#valid-msg");
+
+    const errorMap = ["Invalid number", "Invalid country code", "Too short", "Too long", "Invalid number"];
+
+    // initialize plugin
+    const iti = window.intlTelInput(input, {
+        initialCountry: "tr",
+        onlyCountries: ["tr"],
+        strictMode: true,
+        allowDropdown: false,
+        separateDialCode: true,
+        showFlags: true,
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/js/utils.js"
+    });
+
+    const reset = () => {
+        input.classList.remove("error");
+        input.classList.remove("valid"); // Valid class'ını kaldır
+        errorMsg.innerHTML = "";
+        errorMsg.classList.add("hide");
+        validMsg.classList.add("hide");
+    };
+
+    const showError = (msg) => {
+        input.classList.add("error");
+        errorMsg.innerHTML = msg;
+        errorMsg.classList.remove("hide");
+    };
+
+    // function to validate the number in real-time
+    const validateNumber = () => {
+        reset();
+        if (input.value.trim()) {
+            if (iti.isValidNumber()) {
+                validMsg.classList.remove("hide");
+                input.classList.add("valid"); // Geçerli numara ise 'valid' class'ını ekle
+            } else {
+                const errorCode = iti.getValidationError();
+                const msg = errorMap[errorCode] || "Invalid number";
+                showError(msg);
+            }
+        }
+    };
+
+    // on keyup / change flag: validate in real-time
+    input.addEventListener('keyup', validateNumber);
+    input.addEventListener('change', validateNumber);
+
+
+
+    function RemoveAddress(Id) {
+        $.ajax({
+            url: '/Home/RemoveAddress/',
+            type: 'POST',
+            data: {Id:Id},
+            success: function (result) {
+                if (result.success) {
+                    toastr.success(result.message);
+
+
+
+
+                    var addresscards = $("#address-cards");
+                    addresscards.empty();
+                    var i = 1;
+                    result.adressList.forEach(function (address) {
+                        var card = " <div class='col-12'><div class='card mb-2'><div class='card-body'><h5 class='card-title'>" + address.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + address.name + " " + address.surname + "</h6><p class='card-text'>" + address.address + "</p> <a href='#' class='card-link'>Düzenle</a> <a onclick='RemoveAddress(" + address.id + ")' class='card-link'>Sil</a>   <a onclick='SelectAddress(" + address.id +")' class='card-link'>Seç</a> </div></div></div>";
+
+                        addresscards.append(card);
+                        i++;
+                    });
+
+
+
+
+                } else {
+                    toastr.error(result.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error: ' + error);
+            }
+        });
+    }
+
+    function SelectAddress(Id) {
+
+        $.ajax({
+            url: '/Home/GetAddress/',
+            type: 'POST',
+            data: { Id: Id },
+            success: function (result) {
+                if (result.success) {
+
+
+                    toastr.success(result.message);
+                    var addresscards = $("#cartAddress");
+                    addresscards.empty();
+                    var i = 1;
+                    result.adressList.forEach(function (address) {
+                        var card = " <div class='col-12'><div class='card mb-2 text-start  address-card' addressId='"+address.id+"'><div class='card-body'><h5 class='card-title'>" + address.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + address.name + " " + address.surname + "</h6><p class='card-text'>" + address.address + "</p> </div></div></div>   <a href='#Adres' data-bs-toggle='offcanvas' data-bs-target='#staticBackdrop' aria-controls='staticBackdrop'> Adres Değiştir / Ekle</a >";
+
+                        addresscards.append(card);
+                        i++;
+                    });
+
+
+
+
+                } else {
+                    toastr.error(result.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('AJAX Error: ' + error);
+            }
+        });
+
+    }
 
 
     function removeItemInCart(id) {
@@ -191,9 +712,22 @@
                 console.log(result);
                 var table = $(result).find(".shop-table tbody tr");
                 $('.cart-wrapper').empty().append(table);
-                var total = $(result).find("#cart-total").text();
+                var total = $(result).find("#subtotal").text();
                 $("#cart-total").text(total);
                 $("#subtotal").text(total);
+                var cargo = $(result).find(".cargo").html();
+                var lasttotal = $(result).find(".lasttotal").html();
+                var progress = $(result).find(".free-progress-bar").html();
+                $(".cargo").empty();
+                $(".cargo").append(cargo);
+
+                $(".lasttotal").empty();
+                $(".lasttotal").append(lasttotal);
+
+                $('.couponadded').remove();
+                $('#address').after($(result).find(".couponadded"));
+                $(".free-progress-bar").empty();
+                $(".free-progress-bar").append(progress);
 
             }
         });
@@ -213,9 +747,28 @@
                     console.log(result);
                     var table = $(result).find(".shop-table tbody tr");
                     $('.cart-wrapper').empty().append(table);
-                    var total = $(result).find("#cart-total").text();
+                    var total = $(result).find("#subtotal").text();
                     $("#cart-total").text(total);
                     $("#subtotal").text(total);
+                    var cargo = $(result).find(".cargo").html();
+                    var lasttotal = $(result).find(".lasttotal").html();
+                    var progress = $(result).find(".free-progress-bar").html();
+
+                    $(".cargo").empty();
+                    $(".cargo").append(cargo);
+
+                    $(".lasttotal").empty();
+                    $(".lasttotal").append(lasttotal);
+
+
+                    $(".free-progress-bar").empty();
+                    $(".free-progress-bar").append(progress);
+
+                    $('.couponadded').remove();
+                    $('#address').after($(result).find(".couponadded"));
+
+
+
                     var cartCount = $(result).find(".cart-item").length;
 
                     $(".header-cart-count").text(cartCount);
@@ -235,28 +788,49 @@
                     console.log(result);
                     var table = $(result).find(".shop-table tbody tr");
                     $('.cart-wrapper').empty().append(table);
-                    var total = $(result).find("#cart-total").text();
+                    var total = $(result).find("#subtotal").text();
                     $("#cart-total").text(total);
                     $("#subtotal").text(total);
+                    var cargo = $(result).find(".cargo").html();
+                    var lasttotal = $(result).find(".lasttotal").html();
+                    var progress = $(result).find(".free-progress-bar").html();
+
+                    $(".cargo").empty();
+                    $(".cargo").append(cargo);
+
+                    $(".lasttotal").empty();
+                    $(".lasttotal").append(lasttotal);  
 
 
+                    $('.couponadded').remove();
+                    $('#address').after($(result).find(".couponadded"));
+                    $(".free-progress-bar").empty();
+                    $(".free-progress-bar").append(progress);
                 }
             });
         });
 
 
         $('.checkout').on('click', '.btn-order', function () {
+            var addressid = $('#cartAddress .card').attr("addressId");
+            console.log(addressid);
+           
 
-            $.ajax({
-                url: '/Home/Order/',
-                type: 'POST',
-
-                success: function (result) {
-                    console.log(result.message);
-                    toastr.success(result.message);
-
-                }
-            });
+            if (addressid != null) {
+                $.ajax({
+                    url: '/Home/Order/',
+                    type: 'POST',
+                    data: { AddressId: addressid },
+                    success: function (result) {
+                        console.log(result.message);
+                        toastr.success(result.message);
+                        window.location = "/Home/Payment";
+                    }
+                });
+            } else {
+                toastr.error("Ürünlerimizi size ulaştırabilmek için adres seçilmesi zorunludur.Lütfen adres seçiniz.");
+            }
+          
         });
 
 
@@ -275,7 +849,7 @@
                         $('.couponadded').remove();
                         $('#address').after(
 
-                            "   <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>  <tr class='couponadded'>   <th>Kupon Kodu Uygulandı:<strong>" + result.coupon + "</strong></th>  <td>İndirim </br>-&#8378;" + result.discount +"</td>  </tr> "
+                            "   <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>  <tr class='couponadded'>   <th>Kupon Kodu Uygulandı:<strong></br>" + result.coupon + "</strong></th>  <td>İndirim </br>-&#8378;" + result.discount +"</td>  </tr> "
                         );
 
 
@@ -284,9 +858,14 @@
                         console.log(total);
 
                         console.log(parseFloat(total));
-                        console.log(parseFloat(result.discount.replace(',', '.')));
+                        console.log(parseFloat(result.discount));
 
-                        $('#cart-total').text("₺"+(parseFloat(total) - parseFloat(result.discount.replace(',','.'))));
+                        var lasttotal = $(result.cartItemsHtml).find(".lasttotal").html();
+                        console.log("last " + lasttotal);
+                        $(".lasttotal").empty();
+                        $(".lasttotal").append(lasttotal);  
+
+                        //$('#cart-total').text("₺"+(parseFloat(total) - parseFloat(result.discount.replace(',','.'))));
                     } else {
                         toastr.error(result.message);
                     }

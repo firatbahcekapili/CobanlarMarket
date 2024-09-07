@@ -1088,6 +1088,12 @@ namespace CobanlarMarket.Controllers
                 users user = new users() { first_name = Name, last_name = Surname, username = Username, password = Password, email = Email, phone_number = Tel, birth_of_date = DateTime.Parse(Birthdate), avatar = imgpath, role = false, created_at = DateTime.Now, status = true };
 
                 db.users.Add(user);
+
+                db.SaveChanges();
+                cart cart = new cart() { 
+                user_id=user.id, created_at=DateTime.Now
+                };
+                db.cart.Add(cart);
                 db.SaveChanges();
             }
 

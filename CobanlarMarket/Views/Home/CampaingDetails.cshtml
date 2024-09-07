@@ -168,7 +168,7 @@
                     </div>
                     </section>
                     <div class="productsContainer">
-                        @Html.Action("GetCampaignProductsPartial", "Home", new { CampaignId = Model.campaigns.FirstOrDefault().id, CategoryId = -1, PriceRange = "All", PageNumber = 1 })
+                        @Html.Action("GetProductsPartial", "Home", new { CampaignId = Model.campaigns.FirstOrDefault().id, CategoryId = -1, PriceRange = "All", PageNumber = 1 })
                     </div>
 
 
@@ -228,7 +228,7 @@
         console.log(pageNumber);
 
         $.ajax({
-            url: '/Home/GetCampaignProductsPartial/',
+            url: '/Home/GetProductsPartial/',
             type: 'POST',
             data: { CampaignId: parseInt(campaignId), CategoryId: parseInt(categoryId), PriceRange: priceRange, PageNumber: parseInt(pageNumber) },
             success: function (response) {
@@ -258,7 +258,7 @@
         var priceRange = $('#minamount').val() + "-" + $('#maxamount').val();
         var campaignId='@Model.campaigns.FirstOrDefault().id'
         $.ajax({
-            url: '/Home/GetCampaignProductsPartial/',
+            url: '/Home/GetProductsPartial/',
             type: 'POST',
             data: { CampaignId: parseInt(campaignId), CategoryId: parseInt(categoryId), CategoryType: categoryType, PriceRange: priceRange, PageNumber: 1 },
             success: function (response) {
@@ -317,7 +317,7 @@
             var campaignId = '@Model.campaigns.FirstOrDefault().id';
 
             $.ajax({
-                url: '/Home/GetCampaignProductsPartial/',
+                url: '/Home/GetProductsPartial/',
                 type: 'POST',
                 data: { CampaignId: parseInt(campaignId), CategoryId: parseInt(categoryId), PriceRange: priceRange, PageNumber: 1, CategoryType: categorytype },
                 success: function (response) {
@@ -371,5 +371,45 @@
         });
     });
 
+
+</script>
+<script>
+// Document seviyesinde delegasyon kullanarak onchange olayını bağlama
+$(document).on('change', '#sortSelect', function () {
+    var selectedOption = $(this).find('option:selected');
+    var orderType = selectedOption.attr('orderType');
+
+    var categoryId = $(".categorylist .active").attr('categoryId');
+    var categoryType = $(".categorylist .active").attr('categoryType');
+    var priceRange = $('#minamount').val() + "-" + $('#maxamount').val();
+    var campaignId = '@Model.campaigns.FirstOrDefault().id';
+
+    $.ajax({
+        url: '/Home/GetProductsPartial/',
+        type: 'POST',
+        data: { CampaignId: campaignId, CategoryId: parseInt(categoryId), CategoryType: categoryType, PriceRange: priceRange, PageNumber: 1, OrderType: orderType },
+        success: function (response) {
+            $('.productsContainer').fadeOut(300, function () {
+                $(this).empty();
+                $(this).html(response);
+
+                // Background resimleri ayarla
+                $('.set-bg').each(function () {
+                    var bg = $(this).data('setbg');
+                    $(this).css('background-image', 'url(' + bg + ')');
+                });
+
+                $(this).fadeIn(300, function () {
+                    $('html, body').animate({
+                        scrollTop: $(".productsContainer").offset().top
+                    }, 300);
+                });
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error: ", error);
+        }
+    });
+});
 
 </script>
