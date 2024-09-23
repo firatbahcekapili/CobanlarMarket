@@ -1,4 +1,4 @@
-﻿@model CobanlarMarket.Models.products
+﻿@model CobanlarMarket.Models.AllViewModel
 @{
     ViewBag.Title = "EditProduct";
     Layout = "~/Views/Shared/_ManagementLayout.cshtml";
@@ -27,6 +27,28 @@
             padding: 0.2rem;
             font-size: 0.8rem;
         }
+
+    .img-pre {
+        position: relative;
+        max-height: 240px;
+        overflow-y: auto;
+    }
+
+    .remove-img-btn {
+        position: absolute;
+        top: 4px;
+        right: 3px;
+        color: red;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        font-size: 20px;
+    }
+
+        .remove-img-btn:hover {
+            color: darkred;
+        }
 </style>
 
 <div class=" mt-5 ml-5 mr-5">
@@ -39,68 +61,73 @@
         }
         <div class="row justify-content-center">
             <!-- Left Column -->
-            <div class="col-md-5 mr-md-5 bg-white p-5">
+            <div class="col-xl-5 mr-xl-5 mb-xl-0 mb-5 bg-white p-5">
                 <div class="form-group">
                     <label for="productName">Ürün Adı *</label>
                     @*<input type="text" class="form-control" id="productName" placeholder="Ürün Adı Giriniz">*@
-                    @Html.EditorFor(model => Model.name, "Ürün Adı", new { htmlAttributes = new { name = "productName", @class = "form-control", placeholder = "Ürün Adı Giriniz", id = "productName" } })
-                    @Html.ValidationMessageFor(model => Model.name, "")
+                    @Html.EditorFor(model => Model.products.FirstOrDefault().name, "Ürün Adı", new { htmlAttributes = new { name = "productName", @class = "form-control", placeholder = "Ürün Adı Giriniz", id = "productName" } })
+                    @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().name, "")
 
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    <small class="form-text text-muted">Ürün adı en az 2 harften oluşmalıdır.</small>
+
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-lg-4 col-md-6">
                         <label for="category">Kategori *</label>
                         <select class="form-control" id="category">
-                            <option>Kategori Seçiniz</option>
+                            <option disabled>Kategori Seçiniz</option>
                             <!-- Add categories here -->
-
-
-
-                            <option pid="add">Kategori Ekle</option>
 
                         </select>
 
-
-
-
-
                     </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-lg-4 col-md-6">
                         <label for="gender">Alt Kategori *</label>
                         <select class="form-control" id="subCategory" disabled>
-                            <option>Kategori Seçiniz</option>
+                            <option disabled>Alt Kategori Seçiniz</option>
 
                             <!-- Add more options here -->
                         </select>
                     </div>
+                    <div class="form-group col-lg-4 col-md-12">
+                        <label for="gender">Alt Alt Kategori </label>
+                        <select class="form-control" id="subsubCategory" >
+                            <option disabled>Alt Alt Kategori Seçiniz</option>
+
+                            <!-- Add more options here -->
+                        </select>
+                    </div>
+                    <small class="form-text text-muted col-12">Kategori ve Alt Kategori alanlarının seçilmesi zorunludur. Yoksa ekleyebilirsiniz <a href="/Management/AddCategory">Ekle</a> </small>
+
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Açıklama *</label>
+                    <label for="description">Açıklama</label>
                     @*<textarea class="form-control" id="description" rows="3"></textarea>*@
-                    @Html.TextAreaFor(model => Model.description, new { name = "description", @class = "form-control", placeholder = "Açıklama", id = "description" })
-                    @Html.ValidationMessageFor(model => Model.description, "")
+                    @Html.TextAreaFor(model => Model.products.FirstOrDefault().description, new { name = "description", @class = "form-control", placeholder = "Açıklama", id = "description" })
+                    @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().description, "")
 
-                    <small class="form-text text-muted">Do not exceed 100 characters when entering the product name.</small>
                 </div>
             </div>
             <!-- Right Column -->
-            <div class="col-md-5 bg-white p-5">
+            <div class="col-xl-5 mb-xl-0 mb-5 bg-white p-5">
                 <div class="form-group">
-                    <label>Resim Yükle</label>
+                    <label>Resim Yükle *</label>
+
 
                     <div class="form-group">
-                        <div class="d-flex img-pre" id="image-containerr">
+                        <div class="d-flex img-pre row" id="image-containerr">
                             <!-- Resimler buraya eklenecek -->
 
-                            @foreach (var item in Model.product_images)
+                            @foreach (var item in Model.products.FirstOrDefault().product_images)
                             {
-                                <div class="p-2" imgid="@item.id">
+                                <div class="p-2 position-relative col-auto" imgid="@item.id">
+                                    <!-- position-relative ekledik -->
                                     <img src="@item.image_path" alt="" class="img-thumbnail" />
-                                    <a class="remove-img-btn btn" onclick="removeImgDatabase(@item.id)">x</a>
+                                    <button type="button" class="remove-img-btn" onclick="removeImgDatabase(@item.id)">
+                                        <i class="mdi mdi-trash-can icon"></i>
+                                    </button>
                                 </div>
-
                             }
                         </div>
                         <div class="d-flex img-pre" id="image-container">
@@ -114,42 +141,15 @@
 
                     </div>
                     <small class="form-text text-muted">
-                        En az 4 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Resimler belirli boyutlarda olmalıdır. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                        En az 1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
                     </small>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="size">Boyut Ekle</label>
-                        <select class="form-control" id="size">
-                            <option>Boyut Seçiniz</option>
-                            @*@foreach (var item in Model.product_attributes.Where(x => x.type == "size"))
-                {
-                    <option value="@item.id">@item.value</option>
-                }*@
-                        </select>
 
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="color">Renk Ekle</label>
-                        <input type="checkbox" name="" value="" />
-                        <select class="form-control" id="color">
-                            <option>Renk Seçiniz</option>
-                            @*@foreach (var item in Model.product_attributes.Where(x => x.type == "color"))
-                {
-                    <option value="@item.id">@item.value</option>
-                }*@
-                        </select>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="size">Stok Kodu</label>
-                        @Html.EditorFor(model => Model.products_skus.FirstOrDefault().sku, "Stok Kodu", new { htmlAttributes = new { type = "text", name = "sku", @class = "form-control", placeholder = "Stok Kodu Giriniz", id = "sku" } })
-                        @Html.ValidationMessageFor(model => Model.products_skus.FirstOrDefault().sku, "")
-
-                    </div>
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-12">
                         <label for="size">Stok Adeti</label>
-                        @Html.EditorFor(model => Model.products_skus.FirstOrDefault().quantity, "Stok Adeti", new { htmlAttributes = new { type = "number", name = "quantity", @class = "form-control", placeholder = "Stok Adeti Giriniz", id = "quantity" } })
-                        @Html.ValidationMessageFor(model => Model.products_skus.FirstOrDefault().quantity, "")
+                        @Html.EditorFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().quantity, "Stok Adeti", new { htmlAttributes = new { type = "number", name = "quantity", @class = "form-control", placeholder = "Stok Adeti Giriniz", id = "quantity" } })
+                        @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().quantity, "")
                     </div>
                     <div class="form-group col-md-12">
                         <label for="price">Fiyat *</label>
@@ -158,9 +158,9 @@
                                name="price"
                                class="form-control"
                                placeholder="Fiyatı Giriniz"
-                               value="@(Model.products_skus.FirstOrDefault()?.price?.ToString().Replace(",","."))" />
+                               value="@(Model.products.FirstOrDefault().products_skus.FirstOrDefault()?.price?.ToString().Replace(",","."))" />
 
-                        @Html.ValidationMessageFor(model => Model.products_skus.FirstOrDefault().price, "")
+                        @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().price, "")
                     </div>
 
                     <div class="form-group col-md-12">
@@ -170,12 +170,12 @@
                                name="old_price"
                                class="form-control"
                                placeholder="Eski Fiyatı Giriniz"
-                               value="@(Model.products_skus.FirstOrDefault()?.old_price?.ToString().Replace(",","."))" />
+                               value="@(Model.products.FirstOrDefault().products_skus.FirstOrDefault()?.old_price?.ToString().Replace(",","."))" />
 
-                        @Html.ValidationMessageFor(model => Model.products_skus.FirstOrDefault().old_price, "")
+                        @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().old_price, "")
                     </div>
 
-                  
+
 
 
 
@@ -208,46 +208,129 @@
                             pid: item.id
                         }));
                     });
-     var categoryId = '@(Model.category_id)';
-        var parentId = '@(Model.sub_categories?.parent_id)';
+                 var categoryId = '@(Model.products.FirstOrDefault().subcategory_id)';
+                 var parentId = '@(Model.products.FirstOrDefault().sub_categories?.parent_id)';
 
-        // Razor değişkenlerini doğru şekilde JavaScript değişkenlerine dönüştürün
-        if (categoryId === 'null') categoryId = null;
-        if (parentId === 'null') parentId = null;
+                // Razor değişkenlerini doğru şekilde JavaScript değişkenlerine dönüştürün
+                if (categoryId === 'null') categoryId = null;
+                if (parentId === 'null') parentId = null;
 
-                $('#category option').each(function () {
-                    if (categoryId !== null) {
-                        if ($(this).attr('pid') === parentId) {
-                            $(this).prop('selected', true);
-                            console.log($(this).attr('pid'));
+                        $('#category option').each(function () {
+                            if (categoryId !== null) {
+                                if ($(this).attr('pid') === parentId) {
+                                    $(this).prop('selected', true);
+                                    console.log($(this).attr('pid'));
+                                }
+                            }
+                        });
+                            $('#category').trigger('change');
+
+
+                            setTimeout(function () {
+
+                               $('#subCategory option').each(function () {
+                                    if ('@(Model.products.FirstOrDefault().category_type)'==='1'|| '@(Model.products.FirstOrDefault().category_type)' ==='2') {
+                                         if ($(this).val() === '@(Model.products.FirstOrDefault().subcategory_id)' ) {
+                                             $(this).prop('selected', true);
+                                             console.log($(this).val());
+
+                                          }
+                                    }
+
+                                 });
+                                $('#subCategory').trigger('change');
+
+                            }, 100);
+
+
                         }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('Failed to retrieve categories. Error: ' + xhr.responseText);
                     }
                 });
-                    $('#category').trigger('change');
-
-
-                    setTimeout(function () {
-
-                       $('#subCategory option').each(function () {
-
-                             if ($(this).val() === '@(Model.category_id)' ) {
-                                 $(this).prop('selected', true);
-                                 console.log($(this).val());
-
-                             }
-                         });
-
-                    }, 100);
 
 
 
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error(xhr.responseText);
-                alert('Failed to retrieve categories. Error: ' + xhr.responseText);
+        $('#category').on('change', function () {
+            var selectedOption = $(this).find('option:selected');
+            var categoryId = selectedOption.attr('pid');
+            if (categoryId == "add") {
+                window.location = "/Management/AddCategory";
+            }
+            else if (categoryId) {
+                $.ajax({
+                    url: '/Management/GetSubCategories',
+                    type: 'GET',
+                    data: { categoryId: categoryId },
+                    success: function (data) {
+                        var subCategorySelect = $('#subCategory');
+                        subCategorySelect.empty();
+                        subCategorySelect.append('<option value="" disabled selected>Alt Kategori Seçin</option>');
+
+                        $.each(data, function (index, subCategory) {
+                            subCategorySelect.append('<option value="' + subCategory.id + '">' + subCategory.name + '</option>');
+                        });
+                        $('#subCategory').prop("disabled", false);
+
+                    },
+                    error: function () {
+                        alert('Alt kategoriler yüklenirken bir hata oluştu.');
+                    }
+                });
+            } else {
+                $('#subCategory').empty();
+                $('#subCategory').append('<option value="" disabled>Alt Kategori Seçin</option>');
+
             }
         });
+
+
+
+        $('#subCategory').on('change', function () {
+            $('#subsubCategory').empty();
+
+            $.ajax({
+                url: '/Management/GetSubSubCategories',
+                type: 'GET',
+                data: { subcategoryId: this.value },
+                success: function (subsubCategories) {
+                    if (subsubCategories.length > 0) {
+                        var $subsubcategories = $('#subsubCategory');
+                        $subsubcategories.append($('<option>', {
+                           text:"Kategori Seçiniz",
+                            cId:"-1"
+                        }));
+                    $.each(subsubCategories, function (i, item) {
+                        var $option = $('<option>', {
+                            value: item.id,
+                            text: item.name,
+                            pid: item.parent_sub_category_id
+                        });
+                        $subsubcategories.append($option);
+
+                        // Eğer category_type 2 ise kontrol yap
+                        if ('@(Model.products.FirstOrDefault().category_type)' === '2') {
+                            console.log('@(Model.products.FirstOrDefault()?.subcategory_id)');
+
+                            // Eklenen option'un value değeri ile category_id'yi karşılaştır
+                            if (item.id === '@(Model.products.FirstOrDefault()?.sub_subcategory_id)') {
+                                $option.prop('selected', true);
+                                console.log($option.val()+ "ssssss");
+                            }
+                        }
+                    });
+
+                           if ('@(Model.products.FirstOrDefault().category_type)'!=='2') {
+                               $subsubcategories.find(`[cId='-1']`).prop('selected', true);
+                           }
+
+
+                    }
+                }
+            });
+        })
 
 
 
@@ -280,8 +363,8 @@
 
                });
 
-               var colorattr =@(Model.products_skus.FirstOrDefault().color_attribute_id );
-               var sizeattr =@(Model.products_skus.FirstOrDefault().size_attribute_id);
+               var colorattr =@(Model.products.FirstOrDefault().products_skus.FirstOrDefault().color_attribute_id );
+               var sizeattr =@(Model.products.FirstOrDefault().products_skus.FirstOrDefault().size_attribute_id);
 
                if (colorattr!=-1) {
                    $('#color option').each(function () {
@@ -334,11 +417,11 @@
             var reader = new FileReader();
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
-                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                var removeBtn = $('<button>').addClass('remove-img-btn').html('<i class="mdi mdi-close icon"></i>').on('click', function (event) {
                     event.preventDefault(); // Varsayılan davranışı engelle
                     removeImage(file);
                 });
-                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                var wrapper = $('<div>').addClass('p-2 position-relative').append(img).append(removeBtn);
                 container.append(wrapper);
             };
             reader.readAsDataURL(file);
@@ -378,8 +461,12 @@
             type: 'POST',
             data: { Id: id },
             success: function (data) {
+                if (data.success) {
+                    $('[imgid="' + id + '"]').remove();
 
-                $('[imgid="' + id + '"]').remove();
+                } else {
+                    toastr.error(data.message);
+                }
             },
              error: function (xhr, status, error) {
             console.error(xhr.responseText);
@@ -402,81 +489,205 @@ function updateFileInput() {
     $('#submitbtn').on("click", function (e) {
         e.preventDefault();
 
+
+
+
+        var category = $('#category').find('option:selected').val();
+        var subCategory = $("#subCategory").find('option:selected').val();
+
+
+        if (!category || category === "Kategori Seçiniz") {
+            toastr.error("Lütfen bir kategori seçiniz.");
+            return;
+        }
+
+        if (!subCategory || subCategory === "Alt Kategori Seçiniz") {
+            toastr.error("Lütfen bir alt kategori seçiniz.");
+            return;
+        }
+
+
+
+
         if ($('#ProductForm').valid()) {
             var formData = new FormData();
 
-            // Seçilen dosyaları formData'ya ekleyin
             selectedFiles.forEach(file => {
-                formData.append('Imgs', file);
+                var newFileName = file.name.replace(/\s+/g, '-');
+
+                var newFile = new File([file], newFileName, { type: file.type });
+
+                formData.append('Imgs', newFile);
+                console.log(newFile);
             });
-
-            // Diğer form verilerini al
-            var name = $('#productName').val();
-            var id = @Model.id;
+            var name = $('#productName').val() || "";
+            var id = @Model.products.FirstOrDefault().id;
             var subCategory = !isNaN(parseInt($("#subCategory").find('option:selected').val(), 10)) ? parseInt($("#subCategory").find('option:selected').val(), 10) : null;
-            var description = $('#description').val();
-            var size = !isNaN(parseInt($("#size").find('option:selected').val(), 10)) ? parseInt($("#size").find('option:selected').val(), 10) : null;
-            var color = !isNaN(parseInt($("#color").find('option:selected').val(), 10)) ? parseInt($("#color").find('option:selected').val(), 10) : null;
-            var sku = $('#sku').val();
-            var quantity = $('#quantity').val();
-            var price = $('#price').val();
-            var oldprice = $('#old_price').val();
+            var description = $('#description').val() || "";
 
-            formData.append('Name', name);
-            formData.append('Id', id);
-            formData.append('SubCategory', subCategory);
-            formData.append('Description', description);
-            formData.append('Size', size);
-            formData.append('Color', color);
-            formData.append('Sku', sku);
-            formData.append('Quantity', quantity);
-            formData.append('Price', price);
-            formData.append('OldPrice', oldprice);
+            var subsubCategory = !isNaN(parseInt($("#subsubCategory").find('option:selected').val(), 10)) ? parseInt($("#subsubCategory").find('option:selected').val(), 10) : null;
 
-            // AJAX isteği gönder
-            $.ajax({
-                url: '/Management/EditProduct/',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (result) {
-                    if (result.success) {
-                        // Başarılı olduğunda sayfayı yenile
-                        toastr.success(result.message);
 
+
+            var quantity = $('#quantity').val() || "";
+            var price = $('#price').val() || "";
+            var oldprice = $('#old_price').val() || "";
+
+
+
+
+            if (oldprice != "") {
+                if (parseFloat(price) >= parseFloat(oldprice)) {
+                    toastr.error("Eski fiyat yeni fiyattan küçük olamaz.");
+
+                } else {
+                    formData.append('Name', name);
+                    formData.append('Id', id);
+                    formData.append('SubSubCategory', subsubCategory);
+
+                    formData.append('SubCategory', subCategory);
+
+
+
+                    if (subsubCategory !== null && subsubCategory !== undefined && subsubCategory !== '') {
+                        //formData.append('SubCategory', subsubCategory);
+                        formData.append('CategoryType', 2);
                     } else {
-                        // Hata mesajını göster
-                        toastr.error(result.message);
-
+                        console.log("elseee");
+                        //formData.append('SubCategory', subCategory);
+                        formData.append('CategoryType', 1);
                     }
 
+                    formData.append('Description', description);
 
-                    var imgbody = $("#image-containerr");
-                    var imgprebody = $("#image-container");
+                    formData.append('Quantity', quantity);
+                    formData.append('Price', price);
+                    formData.append('OldPrice', oldprice);
+                    for (var pair of formData.entries()) {
+                        console.log(pair[0] + ', ' + pair[1]);
+                    }
+                    $.ajax({
+                        url: '/Management/EditProduct/',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (result) {
+                            if (result.success) {
+                                toastr.success(result.message);
 
-                    imgbody.empty();
-                    imgprebody.empty();
 
-                    var i = 1;
-                    result.files.forEach(function (product) {
-                        var row = "<div class='p-2' imgid='" + product.id + "'> <img src='" + product.image_path + "' class='img-thumbnail'/><a class='remove-img-btn btn' onclick='removeImgDatabase("+product.id+")'>x</a></div>"
-                        imgbody.append(row);
-                        i++;
+                                if (result.skippedFiles.length != 0) {
+                                    toastr.error("Aynı ada sahip bazı resimler zaten kayıtlı: " + result.skippedFiles);
+                                }
+
+                            } else {
+                                toastr.error(result.message);
+
+                            }
+
+                            var imgbody = $("#image-containerr");
+                            var imgprebody = $("#image-container");
+
+                            imgbody.empty();
+                            imgprebody.empty();
+
+                            var i = 1;
+                            result.files.forEach(function (product) {
+                                var row = "<div class='p-2 position-relative col-auto' imgid='" + product.id + "'>" +
+                                    "<img src='" + product.image_path + "' class='img-thumbnail'/>" +
+                                    "<button type='button' class='remove-img-btn' onclick='removeImgDatabase(" + product.id + ")'>" +
+                                    "<i class='mdi mdi-trash-can icon'></i>" +
+                                    "</button>" +
+                                    "</div>";
+
+                                imgbody.append(row);
+                                i++;
+                            });
+
+                            $(".input-div").empty();
+                            var input = "<input type='file' class='form-control' id='productImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>";
+                            $(".input-div").append(input);
+
+                            selectedFiles = [];
+
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('AJAX Error: ' + error);
+                            toastr.error('Bir hata oluştu: ' + error);
+                            selectedFiles = [];
+
+                        }
                     });
-
-                    $(".input-div").empty();
-                    var input = "<input type='file' class='form-control' id='productImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>";
-                    $(".input-div").append(input);
-
-
-
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX Error: ' + error);
-                    toastr.error('Bir hata oluştu: ' + error);
                 }
-            });
+            } else {
+
+                formData.append('Name', name);
+                formData.append('Id', id);
+                formData.append('SubCategory', subCategory);
+                formData.append('Description', description);
+
+                formData.append('Quantity', quantity);
+                formData.append('Price', price);
+                formData.append('OldPrice', oldprice);
+
+                formData.append('SubSubCategory', subsubCategory);
+
+                if (subsubCategory !== null && subsubCategory !== undefined && subsubCategory !== '') {
+                    //formData.append('SubCategory', subsubCategory);
+                    formData.append('CategoryType', 2);
+                } else {
+                    console.log("elseee");
+                    //formData.append('SubCategory', subCategory);
+                    formData.append('CategoryType', 1);
+                }
+
+
+
+                // AJAX isteği gönder
+                $.ajax({
+                    url: '/Management/EditProduct/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message);
+                        } else {
+                            toastr.error(result.message);
+
+                        }
+
+
+                        var imgbody = $("#image-containerr");
+                        var imgprebody = $("#image-container");
+
+                        imgbody.empty();
+                        imgprebody.empty();
+
+                        var i = 1;
+                        result.files.forEach(function (product) {
+                            var row = "<div class='p-2' imgid='" + product.id + "'> <img src='" + product.image_path + "' class='img-thumbnail'/><a class='remove-img-btn btn' onclick='removeImgDatabase(" + product.id + ")'>x</a></div>"
+                            imgbody.append(row);
+                            i++;
+                        });
+
+                        $(".input-div").empty();
+                        var input = "<input type='file' class='form-control' id='productImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>";
+                        $(".input-div").append(input);
+
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error: ' + error);
+                        toastr.error('Bir hata oluştu: ' + error);
+                    }
+                });
+            }
+
+
         }
     });
 
@@ -497,37 +708,6 @@ function updateFileInput() {
     }
 });
 
-    $('#category').on('change', function () {
-        var selectedOption = $(this).find('option:selected');
-        var categoryId = selectedOption.attr('pid');
-        if (categoryId == "add") {
-            window.location = "/Management/AddCategory";
-        }
-        else if (categoryId) {
-            $.ajax({
-                url: '/Management/GetSubCategories', // Metodun URL'si
-                type: 'GET',
-                data: { categoryId: categoryId },
-                success: function (data) {
-                    var subCategorySelect = $('#subCategory');
-                    subCategorySelect.empty();
-                    subCategorySelect.append('<option value="">Alt Kategori Seçin</option>');
 
-                    $.each(data, function (index, subCategory) {
-                        subCategorySelect.append('<option value="' + subCategory.id + '">' + subCategory.name + '</option>');
-                    });
-                    $('#subCategory').prop("disabled", false);
-
-                },
-                error: function () {
-                    alert('Alt kategoriler yüklenirken bir hata oluştu.');
-                }
-            });
-        } else {
-            $('#subCategory').empty();
-            $('#subCategory').append('<option value="">Alt Kategori Seçin</option>');
-
-        }
-    });
 
 </script>

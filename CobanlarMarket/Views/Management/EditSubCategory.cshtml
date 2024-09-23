@@ -29,14 +29,12 @@
                         @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
                         @Html.EditorFor(model => Model.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subname", @class = "form-control", placeholder = "Alt Kategori İsmi", id = "subname" } })
                         @Html.ValidationMessageFor(model => Model.name, "")
-                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="subdescription">Alt Kategori Açıklaması *</label>
+                        <label for="subdescription">Alt Kategori Açıklaması</label>
                         @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
-                        @Html.EditorFor(model => Model.name, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subdescription" } })
-                        @Html.ValidationMessageFor(model => Model.name, "")
-                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                        @Html.EditorFor(model => Model.description, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subdescription" } })
+                        @Html.ValidationMessageFor(model => Model.description, "")
                     </div>
                 </div>
 
@@ -55,6 +53,11 @@
 
 
 <script>
+
+
+
+
+
     $(document).ready(function () {
         $.ajax({
             url: '/Management/GetCategories/',
@@ -73,6 +76,23 @@
                             pid: item.id
                         }));
                     });
+
+
+     var parentId = '@(Model?.parent_id)';
+
+     // Razor değişkenlerini doğru şekilde JavaScript değişkenlerine dönüştürün
+     if (parentId === 'null') parentId = null;
+
+             $('#category option').each(function () {
+                 
+                     if ($(this).attr('pid') === parentId) {
+                         $(this).prop('selected', true);
+                         console.log($(this).attr('pid'));
+                     }
+                 
+             });
+
+
                 }
             },
             error: function (xhr, status, error) {
@@ -84,12 +104,28 @@
 
     $('#subsubmitbtn').on("click", function (e) {
         e.preventDefault();
-        var name = $('#subname').val();
-        var description = $('#subdescription').val();
+
+
+        var category = $('#category').find('option:selected').val();
+
+
+
+        if (!category || category === "Kategori Seçiniz") {
+            toastr.error("Lütfen bir kategori seçiniz.");
+            return;
+        }
+
+
+        var name = $('#subname').val() || "";
+        var description = $('#subdescription').val() || "";
         var selectedOption = $("#category").find('option:selected');
         var categoryId = parseInt(selectedOption.attr('pid'));
         var id =@Model.id;
         console.log('Selected Category ID:', categoryId);
+
+
+
+
 
         if ($('#subCategoryForm').valid()) {
             $.ajax({
@@ -98,6 +134,15 @@
                 data: {Id:id, ParentId: categoryId, Name: name, Description: description },
                 success: function (result) {
                     toastr.success('Alt Kategori Başarıyla Düzenlendi', 'Başarılı');
+
+
+                    if (result.success) {
+
+                        toastr.success('Alt Kategori Başarıyla Düzenlendi', 'Başarılı');
+                    } else {
+                        toastr.error(result.message);
+
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.error(xhr.responseText);

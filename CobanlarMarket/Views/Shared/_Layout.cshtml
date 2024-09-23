@@ -205,8 +205,8 @@
                                     </button>
 
                                     @*<a href="/Home/Whishlist">
-                                        <i class="bi bi-heart"></i>
-                                    </a>*@
+                                            <i class="bi bi-heart"></i>
+                                        </a>*@
 
                                     <div class="header-cart">
                                         <a class="header-cart-link" href="~/Home/Cart">
@@ -233,8 +233,8 @@
                                         <i class="bi bi-search"></i>
                                     </button>
                                     @*<a onclick="toastr.error('Önce Giriş Yapmalısınız.');">
-                                        <i class="bi bi-heart"></i>
-                                    </a>*@
+                                            <i class="bi bi-heart"></i>
+                                        </a>*@
                                     <div class="header-cart">
                                         <a class="header-cart-link" href="~/Home/Cart">
                                             <i class="bi bi-bag"></i><span class="header-cart-count">0</span>
@@ -469,7 +469,7 @@
                 success: function (categories) {
                     var categoryList = $('#categoryList');
                     categoryList.empty(); // Önce mevcut listeyi temizle
-                    categoryList.append('<li  categoryid="-1" categorytype="0"><a href="/Home/Shop#category--1" onclick="filterCategory(-1, 0, this)">Tüm Kategoriler</a></li>');
+                    categoryList.append('<li categoryid="-1" categorytype="0"><a href="/Home/Shop#category--1" onclick="filterCategory(-1, 0, this)">Tüm Kategoriler</a></li>');
 
                     categories.forEach(function (category) {
 
@@ -499,6 +499,32 @@
                                             .attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)');
                                         subListItem.append(subLink);
                                         subCategoryList.append(subListItem);
+
+                                        // Alt-alt kategorileri getir ve ekle
+                                        $.ajax({
+                                            url: '/Home/GetSubSubCategories',
+                                            type: 'GET',
+                                            data: { subcategoryId: subCategory.id },
+                                            success: function (subsubCategories) {
+                                                if (subsubCategories.length > 0) {
+                                                    var subsubCategoryList = $('<ul></ul>');
+                                                    subsubCategories.forEach(function (subsCategory) {
+                                                        var subsubListItem = $('<li></li>')
+                                                            .css('padding-left', '16px')
+                                                            .attr('categoryid', subsCategory.id)
+                                                            .attr('categorytype', 2);
+                                                        var subsubLink = $('<a></a>')
+                                                            .attr('href', '/Home/Shop#subsubcategory-' + subsCategory.id)
+                                                            .text(subsCategory.name)
+                                                            .attr('onclick', 'filterCategory(' + subsCategory.id + ', 2, this)');
+                                                        subsubListItem.append(subsubLink);
+                                                        subsubCategoryList.append(subsubListItem);
+                                                    });
+                                                    subListItem.append(subsubCategoryList); // Alt-alt kategoriyi doğru yere ekle
+                                                }
+                                            }
+                                        });
+
                                     });
                                     listItem.append(subCategoryList);
                                 }
@@ -516,6 +542,7 @@
                 }
             });
         });
+
 
         $(document).ready(function () {
             $("#btn-menu").click(function (event) {

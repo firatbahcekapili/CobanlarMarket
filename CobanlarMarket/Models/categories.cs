@@ -11,28 +11,26 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class categories
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public categories()
         {
-            this.sub_categories = new HashSet<sub_categories>();
             this.coupon_categories = new HashSet<coupon_categories>();
+            this.sub_categories = new HashSet<sub_categories>();
         }
-
+    
         public int id { get; set; }
-        [Required]
         public string name { get; set; }
         public string cover { get; set; }
         public string description { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> deleted_at { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<sub_categories> sub_categories { get; set; }
+    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<coupon_categories> coupon_categories { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<sub_categories> sub_categories { get; set; }
     }
 }

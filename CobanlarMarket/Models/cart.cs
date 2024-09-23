@@ -27,6 +27,7 @@ namespace CobanlarMarket.Models
         public Nullable<System.DateTime> updated_at { get; set; }
         public Nullable<int> coupon_id { get; set; }
         public string discount_value { get; set; }
+        public Nullable<bool> isCargoFree { get; set; }
     
         public virtual coupons coupons { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

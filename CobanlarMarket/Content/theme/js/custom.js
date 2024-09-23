@@ -371,7 +371,7 @@ $(document).ready(function () {
     var productsTable = $("#productsTable");
     if (productsTable.length != 0) {
         productsTable.DataTable({
-            a
+
             info: false,
             lengthChange: false,
             responsive: true,
@@ -390,7 +390,7 @@ $(document).ready(function () {
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
             },
         });
     }
@@ -412,7 +412,7 @@ $(document).ready(function () {
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
             },
         });
     }
@@ -425,16 +425,16 @@ $(document).ready(function () {
 
 
             scrollX: true,
-            order: [[1, "asc"]],
+            order: [[0, "asc"]],
             columnDefs: [
                 {
-                    orderable: false,
+                    orderable: true,
                     targets: [, 0, 4, -1],
                 },
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
             },
         });
     }
@@ -445,16 +445,36 @@ $(document).ready(function () {
             lengthChange: false,
             responsive: true,
             scrollX: true,
-            order: [[1, "asc"]],
+            order: [[0, "asc"]],
             columnDefs: [
                 {
-                    orderable: false,
+                    orderable: true,
                     targets: [, 0, 4, -1],
                 },
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
+            },
+        });
+    }
+    var subCategoryTable = $("#subsubCategoryTable");
+    if (subCategoryTable.length != 0) {
+        subCategoryTable.DataTable({
+            info: false,
+            lengthChange: false,
+            responsive: true,
+            scrollX: true,
+            order: [[0, "asc"]],
+            columnDefs: [
+                {
+                    orderable: true,
+                    targets: [, 0, 4, -1],
+                },
+            ],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Ara...",
             },
         });
     }
@@ -475,41 +495,14 @@ $(document).ready(function () {
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
             },
         });
     }
 
 
 
-    var orderTable = $("#orderTable");
-    if (orderTable.length != 0) {
-        orderTable.DataTable({
-            order: [
-                [2, 'desc']
-            ], rowGroup: {
-                dataSrc: 2
-            },
-            responsive: true,
-
-            info: false,
-
-            lengthChange: false,
-
-            scrollX: true,
-
-            columnDefs: [
-                {
-                    orderable: false,
-                    targets: [, 0, 4, -1],
-                },
-            ],
-            language: {
-                search: "_INPUT_",
-                searchPlaceholder: "Search...",
-            },
-        });
-    }
+   
     var couponTable = $("#couponTable");
     if (couponTable.length != 0) {
         couponTable.DataTable({
@@ -532,7 +525,7 @@ $(document).ready(function () {
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
             },
         });
     }
@@ -558,7 +551,7 @@ $(document).ready(function () {
             ],
             language: {
                 search: "_INPUT_",
-                searchPlaceholder: "Search...",
+                searchPlaceholder: "Ara...",
             },
         });
     }

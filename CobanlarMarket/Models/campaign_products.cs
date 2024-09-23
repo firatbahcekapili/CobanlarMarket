@@ -18,7 +18,7 @@ namespace CobanlarMarket.Models
         public int product_id { get; set; }
         public int camapign_id { get; set; }
     
-        public virtual products products { get; set; }
         public virtual campaigns campaigns { get; set; }
+        public virtual products products { get; set; }
     }
 }

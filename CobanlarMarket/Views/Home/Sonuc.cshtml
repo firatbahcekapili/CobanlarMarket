@@ -1,0 +1,21 @@
+﻿
+@{
+    ViewBag.Title = "Sonuc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Sonuc</h2>
+
+
+@if (ViewBag.PaymentStatus == "SUCCESS")
+{
+    <p>Ödemeniz başarıyla alınmıştır!</p>
+    <p>Toplam Ödenen Tutar: @ViewBag.PaidPrice</p>
+    <p>Ödeme ID: @ViewBag.PaymentId</p>
+    <p>Sepet ID: @ViewBag.BasketId</p>
+    <p>Taksit Sayısı: @ViewBag.Installment</p>
+}
+else
+{
+    <p>Ödeme sırasında bir hata oluştu. Lütfen tekrar deneyin.</p>
+}

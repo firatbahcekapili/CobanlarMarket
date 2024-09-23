@@ -8,12 +8,15 @@
 <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
 
 <div class=" mt-5 ml-5 mr-5">
-    <h2>Kupon Ekle</h2>
 
     <form id="couponForm">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center bg-white mb-5">
+            <div class="col-12  pt-4 pb-4 pl-5  ">
+                <h3>Kupon Ekle</h3>
 
-            <div class="col-12 bg-white p-5">
+            </div>
+
+            <div class="col-12  p-5">
 
 
                 @{
@@ -84,7 +87,7 @@
                         <div class="form-group col-md-6">
                             <label for="enddate">Bitiş Tarihi</label>
 
-                            @Html.EditorFor(model => m.EndDate, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate" } })
+                            @Html.EditorFor(model => m.EndDate, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate", disabled = "disabled" } })
                             @Html.ValidationMessageFor(model => m.EndDate, "", new { @class = "text-danger" })
 
                         </div>
@@ -92,43 +95,86 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Kuponun Geçerli Olacağı Kategorileri Seçin</label>
-                            <div id="categories" style="max-height:300px;overflow:auto;">
-                                @foreach (var category in Model.categories)
-                                {
-                                    if (Model.sub_categories.Any(x => x.parent_id == category.id))
-                                    {
-                                        <div class="category-group">
-                                            <div class="pretty p-default  p-curve p-smooth">
-                                                <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" />
-                                                <div class="state p-primary">
-                                                    <label>@category.name</label>
-                                                </div>
-                                            </div>
+                            @*<div id="categories" style="max-height:300px;overflow:auto;">
+            @foreach (var category in Model.categories)
+            {
+                if (Model.sub_categories.Any(x => x.parent_id == category.id))
+                {
+                    <div class="category-group">
+                        <div class="pretty p-default  p-curve p-smooth">
+                            <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" />
+                            <div class="state p-primary">
+                                <label>@category.name</label>
+                            </div>
+                        </div>
 
-                                            <div class="subcategories">
-                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
-                                                {
-                                                    <div class="pretty p-default p-curve p-smooth">
-                                                        <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" />
-                                                        <div class="state p-primary">
-                                                            <label>@subcategory.name</label>
-                                                        </div>
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
-                                    }
-                                    else
+                        <div class="subcategories">
+                            @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
+                            {
+                                <div class="pretty p-default p-curve p-smooth">
+                                    <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" />
+                                    <div class="state p-primary">
+                                        <label>@subcategory.name</label>
+                                    </div>
+                                </div>
+
+                                <div class="subsubcategories">
+                                    @foreach (var subsubcategory in Model.sub_subcategories.Where(x => x.parent_sub_category_id == subcategory.id))
                                     {
                                         <div class="pretty p-default p-curve p-smooth">
-                                            <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" />
+                                            <input type="checkbox" class="subsubcategory-checkbox" data-parent-subcategory-id="@subcategory.id" id="@subsubcategory.id" />
                                             <div class="state p-primary">
-                                                <label>@category.name</label>
+                                                <label>@subsubcategory.name</label>
                                             </div>
                                         </div>
                                     }
-                                }
-                            </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="pretty p-default p-curve p-smooth">
+                        <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" />
+                        <div class="state p-primary">
+                            <label>@category.name</label>
+                        </div>
+                    </div>
+                }
+            }
+        </div>*@
+
+                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
+                        
+                                <div id="categoryTree" style="max-height:300px;overflow:auto;">
+                                    <ul>
+                                        @foreach (var category in Model.categories)
+                                        {
+                                            <li id="c-@category.id">
+                                                @category.name
+                                            <ul>
+                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
+                                                {
+                                                    <li id="sc-@subcategory.id">
+                                                        @subcategory.name
+                                                    <ul>
+                                                        @foreach (var subsubCategory in Model.sub_subcategories.Where(ss => ss.parent_sub_category_id == subcategory.id))
+                                                        {
+                                                            <li id="ssc-@subsubCategory.id">@subsubCategory.name</li>
+                                                        }
+                                                    </ul>
+                                                </li>
+                                            }
+                                            </ul>
+                                        </li>
+                                    }
+                                    </ul>
+                                </div>
+                           
+
                         </div>
                         <div class="form-group col-md-6">
                             <label>Kuponun Geçerli Olacağı Ürünleri Seçin</label>
@@ -160,50 +206,137 @@
     </form>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-
-        categoryCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                var categoryId = this.getAttribute('data-category-id');
-                var subcategoryCheckboxes = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + categoryId + '"]');
-                subcategoryCheckboxes.forEach(function (subCheckbox) {
-                    subCheckbox.checked = checkbox.checked;
-                    subCheckbox.disabled = checkbox.checked;
-                });
-            });
-        });
-
-        var subcategoryCheckboxes = document.querySelectorAll('.subcategory-checkbox');
-        subcategoryCheckboxes.forEach(function (checkbox) {
-            checkbox.addEventListener('change', function () {
-                var parentId = this.getAttribute('data-parent-id');
-                var parentCheckbox = document.querySelector('.category-checkbox[data-category-id="' + parentId + '"]');
-                var siblingSubcategoryCheckboxes = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + parentId + '"]');
-
-                var allChecked = Array.from(siblingSubcategoryCheckboxes).every(function (subCheckbox) {
-                    return subCheckbox.checked;
-                });
-
-                if (allChecked) {
-                    parentCheckbox.checked = true;
-                    parentCheckbox.indeterminate = false;
-                    siblingSubcategoryCheckboxes.forEach(function (subCheckbox) {
-                        subCheckbox.disabled = true;
-                    });
-                } else {
-                    parentCheckbox.checked = false;
-                    parentCheckbox.indeterminate = true;
-                    siblingSubcategoryCheckboxes.forEach(function (subCheckbox) {
-                        subCheckbox.disabled = false;
-                    });
+    $(document).ready(function () {
+        $('#categoryTree').jstree({
+            "plugins": ["checkbox"],
+            "core": {
+                "themes": {
+                    "responsive": false
                 }
-            });
+            },
+            "checkbox": {
+                "three_state": false,
+                "cascade": "up+down"
+            }
+        });
+    });
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var startDateInput = document.getElementById("startdate");
+        var endDateInput = document.getElementById("enddate");
+
+        // Başlangıç tarihini bugünden başlat
+        var today = new Date().toISOString().split("T")[0];
+        startDateInput.setAttribute("min", today);
+        endDateInput.setAttribute("min", today);
+
+
+        // Başlangıç tarihi seçildiğinde bitiş tarihini aktif hale getir
+        startDateInput.addEventListener("change", function () {
+            endDateInput.disabled = false;
+            endDateInput.setAttribute("min", startDateInput.value);
+
+            if (endDateInput.value < startDateInput.value && endDateInput.value != "") {
+                alert("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+                endDateInput.value = "";
+            }
+
         });
 
-       
+        // Bitiş tarihini başlangıç tarihinden önce seçilemez yap
+        endDateInput.addEventListener("change", function () {
+            if (endDateInput.value < startDateInput.value) {
+                alert("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+                endDateInput.value = "";
+            }
+        });
+    });
 
+    document.addEventListener('DOMContentLoaded', function () {
+        //var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+        //var subcategoryCheckboxes = document.querySelectorAll('.subcategory-checkbox');
+        //var subsubcategoryCheckboxes = document.querySelectorAll('.subsubcategory-checkbox');
 
+        //// Category checkbox event listener
+        //categoryCheckboxes.forEach(function (categoryCheckbox) {
+        //    categoryCheckbox.addEventListener('change', function () {
+        //        var categoryId = this.getAttribute('data-category-id');
+        //        var relatedSubcategories = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + categoryId + '"]');
+        //        var relatedSubsubcategories = document.querySelectorAll('.subsubcategory-checkbox[data-category-id="' + categoryId + '"]');
+
+        //        relatedSubcategories.forEach(function (subcategoryCheckbox) {
+        //            subcategoryCheckbox.checked = categoryCheckbox.checked;
+        //            var subcategoryId = subcategoryCheckbox.getAttribute('id');
+        //            var relatedSubsubcategories = document.querySelectorAll('.subsubcategory-checkbox[data-parent-subcategory-id="' + subcategoryId + '"]');
+        //            relatedSubsubcategories.forEach(function (subsubCheckbox) {
+        //                subsubCheckbox.checked = categoryCheckbox.checked;
+        //            });
+        //        });
+        //    });
+        //});
+
+        //// Subcategory checkbox event listener
+        //subcategoryCheckboxes.forEach(function (subcategoryCheckbox) {
+        //    subcategoryCheckbox.addEventListener('change', function () {
+        //        var parentCategoryId = this.getAttribute('data-parent-id');
+        //        var parentCategoryCheckbox = document.querySelector('.category-checkbox[data-category-id="' + parentCategoryId + '"]');
+        //        var relatedSubsubcategories = document.querySelectorAll('.subsubcategory-checkbox[data-parent-subcategory-id="' + this.id + '"]');
+
+        //        // Check/uncheck sub-subcategories when subcategory is toggled
+        //        relatedSubsubcategories.forEach(function (subsubCheckbox) {
+        //            subsubCheckbox.checked = subcategoryCheckbox.checked;
+        //        });
+
+        //        // Check if all subcategories are checked
+        //        var siblingSubcategories = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + parentCategoryId + '"]');
+        //        var allSubcategoriesChecked = Array.from(siblingSubcategories).every(function (subCheckbox) {
+        //            return subCheckbox.checked;
+        //        });
+
+        //        if (allSubcategoriesChecked) {
+        //            parentCategoryCheckbox.checked = true;
+        //        } else {
+        //            parentCategoryCheckbox.checked = false;
+        //        }
+        //    });
+        //});
+
+        //// Sub-subcategory checkbox event listener
+        //subsubcategoryCheckboxes.forEach(function (subsubCheckbox) {
+        //    subsubCheckbox.addEventListener('change', function () {
+        //        var parentSubcategoryId = this.getAttribute('data-parent-subcategory-id');
+        //        var parentSubcategoryCheckbox = document.querySelector('.subcategory-checkbox[id="' + parentSubcategoryId + '"]');
+        //        var siblingSubsubcategories = document.querySelectorAll('.subsubcategory-checkbox[data-parent-subcategory-id="' + parentSubcategoryId + '"]');
+
+        //        // Check if all sub-subcategories are checked
+        //        var allSubsubcategoriesChecked = Array.from(siblingSubsubcategories).every(function (subsubCheckbox) {
+        //            return subsubCheckbox.checked;
+        //        });
+
+        //        if (allSubsubcategoriesChecked) {
+        //            parentSubcategoryCheckbox.checked = true;
+        //        } else {
+        //            parentSubcategoryCheckbox.checked = false;
+        //        }
+
+        //        // Check if all subcategories are checked
+        //        var parentCategoryId = parentSubcategoryCheckbox.getAttribute('data-parent-id');
+        //        var siblingSubcategories = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + parentCategoryId + '"]');
+        //        var allSubcategoriesChecked = Array.from(siblingSubcategories).every(function (subCheckbox) {
+        //            return subCheckbox.checked;
+        //        });
+
+        //        var parentCategoryCheckbox = document.querySelector('.category-checkbox[data-category-id="' + parentCategoryId + '"]');
+        //        if (allSubcategoriesChecked) {
+        //            parentCategoryCheckbox.checked = true;
+        //        } else {
+        //            parentCategoryCheckbox.checked = false;
+        //        }
+        //    });
+        //});
 
         var element = document.getElementById('products');
         var products = new Choices('#products', {
@@ -215,13 +348,13 @@
 
         $('#submitbtn').on("click", function (e) {
             e.preventDefault();
-            var code = $('#code').val();
-            var dtype = $('#dtype').find('option:selected').val();
-            var dvalue = $('#dvalue').val();
-            var minprice = $('#minprice').val();
-            var maxprice = $('#maxprice').val();
-            var startdate = $('#startdate').val();
-            var enddate = $('#enddate').val();
+            var code = $('#code').val() || "";
+            var dtype = $('#dtype').find('option:selected').val() || "";
+            var dvalue = $('#dvalue').val() || "";
+            var minprice = $('#minprice').val() || "";
+            var maxprice = $('#maxprice').val() || "";
+            var startdate = $('#startdate').val() || "";
+            var enddate = $('#enddate').val() || "";
 
             var formData = new FormData();
             formData.append("Code", code);
@@ -233,28 +366,83 @@
             formData.append("EndDate", enddate);
 
             
-          
+            var selectedNodes = $('#categoryTree').jstree('get_checked', true);
+            var selectedIds = [];
+
+            // Seçili düğümlerin ID'lerini ve parent'larını almak için bir dizi
+            var parentIds = selectedNodes.map(function (node) {
+                return node.id; // Her düğümün ID'sini al
+            });
+
+            // Seçili ID'leri al
+            selectedNodes.forEach(function (node) {
+                selectedIds.push(node.id);
+            });
+
+            // Parent ID'si dizisinde olan her düğüm için child node'ları sil
+            selectedIds = selectedIds.filter(function (id) {
+                var node = $('#categoryTree').jstree('get_node', id);
+                // Eğer node'un parent'ı parentIds dizisinde ise, o node'u sil
+                return !parentIds.includes(node.parent);
+            });
+
+            // Yeni diziyi gönderebilirsiniz
+            console.log("Filtered selected IDs:", selectedIds);
                
-                var selectedCategories = [];
-                var selectedSubcategories = [];
+            //var selectedCategories = [];
+            //var selectedSubcategories = [];
+            //var selectedSubsubcategories = [];
 
-                categoryCheckboxes.forEach(function (checkbox) {
-                    if (checkbox.checked) {
-                        selectedCategories.push(checkbox.id);
-                    }
-                });
+            //// Tüm kategoriler üzerinde gezin
+            //categoryCheckboxes.forEach(function (categoryCheckbox) {
+            //    var categoryId = categoryCheckbox.id;
 
-                subcategoryCheckboxes.forEach(function (checkbox) {
-                    if (checkbox.checked && !checkbox.disabled) {
-                        selectedSubcategories.push(checkbox.id);
-                    }
-                });
+            //    if (categoryCheckbox.checked) {
+            //        var siblingSubcategories = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + categoryId + '"]');
+            //        var allSubcategoriesChecked = Array.from(siblingSubcategories).every(function (subCheckbox) {
+            //            return subCheckbox.checked;
+            //        });
 
-                console.log('Selected Categories:', selectedCategories);
-                console.log('Selected Subcategories:', selectedSubcategories);
+            //        if (allSubcategoriesChecked) {
+            //            // Eğer tüm alt kategoriler seçiliyse sadece kategoriyi gönder
+            //            selectedCategories.push(categoryId);
+            //        } else {
+            //            // Eğer tüm alt kategoriler seçili değilse, her bir alt kategori için kontrol et
+            //            siblingSubcategories.forEach(function (subCheckbox) {
+            //                if (subCheckbox.checked) {
+            //                    var subcategoryId = subCheckbox.id;
+            //                    var siblingSubsubcategories = document.querySelectorAll('.subsubcategory-checkbox[data-parent-id="' + subcategoryId + '"]');
+            //                    var allSubsubcategoriesChecked = Array.from(siblingSubsubcategories).every(function (subsubCheckbox) {
+            //                        return subsubCheckbox.checked;
+            //                    });
 
-            formData.append("Categories", selectedCategories);
-            formData.append("SubCategories", selectedSubcategories);
+            //                    if (allSubsubcategoriesChecked) {
+            //                        // Eğer tüm alt alt kategoriler seçiliyse, sadece alt kategoriyi gönder
+            //                        selectedSubcategories.push(subcategoryId);
+            //                    } else {
+            //                        // Eğer tüm alt alt kategoriler seçili değilse, sadece seçilen alt alt kategorileri gönder
+            //                        siblingSubsubcategories.forEach(function (subsubCheckbox) {
+            //                            if (subsubCheckbox.checked) {
+            //                                selectedSubsubcategories.push(subsubCheckbox.id);
+            //                            }
+            //                        });
+
+            //                        // Ayrıca seçili olan alt kategoriyi de gönder
+            //                        selectedSubcategories.push(subcategoryId);
+            //                    }
+            //                }
+            //            });
+            //        }
+            //    }
+            //});
+
+
+            //    console.log('Selected Categories:', selectedCategories);
+            //console.log('Selected Subcategories:', selectedSubcategories);
+            //console.log('Selected Subsubcategories:', selectedSubsubcategories);
+
+
+            formData.append("CategoryIds", selectedIds.join(','));
 
             var selectedProducts = products.getValue(true);
             formData.append("Products", selectedProducts);
@@ -275,7 +463,7 @@
 
                             document.getElementById("couponForm").reset();
 
-
+                            $('#categoryTree').jstree().deselect_all(true);
 
 
                         } else {

@@ -1,7 +1,7 @@
 ﻿@model List<CobanlarMarket.Models.products>
 @foreach (var item in Model)
 {
-    <a href="#" class="result-item">
+    <a href="/Home/Product/@item.id" class="result-item">
         <img src="@item.cover"
              class="search-thumb"
              alt="" />

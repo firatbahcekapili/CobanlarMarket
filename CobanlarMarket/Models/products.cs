@@ -11,48 +11,48 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class products
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public products()
         {
+            this.campaign_products = new HashSet<campaign_products>();
             this.cart_item = new HashSet<cart_item>();
+            this.coupon_products = new HashSet<coupon_products>();
             this.order_item = new HashSet<order_item>();
             this.product_images = new HashSet<product_images>();
             this.products_skus = new HashSet<products_skus>();
             this.wishlist = new HashSet<wishlist>();
-            this.coupon_products = new HashSet<coupon_products>();
-            this.campaign_products = new HashSet<campaign_products>();
         }
-
+    
         public int id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
         public string summary { get; set; }
         public string cover { get; set; }
-        [Required]
-
-        public Nullable<int> category_id { get; set; }
+        public Nullable<int> subcategory_id { get; set; }
+        public string sub_subcategory_id { get; set; }
+        public Nullable<int> category_type { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> deleted_at { get; set; }
         public Nullable<bool> status { get; set; }
-
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<campaign_products> campaign_products { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<cart_item> cart_item { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<coupon_products> coupon_products { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order_item> order_item { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<product_images> product_images { get; set; }
-        public virtual sub_categories sub_categories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<products_skus> products_skus { get; set; }
+        public virtual sub_categories sub_categories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<wishlist> wishlist { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<coupon_products> coupon_products { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<campaign_products> campaign_products { get; set; }
+        public virtual sub_subcategories sub_subcategories { get; set; }
     }
 }

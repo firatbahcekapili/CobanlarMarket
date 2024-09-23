@@ -9,12 +9,15 @@
 <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
 
 <div class=" mt-5 ml-5 mr-5">
-    <h2>Kupon Düzenle</h2>
-
+  
     <form id="couponForm">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center  bg-white mb-5">
+            <div class="col-12  pt-4 pb-4 pl-5  ">
+                <h3>Kupon Düzenle</h3>
 
-            <div class="col-12 bg-white p-5">
+            </div>
+
+            <div class="col-12 p-5">
 
 
 
@@ -36,7 +39,7 @@
                             @Html.DropDownListFor(model => model.coupons.FirstOrDefault().DiscountType, (IEnumerable<SelectListItem>)ViewBag.DiscountTypes, new { name = "dtype", @class = "form-control", placeholder = "İndirim Türü Seçiniz", id = "dtype" })
                             @Html.ValidationMessageFor(model => model.coupons.FirstOrDefault().DiscountType, "", new { @class = "text-danger" })
 
-                       
+
                         </div>
 
                         <div class="form-group col-md-6">
@@ -77,20 +80,20 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="startdate">Başlangıç Tarihi *</label>
+                            <label for="StartDate">Başlangıç Tarihi *</label>
 
 
 
-                            <input type="date" id="startdate" name="startdate" class="form-control" placeholder="Başlangıç Tarihi">
+                            <input type="date" id="StartDate" name="StartDate" class="form-control" placeholder="Başlangıç Tarihi">
 
                             @Html.ValidationMessageFor(model => model.coupons.FirstOrDefault().StartDate, "", new { @class = "text-danger" })
 
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label for="enddate">Bitiş Tarihi *</label>
+                            <label for="EndDate">Bitiş Tarihi *</label>
 
-                            <input type="date" id="enddate" name="enddate" class="form-control" placeholder="Bitiş Tarihi">
+                            <input type="date" id="EndDate" name="EndDate" class="form-control" placeholder="Bitiş Tarihi">
 
                             @Html.ValidationMessageFor(model => model.coupons.FirstOrDefault().EndDate, "", new { @class = "text-danger" })
 
@@ -99,14 +102,47 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Kuponun Geçerli Olacağı Kategorileri Seçin</label>
-                            <div id="categories" style="max-height:300px;overflow:auto;">
+
+
+
+
+                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
+
+                            <div id="categoryTree" style="max-height:300px;overflow:auto;">
+                                <ul>
+                                    @foreach (var category in Model.categories)
+                                    {
+                                        <li id="c-@category.id"class=" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "selected" : "")">
+                                            @category.name
+                                            <ul>
+                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
+                                                {
+                                                    <li id="sc-@subcategory.id" class="@(subcategory.coupon_categories.Any(p => p.subcategory_id == subcategory.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "selected" : "")">
+                                                        @subcategory.name
+                                                        <ul>
+                                                            @foreach (var subsubCategory in Model.sub_subcategories.Where(ss => ss.parent_sub_category_id == subcategory.id))
+                                                            {
+                                                                <li id="ssc-@subsubCategory.id" class=" @(subsubCategory.coupon_categories.Any(p => p.sub_subcategory_id == subsubCategory.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "selected" : "")">@subsubCategory.name</li>
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            @*<div id="categories" style="max-height:300px;overflow:auto;">
                                 @foreach (var category in Model.categories)
                                 {
                                     if (Model.sub_categories.Any(x => x.parent_id == category.id))
                                     {
                                         <div class="category-group">
                                             <div class="pretty p-default  p-curve p-smooth">
-                                                <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p=>p.category_id==category.id && p.coupon_id==Model.coupons.FirstOrDefault().Id) ? "checked":"")/>
+                                                <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") />
                                                 <div class="state p-primary">
                                                     <label>@category.name</label>
                                                 </div>
@@ -116,7 +152,7 @@
                                                 @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
                                                 {
                                                     <div class="pretty p-default p-curve p-smooth">
-                                                        <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" @(subcategory.coupon_categories.Any(p=>p.subcategory_id==subcategory.id && p.coupon_id==Model.coupons.FirstOrDefault().Id)?"checked":"") @(category.coupon_categories.Any(p=>p.category_id==category.id && p.coupon_id==Model.coupons.FirstOrDefault().Id) ? "checked disabled":"") />
+                                                        <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" @(subcategory.coupon_categories.Any(p => p.subcategory_id == subcategory.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked disabled" : "") />
                                                         <div class="state p-primary">
                                                             <label>@subcategory.name</label>
                                                         </div>
@@ -128,14 +164,14 @@
                                     else
                                     {
                                         <div class="pretty p-default p-curve p-smooth">
-                                            <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p=>p.category_id==category.id && p.coupon_id==Model.coupons.FirstOrDefault().Id)?"checked":"")  />
+                                            <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") />
                                             <div class="state p-primary">
                                                 <label>@category.name</label>
                                             </div>
                                         </div>
                                     }
                                 }
-                            </div>
+                            </div>*@
                         </div>
                         <div class="form-group col-md-6">
                             <label>Kuponun Geçerli Olacağı Ürünleri Seçin</label>
@@ -144,15 +180,15 @@
 
                                 @foreach (var item in Model.products)
                                 {
-                                    
-                                    <option value="@item.id" @(item.coupon_products.Any(p=>p.product_id==item.id && p.coupon_id==Model.coupons.FirstOrDefault().Id)?"selected":"")  >@item.name</option>
+
+                                    <option value="@item.id" @(item.coupon_products.Any(p => p.product_id == item.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "selected" : "")>@item.name</option>
                                 }
                             </select>
                         </div>
                     </div>
-                
 
-                    
+
+
                     <div class="form-group">
                         <div class="col-md-offset-2 ">
                             <a id="submitbtn" class="btn btn-outline-primary float-right">Kaydet</a>
@@ -169,6 +205,61 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
+    $(document).ready(function () {
+       
+        var selected = $('.selected');
+        console.log(selected);
+        $('#categoryTree').jstree({
+            'core': {
+                'data': $('#categoryTree').html() // HTML yapısını al
+                , "themes": {
+                    "icons": false
+                }
+
+            },
+            "plugins": ["checkbox","themes"]
+        }).on("ready.jstree", function () {
+            // Tüm selected düğümleri kontrol et
+            selected.each(function () {
+                var nodeId = $(this).attr('id'); // ID'yi al
+                if (nodeId) {
+                    $('#categoryTree').jstree().check_node(nodeId); 
+                    $('#categoryTree').jstree().open_node(nodeId); 
+
+                }
+            });
+        })
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var startDateInput = document.getElementById("StartDate");
+        var endDateInput = document.getElementById("EndDate");
+
+        // Başlangıç tarihini bugünden başlat
+        var today = new Date().toISOString().split("T")[0];
+        startDateInput.setAttribute("min", today);
+        endDateInput.setAttribute("min", today);
+
+
+        // Başlangıç tarihi seçildiğinde bitiş tarihini aktif hale getir
+        startDateInput.addEventListener("change", function () {
+            endDateInput.disabled = false;
+            endDateInput.setAttribute("min", startDateInput.value);
+            if (endDateInput.value < startDateInput.value && endDateInput.value != "") {
+                alert("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+                endDateInput.value = "";
+            }
+        });
+
+        // Bitiş tarihini başlangıç tarihinden önce seçilemez yap
+        endDateInput.addEventListener("change", function () {
+            if (endDateInput.value < startDateInput.value) {
+                alert("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+                endDateInput.value = "";
+            }
+        });
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
 
@@ -226,22 +317,22 @@
 
         // Moment.js kullanarak tarihi biçimlendirin
         var formattedStartdate = moment(startdateFromServer, "DD.MM.YYYY HH:mm:ss").format("YYYY-MM-DD");
-        document.getElementById('startdate').value = formattedStartdate;
+        document.getElementById('StartDate').value = formattedStartdate;
 
         var formattedEnddate = moment(enddateFromServer, "DD.MM.YYYY HH:mm:ss").format("YYYY-MM-DD");
-        document.getElementById('enddate').value = formattedEnddate;
+        document.getElementById('EndDate').value = formattedEnddate;
 
 
         $('#submitbtn').on("click", function (e) {
             e.preventDefault();
             var id='@Model.coupons.FirstOrDefault().Id';
-            var code = $('#code').val();
-            var dtype = $('#dtype').find('option:selected').val();
-            var dvalue = $('#dvalue').val();
-            var minprice = $('#minprice').val();
-            var maxprice = $('#maxprice').val();
-            var startdate = $('#startdate').val();
-            var enddate = $('#enddate').val();
+            var code = $('#code').val() ||"";
+            var dtype = $('#dtype').find('option:selected').val() || "";
+            var dvalue = $('#dvalue').val() || "";
+            var minprice = $('#minprice').val() || "";
+            var maxprice = $('#maxprice').val() || "";
+            var startdate = $('#StartDate').val() || "";
+            var enddate = $('#EndDate').val() || "";
 
             var formData = new FormData();
             formData.append("Id", parseInt(id));
@@ -255,27 +346,50 @@
 
 
 
-            var selectedCategories = [];
-            var selectedSubcategories = [];
+            var selectedNodes = $('#categoryTree').jstree('get_checked', true);
+            var selectedIds = [];
 
-            categoryCheckboxes.forEach(function (checkbox) {
-                if (checkbox.checked) {
-                    selectedCategories.push(checkbox.id);
-                }
+            // Seçili düğümlerin ID'lerini ve parent'larını almak için bir dizi
+            var parentIds = selectedNodes.map(function (node) {
+                return node.id; // Her düğümün ID'sini al
             });
 
-            subcategoryCheckboxes.forEach(function (checkbox) {
-                if (checkbox.checked && !checkbox.disabled) {
-                    selectedSubcategories.push(checkbox.id);
-                }
+            // Seçili ID'leri al
+            selectedNodes.forEach(function (node) {
+                selectedIds.push(node.id);
             });
 
-            console.log('Selected Categories:', selectedCategories);
-            console.log('Selected Subcategories:', selectedSubcategories);
+            // Parent ID'si dizisinde olan her düğüm için child node'ları sil
+            selectedIds = selectedIds.filter(function (id) {
+                var node = $('#categoryTree').jstree('get_node', id);
+                // Eğer node'un parent'ı parentIds dizisinde ise, o node'u sil
+                return !parentIds.includes(node.parent);
+            });
 
-            formData.append("Categories", selectedCategories);
-            formData.append("SubCategories", selectedSubcategories);
+            // Yeni diziyi gönderebilirsiniz
+            console.log("Filtered selected IDs:", selectedIds);
+            formData.append("CategoryIds", selectedIds.join(','));
 
+
+            //var selectedCategories = [];
+            //var selectedSubcategories = [];
+
+            //categoryCheckboxes.forEach(function (checkbox) {
+            //    if (checkbox.checked) {
+            //        selectedCategories.push(checkbox.id);
+            //    }
+            //});
+
+            //subcategoryCheckboxes.forEach(function (checkbox) {
+            //    if (checkbox.checked && !checkbox.disabled) {
+            //        selectedSubcategories.push(checkbox.id);
+            //    }
+            //});
+
+            //console.log('Selected Categories:', selectedCategories);
+            //console.log('Selected Subcategories:', selectedSubcategories);
+
+        
             var selectedProducts = products.getValue(true);
             formData.append("Products", selectedProducts);
 

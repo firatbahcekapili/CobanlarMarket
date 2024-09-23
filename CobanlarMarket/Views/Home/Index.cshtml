@@ -34,16 +34,16 @@
                     </div>
                 </section>
                 @*<ul>
-                        @foreach (var item in Model.carts.Where(x => x.user_id == 10))
-                        {
-                            var a = item.cart_item.ToList();
-                            foreach (var x in a)
-                            {
-                                <li> @Model.products.FirstOrDefault(s => s.id == x.product_id).name</li>
-                            }
+            @foreach (var item in Model.carts.Where(x => x.user_id == 10))
+            {
+                var a = item.cart_item.ToList();
+                foreach (var x in a)
+                {
+                    <li> @Model.products.FirstOrDefault(s => s.id == x.product_id).name</li>
+                }
 
-                        }
-                    </ul>*@
+            }
+        </ul>*@
 
 
 
@@ -53,7 +53,6 @@
                         <div class="section-title">
 
                             <h2>TÜM KATEGORİLER</h2>
-                            <p>yaz Koleksiyiyonleri karsinizda</p>
                         </div>
                         <div>
                             <ul class="category-list">
@@ -88,7 +87,6 @@
                     <div class="container">
                         <div class="section-title">
                             <h2>TÜM ÜRÜNLER</h2>
-                            <p>Yaz Koleksiyiyonleri karsinizda</p>
                         </div>
                         <div class="product-wrapper glide">
                             <div class="slick-slider" dir="ltr">
@@ -141,27 +139,27 @@
                                                                 <span>-%@(100-Math.Round((decimal)discount))</span>
                                                             </span>
                                                         }
-                                                    <div class="product-links">
-                                                        <a onclick="AddCart(@product.id)">
-                                                            <i class="bi bi-basket-fill"></i>
-                                                        </a>
-                                                        @*<a onclick="AddWishlist(@product.id)">
-                                                            <i class="bi bi-heart-fill"></i>
-                                                        </a>*@
-                                                        <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a>
-                                                        @{
-                                                            // Mevcut protokol ve domaini al
-                                                            string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
-                                                            // Ürün yolunu dinamik olarak oluştur
-                                                            string productPath = Url.Action("Product", "Home", new { id = product.id });
-                                                            // Domain ile yolu birleştir
-                                                            string fullUrl = $"{domain}{productPath}";
-                                                        }
-                                                        <a class="shareBtn" link="@fullUrl">
-                                                            <i class="bi bi-share-fill"></i>
-                                                        </a>
+                                                        <div class="product-links">
+                                                            <a onclick="AddCart(@product.id)">
+                                                                <i class="bi bi-basket-fill"></i>
+                                                            </a>
+                                                            @*<a onclick="AddWishlist(@product.id)">
+                                                        <i class="bi bi-heart-fill"></i>
+                                                    </a>*@
+                                                            <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a>
+                                                            @{
+                                                                // Mevcut protokol ve domaini al
+                                                                string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                                                                // Ürün yolunu dinamik olarak oluştur
+                                                                string productPath = Url.Action("Product", "Home", new { id = product.id });
+                                                                // Domain ile yolu birleştir
+                                                                string fullUrl = $"{domain}{productPath}";
+                                                            }
+                                                            <a class="shareBtn" link="@fullUrl">
+                                                                <i class="bi bi-share-fill"></i>
+                                                            </a>
 
-                                                    </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -176,244 +174,250 @@
                         </div>
 
                         @*<style>
-                                body {
-                                    background-color: #F5F5FF;
-                                }
+                    body {
+                        background-color: #F5F5FF;
+                    }
 
-                                .wrapper {
-                                    padding: 70px 0;
-                                    overflow-x: hidden;
-                                }
-
-
-                                .my-slider {
-                                    padding: 0 70px;
-                                }
-
-                                .slick-initialized .slick-slide {
-                                    background-color: #b32532;
-                                    color: #FFF;
-                                    height: 200px;
-                                    margin: 0 15px 0 0;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                }
+                    .wrapper {
+                        padding: 70px 0;
+                        overflow-x: hidden;
+                    }
 
 
+                    .my-slider {
+                        padding: 0 70px;
+                    }
 
-                                .slick-next, .slick-prev {
-                                    z-index: 5;
-                                }
+                    .slick-initialized .slick-slide {
+                        background-color: #b32532;
+                        color: #FFF;
+                        height: 200px;
+                        margin: 0 15px 0 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
 
-                                .slick-next {
-                                    right: 15px;
-                                }
 
-                                .slick-prev {
-                                    left: 15px;
-                                }
 
-                                    .slick-next:before, .slick-prev:before {
-                                        color: #000;
-                                        font-size: 26px;
-                                    }
-                            </style>
+                    .slick-next, .slick-prev {
+                        z-index: 5;
+                    }
 
-                            <div class="wrapper">
-                                <div class="my-slider">
-                                    @{
-                                        int i = -1;
-                                    }
-                                    @foreach (var product in Model.products)
-                                    {
-                                        <div style="width: 450px">
+                    .slick-next {
+                        right: 15px;
+                    }
 
-                                            <div class="product-item glide__slide glide__slide--active">
-                                                <div class="product-image">
-                                                    <a href="/Home/Product/@product.id">
-                                                        @if (product.cover != null)
-                                                        {
-                                                            <img src="@product.cover" alt="" class="img1" />
-                                                        }
-                                                        else
-                                                        {
-                                                            <img src="~/Content/theme/images/empty.png" alt="" class="img1" />
-                                                        }
-                                                    </a>
-                                                </div>
-                                                <div class="product-info">
-                                                    <a href="#" class="product-title">@product.name</a>
-                                                    <ul class="product-star">
-                                                        <li><i class="bi bi-star-fill"></i></li>
-                                                        <li><i class="bi bi-star-fill"></i></li>
-                                                        <li><i class="bi bi-star-fill"></i></li>
-                                                        <li><i class="bi bi-star-fill"></i></li>
-                                                        <li><i class="bi bi-star-half"></i></li>
-                                                    </ul>
-                                                    <div class="product-prices">
-                                                        <strong class="new-price">&#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).price</strong>
-                                                        @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
-                                                        {
-                                                            <span class="old-price">
-                                                                &#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price
-                                                            </span>
-                                                        }
-                                                    </div>
-                                                    @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
-                                                    {
-                                                        var discount = (product.products_skus.FirstOrDefault(x => x.product_id == product.id).price / product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price * 100);
-                                                        <span class="product-discount">
-                                                            <span>-%@(100-Math.Round((decimal)discount))</span>
-                                                        </span>
-                                                    }
-                                                    <div class="product-links">
-                                                        <a onclick="AddCart(@product.id)">
-                                                            <i class="bi bi-basket-fill"></i>
-                                                        </a>
-                                                        <a onclick="AddWishlist(@product.id)">
-                                                            <i class="bi bi-heart-fill"></i>
-                                                        </a>
-                                                        <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a><a href="#">
-                                                            <i class="bi bi-share-fill"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
+                    .slick-prev {
+                        left: 15px;
+                    }
+
+                        .slick-next:before, .slick-prev:before {
+                            color: #000;
+                            font-size: 26px;
+                        }
+                </style>
+
+                <div class="wrapper">
+                    <div class="my-slider">
+                        @{
+                            int i = -1;
+                        }
+                        @foreach (var product in Model.products)
+                        {
+                            <div style="width: 450px">
+
+                                <div class="product-item glide__slide glide__slide--active">
+                                    <div class="product-image">
+                                        <a href="/Home/Product/@product.id">
+                                            @if (product.cover != null)
+                                            {
+                                                <img src="@product.cover" alt="" class="img1" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/Content/theme/images/empty.png" alt="" class="img1" />
+                                            }
+                                        </a>
+                                    </div>
+                                    <div class="product-info">
+                                        <a href="#" class="product-title">@product.name</a>
+                                        <ul class="product-star">
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-half"></i></li>
+                                        </ul>
+                                        <div class="product-prices">
+                                            <strong class="new-price">&#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).price</strong>
+                                            @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
+                                            {
+                                                <span class="old-price">
+                                                    &#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price
+                                                </span>
+                                            }
                                         </div>
+                                        @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
+                                        {
+                                            var discount = (product.products_skus.FirstOrDefault(x => x.product_id == product.id).price / product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price * 100);
+                                            <span class="product-discount">
+                                                <span>-%@(100-Math.Round((decimal)discount))</span>
+                                            </span>
+                                        }
+                                        <div class="product-links">
+                                            <a onclick="AddCart(@product.id)">
+                                                <i class="bi bi-basket-fill"></i>
+                                            </a>
+                                            <a onclick="AddWishlist(@product.id)">
+                                                <i class="bi bi-heart-fill"></i>
+                                            </a>
+                                            <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a><a href="#">
+                                                <i class="bi bi-share-fill"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                        i++;
+                            i++;
+                        }
+
+
+                    </div>
+                </div>*@
+
+                    </div>
+                </section>
+
+
+
+
+
+
+
+
+
+
+                @{
+                    var list = Model.campaigns.ToArray();
+                    int sira = 0;
+                }
+                @if (list.Length != 0)
+                {
+                    <div class="section-title">
+                        <h2>Kampanyalar</h2>
+                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+                    </div>
+                    <section class="campaigns">
+                        <div class="container">
+
+
+                            @for (int d = 0; d <= decimal.Ceiling(Model.campaigns.Count() / 2); d++)
+                            {
+
+
+                                <div class="campaigns-wrapper ">
+
+
+                                    @for (int c = 0; c < 2; c++)
+                                    {
+
+                                        if (sira >= Model.campaigns.Count())
+                                        {
+                                            break;
+                                        }
+                                        <div class="campaign-item " style="background-image:url(@list[sira].campaign_cover)">
+                                            <h3 class="campaign-title">
+                                                @list[sira].campaign_title
+                                            </h3>
+                                            <p class="campaign-desc">
+                                                @list[sira].campaign_start_date.ToString("M") - @list[sira].campaign_end_date.ToString("M")
+                                            </p>
+                                            <a href="/Home/CampaingDetails/@list[sira].id" class="btn btn-red">
+                                                İNCELE<i class="bi bi-arrow-right"></i>
+                                            </a>
+                                        </div>
+                                        sira++;
                                     }
 
 
                                 </div>
-                            </div>*@
 
-                    </div>
-                </section>
-
-
-
-
-
-
-
-
-
-                <div class="section-title">
-                    <h2>Kampanyalar</h2>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
-                </div>
-                <section class="campaigns">
-                    <div class="container">
-                        @{
-                            var list = Model.campaigns.ToArray();
-                            int sira = 0;
-                        }
-                        @for (int d = 0; d <= decimal.Ceiling(Model.campaigns.Count() / 2); d++)
-                        {
-
-
-                            <div class="campaigns-wrapper ">
-
-
-                                @for (int c = 0; c < 2; c++)
-                                {
-
-                                    if (sira >= Model.campaigns.Count())
-                                    {
-                                        break;
-                                    }
-                                    <div class="campaign-item " style="background-image:url(@list[sira].campaign_cover)">
-                                        <h3 class="campaign-title">
-                                            @list[sira].campaign_title
-                                        </h3>
-                                        <p class="campaign-desc">
-                                            @list[sira].campaign_start_date.ToString("M") - @list[sira].campaign_end_date.ToString("M")
-                                        </p>
-                                        <a href="/Home/CampaingDetails/@list[sira].id" class="btn btn-red">
-                                            İNCELE<i class="bi bi-arrow-right"></i>
-                                        </a>
-                                    </div>
-                                    sira++;
-                                }
-
-
-                            </div>
-
-                        }
-                    </div>
-                </section>
-
-                @*<section class="blogs blog-page">
-                        <div class="container">
-                            <div class="section-title">
-                                <h2>Blog</h2>
-                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
-                            </div>
-                            <ul class="blog-list">
-                                <li class="blog-item">
-                                    <a href="#" class="blog-image">
-                                        <img src="~/img/blogs/blog1.jpg" alt="" />
-                                    </a>
-                                    <div class="blog-info">
-                                        <div class="blog-info-top">
-                                            <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                        </div>
-                                        <div class="blog-info-center">
-                                            <a href="#">Lorem ipsum dolor sit.</a>
-                                        </div>
-                                        <div class="blog-info-bottom">
-                                            <a href="#">Read More</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="blog-item">
-                                    <a href="#" class="blog-image">
-                                        <img src="~/img/blogs/blog1.jpg" alt="" />
-                                    </a>
-                                    <div class="blog-info">
-                                        <div class="blog-info-top">
-                                            <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                        </div>
-                                        <div class="blog-info-center">
-                                            <a href="#">Lorem ipsum dolor sit.</a>
-                                        </div>
-                                        <div class="blog-info-bottom">
-                                            <a href="#">Read More</a>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="blog-item">
-                                    <a href="#" class="blog-image">
-                                        <img src="~/img/blogs/blog1.jpg" alt="" />
-                                    </a>
-                                    <div class="blog-info">
-                                        <div class="blog-info-top">
-                                            <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                        </div>
-                                        <div class="blog-info-center">
-                                            <a href="#">Lorem ipsum dolor sit.</a>
-                                        </div>
-                                        <div class="blog-info-bottom">
-                                            <a href="#">Read More</a>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
+                            }
                         </div>
-                    </section>*@
-                <section class="campaing-single">
-                    <div class="container">
-                        <div class="campaing-wrapper">
-                            <h2>New Season Better</h2>
-                            <strong>40% INDIRIM</strong><span></span><a href="#" class="btn btn-lg btn-red">
-                                ALIŞVERIS YAP<i class="bi bi-arrow-right"></i>
+                    </section>
+                }
+
+                    @*<section class="blogs blog-page">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Blog</h2>
+                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+                    </div>
+                    <ul class="blog-list">
+                        <li class="blog-item">
+                            <a href="#" class="blog-image">
+                                <img src="~/img/blogs/blog1.jpg" alt="" />
                             </a>
+                            <div class="blog-info">
+                                <div class="blog-info-top">
+                                    <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                </div>
+                                <div class="blog-info-center">
+                                    <a href="#">Lorem ipsum dolor sit.</a>
+                                </div>
+                                <div class="blog-info-bottom">
+                                    <a href="#">Read More</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="blog-item">
+                            <a href="#" class="blog-image">
+                                <img src="~/img/blogs/blog1.jpg" alt="" />
+                            </a>
+                            <div class="blog-info">
+                                <div class="blog-info-top">
+                                    <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                </div>
+                                <div class="blog-info-center">
+                                    <a href="#">Lorem ipsum dolor sit.</a>
+                                </div>
+                                <div class="blog-info-bottom">
+                                    <a href="#">Read More</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="blog-item">
+                            <a href="#" class="blog-image">
+                                <img src="~/img/blogs/blog1.jpg" alt="" />
+                            </a>
+                            <div class="blog-info">
+                                <div class="blog-info-top">
+                                    <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                </div>
+                                <div class="blog-info-center">
+                                    <a href="#">Lorem ipsum dolor sit.</a>
+                                </div>
+                                <div class="blog-info-bottom">
+                                    <a href="#">Read More</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>*@
+                    <section class="campaing-single">
+                        <div class="container">
+                            <div class="campaing-wrapper">
+                                <h2>New Season Better</h2>
+                                <strong>40% INDIRIM</strong><span></span><a href="#" class="btn btn-lg btn-red">
+                                    ALIŞVERIS YAP<i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                </section>
-            </div>
+                    </section>
+                </div>
         </div>
     </div>
 

@@ -34,6 +34,8 @@
                                     <th>Ürün Adı</th>
                                     <th>Adet</th>
                                     <th>Toplam Tutar</th>
+                                    <th>Sipariş Durumu</th>
+
                                     <th>Sipariş Tarihi</th>
                                     <th>Action</th>
                                 </tr>
@@ -44,7 +46,7 @@
                                 }
                                 @foreach (var item in Model.order_item)
                                 {
-                                    <tr>
+                                    <tr orderId="@item.order_id" payId="@Model.payment_details.FirstOrDefault(x=>x.order_id == item.order_id).paymentId">
                                         <td class="py-0">
                                             <img src="@item.products.cover" alt="Alternate Text" />
                                         </td>
@@ -53,13 +55,15 @@
                                         <td>@item.order_details.users.username</td>
                                         <td>@item.products.name</td>
                                         <td>@item.quantity</td>
-                                        <td>@(Model.products_skus.FirstOrDefault(p=>p.product_id==item.product_id).price * item.quantity)</td>
+                                        <td>@(Model.products_skus.FirstOrDefault(p => p.product_id == item.product_id).price * item.quantity)</td>
+                                        <td class="paymentstatus">@Model.payment_details.FirstOrDefault(x=>x.order_id==item.order_id).status</td>
                                         <td>@item.created_at</td>
 
 
+
                                         <td>
-                                            <a href="#">
-                                                <span class="mdi mdi-eye text-primary "></span>
+                                            <a onclick="">
+                                                <span class="mdi mdi-eye text-bg-warning "></span>
 
                                             </a>
                                             <a href="/Management/EditProduct/@item.id">
@@ -88,12 +92,21 @@
 
     </div>
 </div>
+
+<script src="https://cdn.datatables.net/2.1.5/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.1.5/js/dataTables.jqueryui.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.jqueryui.js"></script>
+<script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.min.js"></script>
+<link href="https://cdn.datatables.net/rowreorder/1.5.0/css/rowReorder.dataTables.min.css" rel="stylesheet">
+
+<script src="https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.min.js"></script>
 <script>
 
     function Remove(id) {
 
         $.ajax({
-            url: '/Management/RemoveProduct/',
+            url: '/Management/RemoveOrder/',
             type: 'POST',
             data: { Id: id },
             success: function (result) {
@@ -131,6 +144,82 @@
 
 
         });
+
+
+    }
+
+    var orderTable = $("#orderTable");
+    if (orderTable.length != 0) {
+        orderTable.DataTable({
+            order: [
+                [2, 'desc']
+            ], rowGroup: {
+                dataSrc: 2,
+                startRender: function (rows, group) {
+
+                    var payId = $("#orderTable").find("[orderId='" + group + "']").attr("payId");
+
+                    return $('<a class="btn btn-danger float-right" href="javascript:void(0);" onclick="Refund(\'' + payId + '\')">İade Et</a>'); 
+
+                }
+            },
+            responsive: true,
+
+            info: false,
+
+            lengthChange: false,
+
+            scrollX: true,
+
+            columnDefs: [
+                {
+                    orderable: false,
+                    targets: [, 0, 4, -1],
+                },
+            ],
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Ara..",
+            },
+        });
+    }
+
+
+    function Refund(payId) {
+
+        $.ajax({
+            url: '/Management/Refund/',
+            type: 'POST',
+            data: { PaymentId: payId },
+            success: function (result) {
+                if (result.success) {
+                    toastr.success(result.message, 'İşlem Başarılı');
+
+                    var tr = $("#orderTable tbody [orderId='"+ result.list[0].order_id +"']");
+
+                    tr.find(".paymentstatus").text(result.list[0].paymentstatus);
+                    
+                  
+
+
+
+
+                } else {
+                    toastr.error(result.message, 'İşlem Başarısız');
+
+                }
+
+           
+
+
+
+
+            }
+
+
+        });
+
+
 
 
     }

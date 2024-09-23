@@ -29,11 +29,11 @@ namespace CobanlarMarket.Models
         public Nullable<System.DateTime> updated_at { get; set; }
         public Nullable<int> coupon_id { get; set; }
     
+        public virtual coupons coupons { get; set; }
         public virtual users users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order_item> order_item { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<payment_details> payment_details { get; set; }
-        public virtual coupons coupons { get; set; }
     }
 }

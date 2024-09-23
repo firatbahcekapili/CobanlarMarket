@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -52,10 +52,10 @@
       <HintPath>..\packages\Azure.Identity.1.12.0\lib\netstandard2.0\Azure.Identity.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Iyzipay, Version=2.1.61.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Iyzipay.2.1.61\lib\net45\Iyzipay.dll</HintPath>
@@ -68,7 +68,7 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.SqlClient, Version=5.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.SqlClient.5.2.1\lib\net462\Microsoft.Data.SqlClient.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Data.SqlClient.5.2.2\lib\net462\Microsoft.Data.SqlClient.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Identity.Client, Version=4.62.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Identity.Client.4.62.0\lib\net472\Microsoft.Identity.Client.dll</HintPath>
@@ -229,7 +229,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManagementController.cs" />
-    <Compile Include="Controllers\usersController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -297,18 +296,19 @@
     <Compile Include="Models\product_images.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\sp_helpdiagrams_Result.cs">
-      <DependentUpon>Model1.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\sub_categories.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sub_subcategories.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\sysdiagrams.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\users.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\WebhookNotification.cs" />
     <Compile Include="Models\wishlist.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -525,6 +525,7 @@
     <Content Include="Content\theme\images\user\user-sm-05.jpg" />
     <Content Include="Content\theme\images\user\user-sm-06.jpg" />
     <Content Include="Content\theme\images\user\user-xs-01.jpg" />
+    <Content Include="Content\theme\images\User_Icon.png" />
     <Content Include="Content\theme\index.html" />
     <Content Include="Content\theme\input-group.html" />
     <Content Include="Content\theme\invoice.html" />
@@ -1620,6 +1621,7 @@
     <Content Include="img\campaigns\banner2.png" />
     <Content Include="img\campaigns\banner3.png" />
     <Content Include="img\campaigns\banner4.png" />
+    <Content Include="img\cartempty.png" />
     <Content Include="img\categories\categories1.png" />
     <Content Include="img\categories\categories2.png" />
     <Content Include="img\categories\categories3.png" />
@@ -1630,6 +1632,7 @@
     <Content Include="img\footer\app-store.png" />
     <Content Include="img\footer\cards.png" />
     <Content Include="img\footer\google-play.png" />
+    <Content Include="img\login.png" />
     <Content Include="img\mega-menu.jpg" />
     <Content Include="img\modal-dialog.jpg" />
     <Content Include="img\products\e6s7-listing.jpg" />
@@ -1820,11 +1823,6 @@
     <Content Include="Views\Home\Campaing.cshtml" />
     <Content Include="Views\Home\Blog.cshtml" />
     <Content Include="Views\Home\Auth.cshtml" />
-    <Content Include="Views\products\Create.cshtml" />
-    <Content Include="Views\products\Delete.cshtml" />
-    <Content Include="Views\products\Details.cshtml" />
-    <Content Include="Views\products\Edit.cshtml" />
-    <Content Include="Views\products\Index.cshtml" />
     <Content Include="Views\Shared\_GirisYap.cshtml" />
     <Content Include="Views\Shared\_SearchPartial.cshtml" />
     <Content Include="Views\Management\Dashboard.cshtml" />
@@ -1844,11 +1842,6 @@
     <Content Include="Views\Management\AddUser.cshtml" />
     <Content Include="Views\Management\UserList.cshtml" />
     <Content Include="Views\Management\EditAttribute.cshtml" />
-    <Content Include="Views\users\Create.cshtml" />
-    <Content Include="Views\users\Delete.cshtml" />
-    <Content Include="Views\users\Details.cshtml" />
-    <Content Include="Views\users\Edit.cshtml" />
-    <Content Include="Views\users\Index.cshtml" />
     <Content Include="Views\Management\EditUser.cshtml" />
     <Content Include="Views\Management\EditCategory.cshtml" />
     <Content Include="Views\Management\EditSubCategory.cshtml" />
@@ -1865,6 +1858,8 @@
     <Content Include="Views\Management\EditCampaign.cshtml" />
     <Content Include="Views\Home\CampaingDetails.cshtml" />
     <Content Include="Views\Home\Payment.cshtml" />
+    <Content Include="Views\Home\Sonuc.cshtml" />
+    <Content Include="Views\Management\EditSubSubCategory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1935,11 +1930,11 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.4.1.0\build\net472\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Data.SqlClient.SNI.5.2.0\build\net462\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Data.SqlClient.SNI.5.2.0\build\net462\Microsoft.Data.SqlClient.SNI.targets'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.props'))" />
-    <Error Condition="!Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.4\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.5.2.0\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.5.2.0\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
-  <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.targets')" />
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

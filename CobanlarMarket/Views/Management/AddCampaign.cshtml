@@ -7,8 +7,33 @@
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
 
+
+<style>
+    .img-pre {
+        position: relative;
+        width:300px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .remove-img-btn {
+        position: absolute;
+        top: 4px;
+        right: 3px;
+        color: red;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        font-size: 20px;
+    }
+
+        .remove-img-btn:hover {
+            color: darkred;
+        }
+</style>
 <div class=" mt-5 ml-5 mr-5">
-    <h2>Kampanya Ekle</h2>
+    
 
     <form id="campaignForm">
 
@@ -18,9 +43,12 @@
         <div class="row justify-content-center">
 
             <div class="col-12 bg-white p-5">
+                <div class="col-12 pt-4 pb-4 pl-0 " >
+                    <h3>Kampanya Ekle</h3>
 
+                </div>
                 <div class="form-group">
-                    <label>Resim Yükle</label>
+                    <label>Resim Yükle *</label>
 
                     <div class="form-group img-parent">
                         <div class="d-flex img-pre" id="image-container">
@@ -31,7 +59,7 @@
 
                     </div>
                     <small class="form-text text-muted">
-                        1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Resimler belirli boyutlarda olmalıdır. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                        1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
                     </small>
                 </div>
                 <div class="form-group">
@@ -41,7 +69,6 @@
                     @Html.ValidationMessageFor(model => c.campaign_title, "")
 
 
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
@@ -55,7 +82,7 @@
                     <div class="form-group col-md-6">
                         <label for="enddate">Bitiş Tarihi</label>
 
-                        @Html.EditorFor(model => c.campaign_end_date, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate" } })
+                        @Html.EditorFor(model => c.campaign_end_date, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate", required = "required", disabled = "disabled" } })
                         @Html.ValidationMessageFor(model => c.campaign_end_date, "", new { @class = "text-danger" })
 
                     </div>
@@ -99,9 +126,9 @@
             e.preventDefault();
 
             var img = $('#campaignImg')[0].files[0];
-            var title = $('#title').val();
-            var startdate = $('#startdate').val();
-            var enddate = $('#enddate').val();
+            var title = $('#title').val() || "";
+            var startdate = $('#startdate').val() || "";
+            var enddate = $('#enddate').val() || "" ;
 
 
 
@@ -168,12 +195,12 @@
         selectedFiles.forEach(file => {
             var reader = new FileReader();
             reader.onload = function (e) {
-                var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail').css("width", "200px");
-                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
-                    event.preventDefault(); // Varsayılan davranışı engelle
+                var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
+                var removeBtn = $('<button>').addClass('remove-img-btn').html('<i class="mdi mdi-close icon"></i>').on('click', function (event) {
+                    event.preventDefault(); 
                     removeImage(file);
                 });
-                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                var wrapper = $('<div>').addClass('p-2 position-relative').append(img).append(removeBtn);
                 container.append(wrapper);
             };
             reader.readAsDataURL(file);
@@ -204,5 +231,37 @@
         };
         reader.readAsDataURL(fileToRemove);
     }
+
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var startDateInput = document.getElementById("startdate");
+        var endDateInput = document.getElementById("enddate");
+
+        // Başlangıç tarihini bugünden başlat
+        var today = new Date().toISOString().split("T")[0];
+        startDateInput.setAttribute("min", today);
+
+        // Başlangıç tarihi seçildiğinde bitiş tarihini aktif hale getir
+        startDateInput.addEventListener("change", function () {
+            endDateInput.disabled = false;
+            endDateInput.setAttribute("min", startDateInput.value);
+           
+
+            if (endDateInput.value < startDateInput.value && endDateInput.value != "") {
+                alert("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+                endDateInput.value = "";
+            }
+        });
+
+        // Bitiş tarihini başlangıç tarihinden önce seçilemez yap
+        endDateInput.addEventListener("change", function () {
+            if (endDateInput.value < startDateInput.value  ) {
+                alert("Bitiş tarihi, başlangıç tarihinden önce olamaz!");
+                endDateInput.value = "";
+            }
+        });
+    });
+
 
 </script>

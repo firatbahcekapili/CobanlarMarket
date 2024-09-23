@@ -174,23 +174,42 @@
                             <div class="product-categories">
                                 <span>Categories:</span>
 
-                                @if (Model.products.FirstOrDefault().category_id != null)
+                                @if (Model.products.FirstOrDefault().subcategory_id != null)
                                 {
 
                                     <strong>
 
-                                        @Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().category_id).parent_id).name.ToString()
+                                        @(
+                                        Model.products.FirstOrDefault() != null &&
+                                        Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id) != null &&
+                                        Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).parent_id) != null
+                                        ? Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).parent_id).name.ToString()
+                                        : ""
+)
 
 
 
                                     </strong>
                                     <strong>
 
-                                        / @Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().category_id).name
+                                        / @Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).name
 
 
 
                                     </strong>
+                                    if (Model.products.FirstOrDefault().sub_subcategory_id != null)
+                                    {
+                                        <strong>
+
+                                            / @Model.sub_subcategories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().sub_subcategory_id).name
+
+
+
+                                        </strong>
+                                    }
+
+
+
 
                                 }
 
@@ -225,11 +244,9 @@
             <div class="single-tabs">
                 <ul class="tab-list">
                     <li>
-                        <a href="#" class="tab-button active" data-tab="descriptions">Description</a>
+                        <a href="#" class="tab-button active" data-tab="descriptions">Açıklama</a>
                     </li>
-                    <li>
-                        <a href="#" class="tab-button" data-tab="information">Additional information</a>
-                    </li>
+                   
                     <li>
                         <a href="#" class="tab-button" data-tab="reviews">Reviews</a>
                     </li>
@@ -237,46 +254,11 @@
                 <div class="tab-panel">
                     <div id="descriptions" class="tab-content active">
                         <p>
-                            Quisque varius diam vel metus mattis, id aliquam diam rhoncus. Proin vitae magna in dui
-                            finibus malesuada et at nulla. Morbi elit ex, viverra vitae ante vel, blandit feugiat
-                            ligula. Fusce fermentum iaculis nibh, at sodales leo maximus a. Nullam ultricies sodales
-                            nunc, in pellentesque lorem mattis quis. Cras imperdiet est in nunc tristique lacinia.
-                            Nullam aliquam mauris eu accumsan tincidunt. Suspendisse velit ex, aliquet vel ornare
-                            vel, dignissim a tortor.
+                           @Model.products.FirstOrDefault().description
                         </p>
-                        <br>
-                        <p>
-                            Quisque varius diam vel metus mattis, id aliquam diam rhoncus. Proin vitae magna in dui
-                            finibus malesuada et at nulla. Morbi elit ex, viverra vitae ante vel, blandit feugiat
-                            ligula. Fusce fermentum iaculis nibh, at sodales leo maximus a. Nullam ultricies sodales
-                            nunc, in pellentesque lorem mattis quis. Cras imperdiet est in nunc tristique lacinia.
-                            Nullam aliquam mauris eu accumsan tincidunt. Suspendisse velit ex, aliquet vel ornare
-                            vel, dignissim a tortor.
-                        </p>
+                     
                     </div>
-                    <div id="information" class="tab-content">
-                        <h3>Additional information</h3>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <th>Color</th>
-                                    <td>
-                                        <p>
-                                            Apple Red, Bio Blue, Sweet Orange, Blue, Green, Pink, Black, White
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Size</th>
-                                    <td>
-                                        <p>
-                                            XXS, XS, S, M, L, XL, XXL
-                                        </p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                   
                     <div id="reviews" class="tab-content">
                         <h2>Add a review</h2>
                         <form class="comment-form">

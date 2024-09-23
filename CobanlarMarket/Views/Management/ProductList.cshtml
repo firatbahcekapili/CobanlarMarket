@@ -29,7 +29,6 @@
                                     <th>ID</th>
                                     <th>Adet</th>
                                     <th>Tür</th>
-                                    <th>Committed</th>
                                     <th>Günlük Satış</th>
                                     <th>Satılmış</th>
                                     <th>Stokta</th>
@@ -61,15 +60,14 @@
                                         <td>@item.id</td>
                                         <td>1</td>
                                         <td>@item.products_skus.Where(x => x.product_id == item.id).Count()</td>
-                                        <td>2</td>
                                         <td>
                                             <div id="tbl-chart-0@(i)"></div>
                                         </td>
-                                        <td>4</td>
+                                        <td>@Model.order_item.Where(o => o.product_id == item.id).Sum(x=>x.quantity)</td>
                                         <td>@item.products_skus.FirstOrDefault().quantity</td>
                                         <td>
                                             <a href="/Home/Product/@item.id">
-                                                <span class="mdi mdi-eye text-primary "></span>
+                                                <span class="mdi mdi-eye text-bg-warning "></span>
 
                                             </a>
                                             <a href="/Management/EditProduct/@item.id">

@@ -13,6 +13,8 @@ namespace CobanlarMarket.Models
 
         public List<categories> categories;
         public List<sub_categories> sub_categories;
+        public List<sub_subcategories> sub_subcategories;
+
         public List<cart> carts;
         public List<users> users;
         public List<product_attributes> product_attributes;
@@ -21,6 +23,8 @@ namespace CobanlarMarket.Models
         public List<coupons> coupons;
         public List<campaigns> campaigns;
         public List<addresses> addresses;
+        public List<payment_details> payment_details;
+
 
 
 

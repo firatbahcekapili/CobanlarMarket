@@ -18,11 +18,11 @@ namespace CobanlarMarket.Models
         public int coupon_id { get; set; }
         public Nullable<int> category_id { get; set; }
         public Nullable<int> subcategory_id { get; set; }
+        public string sub_subcategory_id { get; set; }
     
         public virtual categories categories { get; set; }
-        public virtual coupon_categories coupon_categories1 { get; set; }
-        public virtual coupon_categories coupon_categories2 { get; set; }
-        public virtual sub_categories sub_categories { get; set; }
         public virtual coupons coupons { get; set; }
+        public virtual sub_categories sub_categories { get; set; }
+        public virtual sub_subcategories sub_subcategories { get; set; }
     }
 }

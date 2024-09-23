@@ -10,7 +10,6 @@
 
 <style>
    
-    /* Geçersiz numara girildiğinde input alanını kırmızı yapar */
     #phone {
         border-color:goldenrod;
     }
@@ -21,14 +20,14 @@
         border-color: green;
     }
   
-    /* Hata mesajı stili */
+
     #error-msg {
         color: red;
         margin-top: 5px;
         font-size: 14px;
     }
 
-    /* Geçerli numara stili */
+  
     #valid-msg {
         color: green;
         margin-top: 5px;
@@ -36,17 +35,17 @@
         display: none;
     }
 
-    /* Mesajları gizlemek için kullanılan sınıf */
+   
     .hide {
         display: none;
     }
 
-    /* Mesajları göstermek için kullanılan sınıf */
+  
     .show {
         display: block;
     }
 
-    /* Buton stili */
+    
     #btn {
         background-color: #007bff;
         color: white;
@@ -58,16 +57,15 @@
         margin-top: 10px;
     }
 
-        /* Buton hover efekti */
         #btn:hover {
             background-color: #0056b3;
         }
     .offcanvas-backdrop {
-        opacity: 0.6 !important; /* Son opaklık seviyesi */
+        opacity: 0.6 !important; 
     }
 
         .offcanvas-backdrop.show {
-            opacity: 0.6 !important; /* Açıldığında son opaklık seviyesi */
+            opacity: 0.6 !important; 
         }
 
     .address-card{
@@ -86,8 +84,6 @@
         <div>
             <div class="main-layout">
 
-
-                <div id="iyzipay-checkout-form" class="popup" style="width:500px"></div>
 
 
                 <div class="modal-dialog ">
@@ -125,6 +121,9 @@
                     var kisi = Session["user"];
                     if (kisi != null)
                     {
+
+
+
                         CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
 
                         toplam = 0;
@@ -143,221 +142,253 @@
 
                         }
 
+                        if (totalForBar != 0)
+                        {
 
-
-                        <section class="cart-page">
-                            <div class="container">
-                                <div class="cart-page-wrapper">
-                                    <form class="cart-form">
-                                        <div class="free-progress-bar">
-
-
-
-                                            @{
-                                                if (totalForBar <= 300)
-                                                {
-                                                    decimal bar = (totalForBar.HasValue) ? (totalForBar.Value / 300 * 100) : 0;
-                                                    string formattedBar = bar.ToString("F2").Replace(',', '.');
-                                                    <p class="progress-bar-title">
-                                                        <strong>@(300 - totalForBar)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
-                                                    </p>
-                                                    <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
-                                                }
-                                                else
-                                                {
-                                                    <span>Kargo Ücretsiz!</span>
-                                                    <div class="progress-bar"><span class="progress" style="width:100%;"></span></div>
-
-                                                }
-
-                                            }
-
-                                        </div>
-                                        <div class="shop-table-wrapper">
-
-
-                                            <table class="shop-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="product-thumbnail">&nbsp;</th>
-                                                        <th class="product-thumbnail">&nbsp;</th>
-                                                        <th class="product-name">Ürün</th>
-                                                        <th class="product-price">Fiyat</th>
-                                                        <th class="product-quantity">Adet</th>
-                                                        <th class="product-subtotal">Toplam Tutar</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="cart-wrapper">
+                            <section class="cart-page">
+                                <div class="container">
+                                    <div class="cart-page-wrapper">
+                                        <form class="cart-form">
+                                            <div class="free-progress-bar">
 
 
 
-
-
-                                                    @foreach (var cartItem in Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item)
+                                                @{
+                                                    if (totalForBar <= 300)
                                                     {
-                                                        <tr class="cart-item" id="@cartItem.id">
-                                                            <td></td>
-                                                            <td class="cart-image">
-                                                                <img src="@cartItem.products.cover" alt=""><i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
-                                                            </td>
-                                                            <td>@cartItem.products.name</td>
-                                                            <td>&#8378;@cartItem.products.products_skus.FirstOrDefault().price</td>
-                                                            <td class="product-quantity d-flex justify-content-center align-items-center">
-
-                                                                <div class="qty-input">
-                                                                    <button class="qty-count qty-count--minus" data-action="minus" type="button">-</button>
-                                                                    <input class="product-qty" type="number" name="product-qty" min="-1" max="15" step="1" value="@cartItem.quantity">
-                                                                    <button class="qty-count qty-count--add" data-action="add" type="button">+</button>
-                                                                </div>
-
-                                                            </td>
-                                                            <td class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
-                                                        </tr>
-
-
-                                                        toplam += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
-
+                                                        decimal bar = (totalForBar.HasValue) ? (totalForBar.Value / 300 * 100) : 0;
+                                                        string formattedBar = bar.ToString("F2").Replace(',', '.');
+                                                        <p class="progress-bar-title">
+                                                            <strong>@(300 - totalForBar)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
+                                                        </p>
+                                                        <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>Kargo Ücretsiz!</span>
+                                                        <div class="progress-bar"><span class="progress" style="width:100%;"></span></div>
 
                                                     }
 
+                                                }
 
-                                                </tbody>
-                                            </table>
-                                            <div class="actions-wrapper">
-                                                <div class="coupon">
-                                                    <input type="text" class="input-text"
-                                                           placeholder="Kupon Kodu" id="couponCode">
-                                                    <button class="btn btn-black" id="addCoupon">
-                                                        Ekle
-                                                    </button>
-                                                </div>
-                                                <div class="update-cart">
-                                                    <button class="btn btn-red">Sepeti Güncelle</button>
+                                            </div>
+                                            <div class="shop-table-wrapper">
+
+
+                                                <table class="shop-table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="product-thumbnail">&nbsp;</th>
+                                                            <th class="product-thumbnail">&nbsp;</th>
+                                                            <th class="product-name">Ürün</th>
+                                                            <th class="product-price">Fiyat</th>
+                                                            <th class="product-quantity">Adet</th>
+                                                            <th class="product-subtotal">Toplam Tutar</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="cart-wrapper">
+
+
+
+
+
+                                                        @foreach (var cartItem in Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item)
+                                                        {
+                                                            <tr class="cart-item" id="@cartItem.id">
+                                                                <td></td>
+                                                                <td class="cart-image">
+                                                                    <img src="@cartItem.products.cover" alt=""><i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
+                                                                </td>
+                                                                <td>@cartItem.products.name</td>
+                                                                <td>&#8378;@cartItem.products.products_skus.FirstOrDefault().price</td>
+                                                                <td class="product-quantity d-flex justify-content-center align-items-center">
+
+                                                                    <div class="qty-input">
+                                                                        <button class="qty-count qty-count--minus" data-action="minus" type="button">-</button>
+                                                                        <input class="product-qty" type="number" name="product-qty" min="-1" max="15" step="1" value="@cartItem.quantity">
+                                                                        <button class="qty-count qty-count--add" data-action="add" type="button">+</button>
+                                                                    </div>
+
+                                                                </td>
+                                                                <td class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
+                                                            </tr>
+
+
+                                                            toplam += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
+
+
+                                                        }
+
+
+                                                    </tbody>
+                                                </table>
+                                                <div class="actions-wrapper">
+                                                    <div class="coupon">
+                                                        <input type="text" class="input-text"
+                                                               placeholder="Kupon Kodu" id="couponCode">
+                                                        <button class="btn btn-black" id="addCoupon">
+                                                            Ekle
+                                                        </button>
+                                                    </div>
+                                                    <div class="update-cart">
+                                                        <button class="btn btn-red">Sepeti Güncelle</button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </form>
-                                    <div class="cart-collaterals">
-                                        <div class="cart-totals">
-                                            <h2>Sepet Toplamı</h2>
-                                            <table id="cartTotalTable">
-                                                <tbody>
-                                                    <tr class="cart-subtotal">
-                                                        <th>Ürün Toplamı</th>
-                                                        <td><span id="subtotal">&#8378;@toplam</span></td>
-                                                    </tr>
-                                                    <tr id="address">
-                                                        <th>Adres</th>
-                                                        <td>
-                                                            <ul>
+                                        </form>
+                                        <div class="cart-collaterals">
+                                            <div class="cart-totals">
+                                                <h2>Sepet Toplamı</h2>
+                                                <table id="cartTotalTable">
+                                                    <tbody>
+                                                        <tr class="cart-subtotal">
+                                                            <th>Ürün Toplamı</th>
+                                                            <td><span id="subtotal">&#8378;@toplam</span></td>
+                                                        </tr>
+                                                        <tr id="address">
+                                                            <th>Adres</th>
+                                                            <td>
+                                                                <ul>
 
-                                                                <li id="cartAddress">
+                                                                    <li id="cartAddress">
 
-                                                                    @{
+                                                                        @{
 
-                                                                        var item = Model.addresses.FirstOrDefault(x => x.user_id == user.id);
-                                                                        if (item != null)
-                                                                        {
-                                                                            <div class="col-12 ">
-                                                                                <div class="card mb-2 text-start address-card" addressId="@item.id">
-                                                                                    <div class="card-body">
-                                                                                        <h5 class="card-title">@item.title</h5>
-                                                                                        <h6 class="card-subtitle mb-2 text-body-secondary">@item.name @item.surname</h6>
-                                                                                        <p class="card-text">@item.address.</p>
+                                                                            var item = Model.addresses.FirstOrDefault(x => x.user_id == user.id);
+                                                                            if (item != null)
+                                                                            {
+                                                                                <div class="col-12 ">
+                                                                                    <div class="card mb-2 text-start address-card" addressId="@item.id">
+                                                                                        <div class="card-body">
+                                                                                            <h5 class="card-title">@item.title</h5>
+                                                                                            <h6 class="card-subtitle mb-2 text-body-secondary">@item.name @item.surname</h6>
+                                                                                            <p class="card-text">@item.address.</p>
 
 
+                                                                                        </div>
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
+                                                                            }
                                                                         }
-                                                                    }
 
 
-                                                                    <a href="#Adres" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
-                                                                        Adres Değiştir/Ekle
-                                                                    </a>
+                                                                        <a href="#Adres" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+                                                                            Adres Değiştir/Ekle
+                                                                        </a>
 
-                                                                </li>
-                                                            </ul>
+                                                                    </li>
+                                                                </ul>
 
 
-                                                        </td>
+                                                            </td>
 
-                                                    </tr>
-                                                    @if (Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id.HasValue)
-                                                    {
-                                                        if (Model.coupons.FirstOrDefault(x => x.Id == Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code != null)
+                                                        </tr>
+                                                        @if (Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id.HasValue)
                                                         {
-                                                            <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>
-                                                            <tr class='couponadded'>
-                                                                <th>
-                                                                    Kupon Kodu Uygulandı:<strong>  @Model.coupons.FirstOrDefault(x => x.Id == Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code   </strong>
-                                                                </th>
-                                                                <td> İndirim -&#8378; @Model.carts.FirstOrDefault(x => x.user_id == user.id).discount_value </td>
+                                                            if (Model.coupons.FirstOrDefault(x => x.Id == Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code != null)
+                                                            {
+                                                                <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>
+                                                                <tr class='couponadded'>
+                                                                    <th>
+                                                                        Kupon Kodu Uygulandı:<strong>  @Model.coupons.FirstOrDefault(x => x.Id == Model.carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code   </strong>
+                                                                    </th>
+                                                                    <td> İndirim -&#8378; @Model.carts.FirstOrDefault(x => x.user_id == user.id).discount_value </td>
 
 
-                                                            </tr>
+                                                                </tr>
 
 
-                                                            string discountValue = Model.carts.FirstOrDefault(x => x.user_id == user.id).discount_value;
+                                                                string discountValue = Model.carts.FirstOrDefault(x => x.user_id == user.id).discount_value;
 
-                                                            // "en-US" kültürüne göre decimal parse işlemi
-                                                            couponDiscount = decimal.Parse(discountValue, new System.Globalization.CultureInfo("en-US"));
+                                                                // "en-US" kültürüne göre decimal parse işlemi
+                                                                couponDiscount = decimal.Parse(discountValue, new System.Globalization.CultureInfo("en-US"));
+
+
+
+                                                            }
+                                                        }
+
+
+                                                        @{
+                                                            if (toplam >= 300)
+                                                            {
+                                                                <tr class="cargo">
+                                                                    <th>Kargo</th>
+                                                                    <td><del>₺@kargo</del> <strong>0₺</strong></td>
+                                                                </tr>
+                                                                kargo = 0;
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <tr class="cargo">
+                                                                    <th>Kargo</th>
+                                                                    <td>₺@kargo</td>
+                                                                </tr>
+                                                            }
 
 
 
                                                         }
-                                                    }
 
 
-                                                    @{
-                                                        if (toplam >= 300)
-                                                        {
-                                                            <tr class="cargo">
-                                                                <th>Kargo</th>
-                                                                <td><del>₺@kargo</del> <strong>0₺</strong></td>
-                                                            </tr>
-                                                            kargo = 0;
-
-                                                        }
-                                                        else
-                                                        {
-                                                            <tr class="cargo">
-                                                                <th>Kargo</th>
-                                                                <td>₺@kargo</td>
-                                                            </tr>
-                                                        }
+                                                        <tr class="lasttotal">
+                                                            <th>Toplam</th>
+                                                            <td><strong id="cart-total">&#8378;@(toplam + kargo - couponDiscount)</strong></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
 
 
-                                                      
-                                                    }
-
-
-                                                    <tr class="lasttotal">
-                                                        <th>Toplam</th>
-                                                        <td><strong id="cart-total">&#8378;@(toplam+kargo-couponDiscount)</strong></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-
-
-                                            <div class="checkout">
-                                                <button class="btn btn-lg btn-red btn-order">
-                                                    Sipariş Ver
-                                                </button>
+                                                <div class="checkout">
+                                                    <button class="btn btn-lg btn-red btn-order">
+                                                        Sipariş Ver
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </section>
+
+                        }
+                        else
+                        {
+                            <div class="container row mt-3 mb-3 ">
+                                <div class="col-12 d-flex justify-content-center">
+                                    <h1 class="text-center">Sepetinde ürün bulunmamaktadır</h1>
+
+                                </div>
+                                <div class="col-12 d-flex justify-content-center">
+                                    <img src="~/img/cartempty.png" style="width:inherit;max-width:fit-content;" />
+                                </div>
+                                <div class="col-12 d-flex justify-content-center">
+                                    <a href="/Home/Shop" class="btn btn-primary">Hemen Alışverişe Başla</a>
+                                </div>
                             </div>
-                        </section>
+                        }
+
                     }
                     else
                     {
-                        <section class="text-center m-5">
-                            <h2>Sepeti kullanabilmek için giriş yapmalısınız</h2>
-                            <a href="/Home/Auth">Giriş Yap</a>
-                        </section>
+                       
+
+                        <div class="container row mt-3 mb-3 ">
+                            <div class="col-12 d-flex justify-content-center">
+                                <h1 class="text-center">Sepeti kullanabilmek için giriş yapmalısınız</h1>
+
+                            </div>
+                            <div class="col-12 d-flex justify-content-center">
+                                <img src="~/img/login.png" style="width:inherit;max-width:fit-content;" />
+                            </div>
+                            <div class="col-12 d-flex justify-content-center">
+                                <a href="/Home/Auth" class="btn btn-primary">Hemen Giriş Yap</a>
+                            </div>
+                        </div>
+
+
+
                     }
                 }
             </div>
@@ -710,24 +741,57 @@
             data: { Id: id },
             success: function (result) {
                 console.log(result);
-                var table = $(result).find(".shop-table tbody tr");
-                $('.cart-wrapper').empty().append(table);
                 var total = $(result).find("#subtotal").text();
-                $("#cart-total").text(total);
-                $("#subtotal").text(total);
-                var cargo = $(result).find(".cargo").html();
-                var lasttotal = $(result).find(".lasttotal").html();
-                var progress = $(result).find(".free-progress-bar").html();
-                $(".cargo").empty();
-                $(".cargo").append(cargo);
 
-                $(".lasttotal").empty();
-                $(".lasttotal").append(lasttotal);
+                if (total == "₺0") {
+                    // İçeriği fadeOut ile kaldır
+                    $(".main-layout").fadeOut(300, function () {
+                        // İçeriği tamamen kaldır
+                        $(this).empty();
 
-                $('.couponadded').remove();
-                $('#address').after($(result).find(".couponadded"));
-                $(".free-progress-bar").empty();
-                $(".free-progress-bar").append(progress);
+                        // Yeni içeriği append et ve fadeIn ile göster
+                        $(this).append(`
+            <div class="container row mt-3 mb-3">
+                <div class="col-12 d-flex justify-content-center">
+                    <h1 class="text-center">Sepetinde ürün bulunmamaktadır</h1>
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <img src="/img/cartempty.png" style="width:inherit;max-width:fit-content;" />
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <a href="/Home/Shop" class="btn btn-primary">Hemen Alışverişe Başla</a>
+                </div>
+            </div>
+        `).fadeIn(300); // Fade-in animasyonu
+
+                    });
+                }
+ else
+                {
+                    var table = $(result).find(".shop-table tbody tr");
+                    $('.cart-wrapper').empty().append(table);
+                    $("#cart-total").text(total);
+                    $("#subtotal").text(total);
+                    var cargo = $(result).find(".cargo").html();
+                    var lasttotal = $(result).find(".lasttotal").html();
+                    var progress = $(result).find(".free-progress-bar").html();
+                    $(".cargo").empty();
+                    $(".cargo").append(cargo);
+
+                    $(".lasttotal").empty();
+                    $(".lasttotal").append(lasttotal);
+
+                    $('.couponadded').remove();
+                    $('#address').after($(result).find(".couponadded"));
+                    $(".free-progress-bar").empty();
+                    $(".free-progress-bar").append(progress);
+
+                }
+
+
+                var cartCount = $(result).find(".cart-item").length;
+
+                $(".header-cart-count").text(cartCount);
 
             }
         });
@@ -745,34 +809,63 @@
                 data: { Id: id },
                 success: function (result) {
                     console.log(result);
-                    var table = $(result).find(".shop-table tbody tr");
-                    $('.cart-wrapper').empty().append(table);
+                   
                     var total = $(result).find("#subtotal").text();
-                    $("#cart-total").text(total);
-                    $("#subtotal").text(total);
-                    var cargo = $(result).find(".cargo").html();
-                    var lasttotal = $(result).find(".lasttotal").html();
-                    var progress = $(result).find(".free-progress-bar").html();
+                   
+                    if (total == "₺0") {
+                        // İçeriği fadeOut ile kaldır
+                        $(".main-layout").fadeOut(300, function () {
+                            // İçeriği tamamen kaldır
+                            $(this).empty();
 
-                    $(".cargo").empty();
-                    $(".cargo").append(cargo);
+                            // Yeni içeriği append et ve fadeIn ile göster
+                            $(this).append(`
+            <div class="container row mt-3 mb-3">
+                <div class="col-12 d-flex justify-content-center">
+                    <h1 class="text-center">Sepetinde ürün bulunmamaktadır</h1>
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <img src="/img/cartempty.png" style="width:inherit;max-width:fit-content;" />
+                </div>
+                <div class="col-12 d-flex justify-content-center">
+                    <a href="/Home/Shop" class="btn btn-primary">Hemen Alışverişe Başla</a>
+                </div>
+            </div>
+        `).fadeIn(300); // Fade-in animasyonu
 
-                    $(".lasttotal").empty();
-                    $(".lasttotal").append(lasttotal);
+                        });
+                    }
+ else {
+                        var table = $(result).find(".shop-table tbody tr");
+                        $('.cart-wrapper').empty().append(table);
+                        $("#cart-total").text(total);
+                        $("#subtotal").text(total);
+                        var cargo = $(result).find(".cargo").html();
+                        var lasttotal = $(result).find(".lasttotal").html();
+                        var progress = $(result).find(".free-progress-bar").html();
+
+                        $(".cargo").empty();
+                        $(".cargo").append(cargo);
+
+                        $(".lasttotal").empty();
+                        $(".lasttotal").append(lasttotal);
 
 
-                    $(".free-progress-bar").empty();
-                    $(".free-progress-bar").append(progress);
+                        $(".free-progress-bar").empty();
+                        $(".free-progress-bar").append(progress);
 
-                    $('.couponadded').remove();
-                    $('#address').after($(result).find(".couponadded"));
+                        $('.couponadded').remove();
+                        $('#address').after($(result).find(".couponadded"));
 
 
 
+                       
+
+                    }
                     var cartCount = $(result).find(".cart-item").length;
 
                     $(".header-cart-count").text(cartCount);
-
+                  
                 }
             });
         });

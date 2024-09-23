@@ -5,38 +5,40 @@
 }
 
 <div class="mt-5 ml-5 mr-5">
-    <h2>Kullanıcı Düzenle</h2>
-
+   
     <form id="UserForm">
-        <div class="row justify-content-center">
-            <div class="col-md-5 bg-white p-5">
+        <div class="row justify-content-center  bg-white mb-5">
+            <div class="col-12  pt-4 pb-4 pl-5  ">
+                <h3>Kullanıcı Düzenle</h3>
+
+            </div>
+
+
+            <div class="col-md-5 p-5">
                 <div class="form-group">
-                    <label for="UserImg" class="col-12">Kullanıcı Fotoğrafı</label>
+                    <label for="UserImg" class="col-12 pl-0">Kullanıcı Fotoğrafı</label>
                     <div class="img bg-primary" id="imgpre" style="height:300px;">
                         <img class="img" src="@Model.avatar" alt="User Img" style="block-size:300px;" />
                     </div>
-                    
+
                     <input type="file" class="form-control" id="userImg" accept=".jpg,.jpeg,.png" aria-describedby="userImg" onchange="dosyaOnizlemeNew(this);">
                 </div>
             </div>
-            <div class="col-md-7 bg-white p-5">
+            <div class="col-md-7 p-5">
                 <div class="form-group">
                     <label for="name">İsim *</label>
                     @Html.EditorFor(model => model.first_name, new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "İsim", id = "name" } })
                     @Html.ValidationMessageFor(model => model.first_name, "")
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
                 </div>
                 <div class="form-group">
                     <label for="surname">Soyad*</label>
                     @Html.EditorFor(model => model.last_name, new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "surname" } })
                     @Html.ValidationMessageFor(model => model.last_name, "")
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
                 </div>
                 <div class="form-group">
                     <label for="userName">Kullanıcı Adı *</label>
                     @Html.EditorFor(model => model.username, new { htmlAttributes = new { name = "userName", @class = "form-control", placeholder = "Kullanıcı Adı", id = "userName" } })
                     @Html.ValidationMessageFor(model => model.username, "")
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
                 </div>
                 <div class="form-group">
                     <label for="password">Şifre *</label>
@@ -57,7 +59,7 @@
                 </div>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
                 <div class="form-group">
-                    <label for="birthdate">Doğum Tarihi *</label>
+                    <label for="birthdate">Doğum Tarihi </label>
                     <input type="date" id="birthdate" name="birthdate" class="form-control" placeholder="Doğum Tarihi">
                     @Html.ValidationMessageFor(model => model.birth_of_date, "", new { @class = "text-danger" })
                 </div>
@@ -88,13 +90,13 @@
                 formData.append('Img', img);
 
                 var Id = $(this).attr("uid");
-                var name = $('#name').val();
-                var surname = $('#surname').val();
-                var username = $('#userName').val();
-                var password = $('#password').val();
-                var email = $('#Email').val();
-                var tel = $('#tel').val();
-                var birthdate = $('#birthdate').val();
+                var name = $('#name').val() ||"";
+                var surname = $('#surname').val() || "";
+                var username = $('#userName').val() || "";
+                var password = $('#password').val() || "";
+                var email = $('#Email').val() || "";
+                var tel = $('#tel').val() || "";
+                var birthdate = $('#birthdate').val() || "";
 
                 formData.append('Id', Id);
                 formData.append('Name', name);

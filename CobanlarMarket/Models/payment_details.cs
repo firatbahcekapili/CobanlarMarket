@@ -21,7 +21,16 @@ namespace CobanlarMarket.Models
         public string status { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> updated_at { get; set; }
+        public string cardType { get; set; }
+        public string cardFamily { get; set; }
+        public Nullable<int> installment { get; set; }
+        public Nullable<decimal> paidPrice { get; set; }
+        public string paymentId { get; set; }
+        public Nullable<decimal> cargoPrice { get; set; }
+        public Nullable<decimal> couponDiscountValue { get; set; }
+        public Nullable<int> couponId { get; set; }
     
+        public virtual coupons coupons { get; set; }
         public virtual order_details order_details { get; set; }
     }
 }
