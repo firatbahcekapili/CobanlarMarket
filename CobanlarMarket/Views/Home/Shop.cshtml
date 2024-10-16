@@ -347,7 +347,6 @@
                 });
             },
             error: function (xhr, status, error) {
-                // Hata durumunu ele alabilirsiniz
             }
         });
     });
@@ -365,7 +364,6 @@
                     $(this).empty();
                     $(this).html(response);
 
-                    // Background resimleri ayarla
                     $('.set-bg').each(function () {
                         var bg = $(this).data('setbg');
                         $(this).css('background-image', 'url(' + bg + ')');
@@ -459,7 +457,6 @@
                     $(this).empty();
                     $(this).html(response);
 
-                    // Background resimleri ayarla
                     $('.set-bg').each(function () {
                         var bg = $(this).data('setbg');
                         $(this).css('background-image', 'url(' + bg + ')');

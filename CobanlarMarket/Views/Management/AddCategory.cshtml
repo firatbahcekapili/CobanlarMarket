@@ -104,7 +104,6 @@
                     <label for="parentcategory">Kategori *</label>
                     <select class="form-control" id="category">
                         <option disabled selected>Kategori Seçiniz</option>
-                        <!-- Add categories here -->
 
 
                         @foreach (var item in Model.categories)
@@ -156,7 +155,6 @@
                     <label for="parentsubcategory">AltKategori *</label>
                     <select class="form-control" id="subcategory">
                         <option disabled selected>Alt Kategori Seçiniz</option>
-                        <!-- Add categories here -->
 
 
                         @foreach (var item in Model.sub_categories)
@@ -239,7 +237,6 @@
 
                             $('#image-container').empty();
 
-                            // Input dosya listesini güncelle
 
                             $("#categoryImg").remove();
                             $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>")
@@ -366,7 +363,7 @@
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
                 var removeBtn = $('<button>').addClass('remove-img-btn').html('<i class="mdi mdi-close icon"></i>').on('click', function (event) {
-                    event.preventDefault(); // Varsayılan davranışı engelle
+                    event.preventDefault(); 
                     removeImage(file);
                 });
                 var wrapper = $('<div>').addClass('p-2 position-relative').append(img).append(removeBtn);
@@ -379,7 +376,6 @@
 
 
     function removeImage(fileToRemove) {
-        // Dosya verisini base64 formatına dönüştür
         var reader = new FileReader();
         reader.onload = function (e) {
             var fileDataURL = e.target.result;

@@ -22,6 +22,8 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using static Azure.Core.HttpHeader;
 using Iyzipay.Model.V2.Subscription;
+using System.Web.WebPages;
+using System.Web.UI.WebControls;
 
 namespace CobanlarMarket.Controllers
 {
@@ -35,9 +37,13 @@ namespace CobanlarMarket.Controllers
 
 
             AllViewModel model = new AllViewModel();
-            model.products = db.products.ToList();
+            model.products = db.products.Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
             model.users = db.users.ToList();
-            model.order_details = db.order_details.ToList();
+            model.order_details = db.order_details.Include(o => o.order_item).ToList();
+            model.order_item = db.order_item.Include(o => o.products_skus).Include(o => o.products).ToList();
+            model.payment_details = db.payment_details.ToList();
+
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
             return View(model);
@@ -523,7 +529,7 @@ namespace CobanlarMarket.Controllers
                     return Json(new { success = false, message = "Resim Bulunamadı" }, JsonRequestBehavior.AllowGet);
                 }
 
-               
+
                 db.SaveChanges();
 
                 // Başarı mesajı döndür
@@ -531,7 +537,7 @@ namespace CobanlarMarket.Controllers
             }
             catch (Exception ex)
             {
-                
+
                 return Json(new { success = false, message = "Resim Silinirken Bir Hata Oluştu" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -670,9 +676,9 @@ namespace CobanlarMarket.Controllers
                         // Alt kategorileri güncelle
                         foreach (var subCategory in category.sub_categories.ToList())
                         {
-                            subCategory.parent_id = null; 
+                            subCategory.parent_id = null;
 
-                           
+
                         }
 
                         // Alt kategorileri güncelle
@@ -680,7 +686,7 @@ namespace CobanlarMarket.Controllers
                         {
                             subCategory.parent_id = null;
 
-                          
+
                         }
 
                         foreach (var cc in db.coupon_categories.Where(x => x.category_id == Id))
@@ -691,10 +697,10 @@ namespace CobanlarMarket.Controllers
 
 
 
-                  
+
                         db.categories.Remove(category);
 
-                      
+
                         db.SaveChanges();
 
                         transaction.Commit();
@@ -710,13 +716,14 @@ namespace CobanlarMarket.Controllers
                              created_at = x.created_at != null ? x.created_at.Value.ToString("dd/MM/yyyy HH:mm:ss") : "N/A"
                          })
                          .ToList();
-                        return Json(listt, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = true, message = "Kategori Başarıyla Silindi.", list = listt });
+
                     }
                     catch (Exception ex)
                     {
-                       
+
                         transaction.Rollback();
-                       
+
                         return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
                     }
                 }
@@ -750,7 +757,7 @@ namespace CobanlarMarket.Controllers
             if (db.categories.Any(x => x.id == Id))
             {
 
-                if (Name != "" && Description != "")
+                if (Name != "")
                 {
 
                     string imgPath = null;
@@ -872,7 +879,7 @@ namespace CobanlarMarket.Controllers
             var category = db.categories.Find(Id);
             if (category == null)
             {
-                
+
                 return Json(new { success = false, message = "Kategori Bulunamadı" }, JsonRequestBehavior.AllowGet);
             }
             else
@@ -934,7 +941,7 @@ namespace CobanlarMarket.Controllers
                     subcategory.description = Description;
                     subcategory.parent_id = ParentId;
                     db.SaveChanges();
-                   
+
 
 
 
@@ -1003,10 +1010,10 @@ namespace CobanlarMarket.Controllers
 
                     db.SaveChanges();
 
-                    foreach (var item in db.products.Where(x=>x.sub_subcategory_id==subcategory.id))
+                    foreach (var item in db.products.Where(x => x.sub_subcategory_id == subcategory.id))
                     {
                         item.subcategory_id = ParentId;
-                       
+
                     }
                     db.SaveChanges();
 
@@ -1045,9 +1052,9 @@ namespace CobanlarMarket.Controllers
 
                         foreach (var product in db.products.Where(x => x.subcategory_id == Id))
                         {
-                            product.subcategory_id = null; 
+                            product.subcategory_id = null;
                         }
-                        foreach (var cc in db.coupon_categories.Where(x=>x.subcategory_id==Id))
+                        foreach (var cc in db.coupon_categories.Where(x => x.subcategory_id == Id))
                         {
                             cc.subcategory_id = null;
                         }
@@ -1076,7 +1083,7 @@ namespace CobanlarMarket.Controllers
                              parentCategory = db.categories.FirstOrDefault(c => c.id == x.parent_id) == null ? "Kategori Yok" : db.categories.FirstOrDefault(c => c.id == x.parent_id).name
                          })
                          .ToList();
-                        return Json(listt, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = true, message = "Alt Kategori Başarıyla Silindi.", list = listt });
                     }
                     catch (Exception ex)
                     {
@@ -1131,7 +1138,8 @@ namespace CobanlarMarket.Controllers
                              parentCategory = db.categories.FirstOrDefault(c => c.id == x.parent_id) == null ? "Kategori Yok" : db.categories.FirstOrDefault(c => c.id == x.parent_id).name
                          })
                          .ToList();
-                        return Json(listt, JsonRequestBehavior.AllowGet);
+                        return Json(new { success = true, message = "Alt Alt Kategori Başarıyla Silindi.", list = listt });
+
                     }
                     catch (Exception ex)
                     {
@@ -1209,29 +1217,29 @@ namespace CobanlarMarket.Controllers
             {
                 if (!string.IsNullOrWhiteSpace(Name))
                 {
-                    
+
                     var lastId = db.sub_subcategories
                                    .OrderByDescending(x => x.id)
                                    .FirstOrDefault()?.id;
 
-                    int newId = 1; 
+                    int newId = 1;
 
                     if (!string.IsNullOrEmpty(lastId))
                     {
-                      
+
                         newId = int.Parse(lastId) + 1;
                     }
 
-                    
+
                     while (db.sub_subcategories.Any(x => x.id == newId.ToString()))
                     {
                         newId++;
                     }
 
-                  
+
                     sub_subcategories subsubcategory = new sub_subcategories()
                     {
-                        id = newId.ToString(),  
+                        id = newId.ToString(),
                         parent_sub_category_id = ParentId,
                         name = Name,
                         description = Description,
@@ -1351,7 +1359,7 @@ namespace CobanlarMarket.Controllers
                             }
                         }
 
-                        db.SaveChanges(); 
+                        db.SaveChanges();
                         db.product_attributes.Remove(attribute);
                         db.SaveChanges();
                     }
@@ -1371,7 +1379,7 @@ namespace CobanlarMarket.Controllers
             }
             catch (Exception ex)
             {
-                
+
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
 
@@ -1444,10 +1452,33 @@ namespace CobanlarMarket.Controllers
             model.product_attributes = db.product_attributes.ToList();
             return View(model);
         }
-        public ActionResult OrderDetail()
+
+
+        public ActionResult OrderDetail(int? Id)
         {
+
+
+            if (Id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+
+            order_details order = db.order_details.FirstOrDefault(x => x.id == Id);
+
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+
             AllViewModel model = new AllViewModel();
             model.products = db.products.ToList();
+            model.order_details = db.order_details.Where(x => x.id == Id).Include(x => x.order_item).ToList();
+            model.order_item = db.order_item.Where(x => x.order_id == Id).Include(x => x.products).Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
+            model.payment_details = db.payment_details.Where(x => x.order_id == Id).ToList();
+            model.coupons = db.coupons.ToList();
+            model.addresses = db.addresses.ToList();
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
@@ -1533,7 +1564,7 @@ namespace CobanlarMarket.Controllers
 
                 }
 
-            
+
                 users user = new users() { first_name = Name, last_name = Surname, username = Username, password = Password, email = Email, phone_number = Tel, birth_of_date = DateTime.Parse(Birthdate), avatar = imgpath, role = false, created_at = DateTime.Now, status = true };
 
 
@@ -1759,7 +1790,7 @@ namespace CobanlarMarket.Controllers
             }
 
 
-            if (!db.coupons.Any(x => x.Code == Code))
+            if (!db.coupons.Any(x => x.Code == Code && x.IsActive == true))
             {
                 decimal value = 0;
 
@@ -1782,7 +1813,7 @@ namespace CobanlarMarket.Controllers
                     value = parsedValue;
                 }
 
-                coupons coupon = new coupons() { Code = Code, DiscountType = Type, DiscountValue = value, MinimumSpend = min_price, MaxDiscountAmount = max_price, StartDate = DateTime.Parse(StartDate), EndDate = DateTime.Parse(EndDate), CreatedAt = DateTime.Now, IsActive = true };
+                coupons coupon = new coupons() { Code = Code, DiscountType = Type, DiscountValue = value, MinimumSpend = min_price, MaxDiscountAmount = max_price, StartDate = DateTime.Parse(StartDate), EndDate = DateTime.Parse(EndDate), CreatedAt = DateTime.Now, IsActive = true, Status = true };
 
                 if (!TryValidateModel(coupon))
                 {
@@ -1922,7 +1953,7 @@ namespace CobanlarMarket.Controllers
 
         }
         [HttpPost]
-        public JsonResult EditCoupon(int Id, string Code, string Type, string Value, string MinPrice, string MaxPrice, string StartDate, string EndDate, string CategoryIds, string Products)
+        public JsonResult EditCoupon(int Id, string Code, string Type, string Value, string MinPrice, string MaxPrice, string StartDate, string EndDate, string CategoryIds, string Products, string Status)
         {
             List<int> categories = new List<int>(); ;
             List<int> subcategories = new List<int>(); ;
@@ -1981,7 +2012,7 @@ namespace CobanlarMarket.Controllers
                 tempcoupon.MaxDiscountAmount = max_price;
                 tempcoupon.StartDate = DateTime.Parse(StartDate);
                 tempcoupon.EndDate = DateTime.Parse(EndDate);
-
+                tempcoupon.IsActive = Status == "Aktif" ? true : false;
                 if (!TryValidateModel(tempcoupon))
                 {
                     var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -2001,11 +2032,13 @@ namespace CobanlarMarket.Controllers
                 coupon.MaxDiscountAmount = max_price;
                 coupon.StartDate = DateTime.Parse(StartDate);
                 coupon.EndDate = DateTime.Parse(EndDate);
+                //Default Pasif
+                tempcoupon.IsActive = Status == "Aktif" ? true : false;
 
                 db.SaveChanges();
                 if (db.coupon_categories.Any(x => x.coupon_id == coupon.Id && x.category_id != null))
                 {
-                    var categoriesToRemove = db.coupon_categories.Where(x => x.coupon_id == coupon.Id ).ToList();
+                    var categoriesToRemove = db.coupon_categories.Where(x => x.coupon_id == coupon.Id).ToList();
                     db.coupon_categories.RemoveRange(categoriesToRemove);
                     db.SaveChanges();
 
@@ -2108,10 +2141,18 @@ namespace CobanlarMarket.Controllers
         }
         public ActionResult CouponList()
         {
+            var expiredCoupons = db.coupons
+               .Where(c => c.EndDate <= DateTime.Now && c.IsActive == true)
+           .ToList();
+
+            expiredCoupons.ForEach(c => c.IsActive = false);
+
+            db.SaveChanges();
+
             AllViewModel model = new AllViewModel();
             model.products = db.products.ToList();
             model.users = db.users.ToList();
-            model.coupons = db.coupons.Include(c => c.coupon_categories).Include(c => c.coupon_products).ToList();
+            model.coupons = db.coupons.Where(c => c.Status == true).Include(c => c.coupon_categories).Include(c => c.coupon_products).ToList();
             model.categories = db.categories.ToList();
             model.sub_categories = db.sub_categories.ToList();
 
@@ -2130,14 +2171,17 @@ namespace CobanlarMarket.Controllers
 
                 coupons coupon = db.coupons.Find(Id);
 
-                db.coupon_categories.RemoveRange(coupon.coupon_categories.ToList());
-                db.coupon_products.RemoveRange(coupon.coupon_products.ToList());
-                db.coupons.Remove(coupon);
+                //db.coupon_categories.RemoveRange(coupon.coupon_categories.ToList());
+                //db.coupon_products.RemoveRange(coupon.coupon_products.ToList());
+                //db.coupons.Remove(coupon);
+
+                coupon.Status = false;
+                coupon.IsActive = false;
 
                 db.SaveChanges();
                 var list = db.coupons
-                        .Where(x => x.IsActive == true)
-                        .ToList()  // Retrieve data from database before formatting
+                        .Where(x => x.Status == true)
+                        .ToList()
                         .Select(x => new
                         {
                             x.Id,
@@ -2146,6 +2190,7 @@ namespace CobanlarMarket.Controllers
                             x.DiscountValue,
                             x.MinimumSpend,
                             x.MaxDiscountAmount,
+                            x.IsActive,
 
                             EndDate = x.EndDate != null ? x.EndDate.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
                             StartDate = x.StartDate != null ? x.StartDate.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
@@ -2221,7 +2266,7 @@ namespace CobanlarMarket.Controllers
 
                 // Resmi bir klasöre kaydetme
 
-                campaigns campaign = new campaigns() { campaign_cover = imgPath, campaign_title = Title, campaign_start_date = DateTime.Parse(StartDate), campaign_end_date = DateTime.Parse(EndDate) };
+                campaigns campaign = new campaigns() { campaign_cover = imgPath, campaign_title = Title, campaign_start_date = DateTime.Parse(StartDate), campaign_end_date = DateTime.Parse(EndDate), is_active = true };
 
                 if (!TryValidateModel(campaign))
                 {
@@ -2281,6 +2326,16 @@ namespace CobanlarMarket.Controllers
 
         public ActionResult CampaignList()
         {
+
+            var expiredCampaigns = db.campaigns
+            .Where(c => c.campaign_end_date <= DateTime.Now && c.is_active == true)
+            .ToList();
+
+            expiredCampaigns.ForEach(c => c.is_active = false);
+
+            db.SaveChanges();
+
+
             AllViewModel model = new AllViewModel();
             model.products = db.products.ToList();
             model.users = db.users.ToList();
@@ -2338,6 +2393,7 @@ namespace CobanlarMarket.Controllers
                             x.id,
                             x.campaign_title,
                             x.campaign_cover,
+                            x.is_active,
                             EndDate = x.campaign_end_date != null ? x.campaign_end_date.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
                             StartDate = x.campaign_start_date != null ? x.campaign_start_date.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
 
@@ -2365,6 +2421,16 @@ namespace CobanlarMarket.Controllers
 
         public ActionResult EditCampaign(int? Id)
         {
+
+            var expiredCampaigns = db.campaigns
+          .Where(c => c.campaign_end_date <= DateTime.Now && c.is_active == true)
+          .ToList();
+
+            expiredCampaigns.ForEach(c => c.is_active = false);
+
+            db.SaveChanges();
+
+
             if (Id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -2391,7 +2457,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
-        public ActionResult EditCampaign(HttpPostedFileBase Img, int Id, string Title, string StartDate, string EndDate, string Products)
+        public ActionResult EditCampaign(HttpPostedFileBase Img, int Id, string Title, string StartDate, string EndDate, string Products, string Status)
         {
 
             if (db.campaigns.Any(x => x.id == Id))
@@ -2495,9 +2561,14 @@ namespace CobanlarMarket.Controllers
                         }
 
 
-                       
+
 
                         campaign.campaign_cover = imgPath;
+
+                        //Default olarak Pasif
+
+                        campaign.is_active = Status == "Aktif" ? true : false;
+
                         db.SaveChanges();
 
                         if (campaign.campaign_products.Any())
@@ -2608,6 +2679,13 @@ namespace CobanlarMarket.Controllers
 
                     var p = db.payment_details.FirstOrDefault(x => x.paymentId == PaymentId);
                     p.status = "İade";
+
+
+                    foreach (var item in db.order_item.Where(x => x.order_id == p.order_id))
+                    {
+                        item.status = "iade";
+                    }
+
                     db.SaveChanges();
 
                     var list = db.order_item.Where(x => x.order_id == p.order_id).ToList()
@@ -2647,6 +2725,573 @@ namespace CobanlarMarket.Controllers
         }
 
 
+        public JsonResult GetNotification()
+        {
+
+            var user = Session["User"] as users;
+            if (user != null)
+            {
+
+                var list = db.notification.Where(x => x.status == true).OrderByDescending(o => o.id).Select(c => new
+                {
+                    c.id,
+                    c.user_id,
+                    c.order_id,
+                    c.text,
+                    c.title,
+                    c.is_read,
+                    c.status,
+                    User = new
+                    {
+                        c.users.first_name,
+                        c.users.last_name,
+                        c.users.id,
+                        c.users.avatar
+                    }
+                });
+                return Json(new { success = true, list = list });
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Kullanıcı Bulunamadı" });
+
+            }
+
+
+
+        }
+        public JsonResult RemoveNotification(int id)
+        {
+
+            var user = Session["User"] as users;
+            if (user != null)
+            {
+
+                var n = db.notification.Find(id);
+
+                if (n != null)
+                {
+                    n.status = false;
+                    db.SaveChanges();
+                    var list = db.notification.Where(x => x.status == true).OrderByDescending(o => o.id).Select(c => new
+                    {
+                        c.id,
+                        c.user_id,
+                        c.order_id,
+                        c.text,
+                        c.title,
+                        c.is_read,
+                        c.status,
+                        User = new
+                        {
+                            c.users.first_name,
+                            c.users.last_name,
+                            c.users.id,
+                            c.users.avatar
+                        }
+                    });
+                    return Json(new { success = true, list = list });
+                }
+                else
+                {
+
+                    return Json(new { success = false });
+
+                }
+
+
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Kullanıcı Bulunamadı" });
+
+            }
+
+
+
+        }
+
+        public JsonResult RemoveAllNotification()
+        {
+
+            var user = Session["User"] as users;
+            if (user != null)
+            {
+
+                var n = db.notification.Where(x => x.status == true);
+
+                if (n != null)
+                {
+                    foreach (var item in n)
+                    {
+                        item.status = false;
+                    }
+                    db.SaveChanges();
+                    var list = db.notification.Where(x => x.status == true).OrderByDescending(o => o.id).Select(c => new
+                    {
+                        c.id,
+                        c.user_id,
+                        c.order_id,
+                        c.text,
+                        c.title,
+                        c.is_read,
+                        c.status,
+                        User = new
+                        {
+                            c.users.first_name,
+                            c.users.last_name,
+                            c.users.id,
+                            c.users.avatar
+                        }
+                    });
+                    return Json(new { success = true, list = list });
+                }
+                else
+                {
+
+                    return Json(new { success = false });
+
+                }
+
+
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Kullanıcı Bulunamadı" });
+
+            }
+
+
+
+        }
+
+
+        public JsonResult ReadNotification(int id)
+        {
+
+            var user = Session["User"] as users;
+            if (user != null)
+            {
+
+                var n = db.notification.FirstOrDefault(x => x.id == id && x.status == true);
+
+                if (n != null)
+                {
+
+                    n.is_read = true;
+
+                    db.SaveChanges();
+                    var list = db.notification.Where(x => x.status == true).OrderByDescending(o => o.id).Select(c => new
+                    {
+                        c.id,
+                        c.user_id,
+                        c.order_id,
+                        c.text,
+                        c.title,
+                        c.is_read,
+                        c.status,
+                        User = new
+                        {
+                            c.users.first_name,
+                            c.users.last_name,
+                            c.users.id,
+                            c.users.avatar
+                        }
+                    });
+                    return Json(new { success = true, list = list });
+                }
+                else
+                {
+
+                    return Json(new { success = false });
+
+                }
+
+
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Kullanıcı Bulunamadı" });
+
+            }
+
+
+
+        }
+
+
+        public JsonResult ReadAllNotification()
+        {
+
+            var user = Session["User"] as users;
+            if (user != null)
+            {
+
+                var n = db.notification.Where(x => x.status == true && x.is_read == false);
+
+                if (n != null)
+                {
+                    foreach (var item in n)
+                    {
+                        item.is_read = true;
+                    }
+                    db.SaveChanges();
+                    var list = db.notification.Where(x => x.status == true).OrderByDescending(o => o.id).Select(c => new
+                    {
+                        c.id,
+                        c.user_id,
+                        c.order_id,
+                        c.text,
+                        c.title,
+                        c.is_read,
+                        c.status,
+                        User = new
+                        {
+                            c.users.first_name,
+                            c.users.last_name,
+                            c.users.id,
+                            c.users.avatar
+                        }
+                    });
+                    return Json(new { success = true, list = list });
+                }
+                else
+                {
+
+                    return Json(new { success = false });
+
+                }
+
+
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Kullanıcı Bulunamadı" });
+
+            }
+
+
+
+        }
+
+        public string isDelivered(int id)
+        {
+
+            if (db.order_details.Any(x => x.id == id))
+            {
+                var isDelivered = db.order_details.FirstOrDefault(x => x.id == id).is_delivered.ToString();
+
+                return isDelivered;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        public JsonResult ChangeDeliveryStatus(int Id)
+        {
+            if (!db.order_details.Any(x => x.id == Id))
+            {
+                return Json(new { success = false, message = "Sipariş Bulunamadı" });
+
+            }
+
+            var order = db.order_details.Find(Id);
+            order.is_delivered = order.is_delivered == true ? false : true;
+            db.SaveChanges();
+
+            return Json(new { success = true, message = "Sipariş Teslimat Durumu Değiştirildi", status = order.is_delivered });
+
+        }
+
+
+        public ActionResult Shipping()
+        {
+
+
+            AllViewModel model = new AllViewModel();
+            model.products = db.products.Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
+            model.users = db.users.ToList();
+            model.order_details = db.order_details.Include(o => o.order_item).ToList();
+            model.order_item = db.order_item.Include(o => o.products_skus).Include(o => o.products).ToList();
+            model.payment_details = db.payment_details.ToList();
+            model.company_details = db.company_details.ToList();
+            model.categories = db.categories.ToList();
+            model.carts = db.cart.ToList();
+            return View(model);
+        }
+
+
+        public ActionResult PageManagement()
+        {
+
+
+            AllViewModel model = new AllViewModel();
+            model.products = db.products.Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
+            model.users = db.users.ToList();
+            model.order_details = db.order_details.Include(o => o.order_item).ToList();
+            model.order_item = db.order_item.Include(o => o.products_skus).Include(o => o.products).ToList();
+            model.payment_details = db.payment_details.ToList();
+            model.company_details = db.company_details.ToList();
+            model.categories = db.categories.ToList();
+            model.carts = db.cart.ToList();
+            return View(model);
+        }
+
+        public JsonResult EditShipping(String MinAmount, String ShippingCost)
+        {
+            var cd = db.company_details.FirstOrDefault();
+
+            if (cd==null)
+            {
+                return Json(new { success = false, message = "Bulunamadı" });
+
+            }
+
+            decimal? minamount = null;
+            decimal? shippingcost = null;
+
+            if (decimal.TryParse(MinAmount.Replace(".", ","), out decimal parsedAmount))
+            {
+                minamount = parsedAmount;
+            }
+            else  // Boş bırakıldıysa veya geçersiz değerse varsayılan değer
+            {
+                minamount = 300;
+            }
+
+            if (decimal.TryParse(ShippingCost.Replace(".", ","), out decimal parsedShipping))
+            {
+                shippingcost = parsedShipping;
+            }
+            else  // Boş bırakıldıysa veya geçersiz değerse varsayılan değer
+            {
+                shippingcost = 30;
+            }
+
+            cd.min_amonunt_for_free_shipping = minamount;
+            cd.shipping_cost = shippingcost;
+
+            db.SaveChanges();
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+        }
+
+        [HttpPost]
+        public JsonResult EditTop(String content)
+        {
+            try
+            {
+                db.company_details.FirstOrDefault().homepage_top_text = content;
+                db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
+
+
+        [HttpPost]
+        public JsonResult EditSliderTitle(String content)
+        {
+            try
+            {
+                db.company_details.FirstOrDefault().homepage_slider_title = content;
+                db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
+
+        [HttpPost]
+        public JsonResult EditSliderImg(HttpPostedFileBase Img)
+        {
+            try
+            {
+                if (Img != null)
+                {
+                    string imgpath = null;
+                    var fileName = Path.GetFileName(Img.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/PageContentImg/SliderImg/"));
+                    imgpath = "/Content/PageContentImg/SliderImg/" + fileName;
+
+                    if (Directory.Exists(path))
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                        foreach (FileInfo file in directoryInfo.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                        Img.SaveAs(Path.Combine(path, fileName));
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(path);
+                        Img.SaveAs(Path.Combine(path, fileName));
+                    }
+                      db.company_details.FirstOrDefault().homepage_slider_img = imgpath;
+                      db.SaveChanges();
+
+                }
+
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
+
+
+
+        [HttpPost]
+        public JsonResult EditSliderText(String content)
+        {
+            try
+            {
+                db.company_details.FirstOrDefault().homepage_slider_text = content;
+                db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
+
+        [HttpPost]
+        public JsonResult EditBottomHeader(String content)
+        {
+            try
+            {
+                db.company_details.FirstOrDefault().homepage_bottom_header = content;
+                db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
+
+        [HttpPost]
+        public JsonResult EditBottomText(String content)
+        {
+            try
+            {
+                db.company_details.FirstOrDefault().homepage_bottom_text = content;
+                db.SaveChanges();
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
+
+
+        [HttpPost]
+        public JsonResult EditBottomImg(HttpPostedFileBase Img)
+        {
+            try
+            {
+                if (Img != null)
+                {
+                    string imgpath = null;
+                    var fileName = Path.GetFileName(Img.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/PageContentImg/BottomImg/"));
+                    imgpath = "/Content/PageContentImg/BottomImg/" + fileName;
+
+                    if (Directory.Exists(path))
+                    {
+                        DirectoryInfo directoryInfo = new DirectoryInfo(path);
+                        foreach (FileInfo file in directoryInfo.GetFiles())
+                        {
+                            file.Delete();
+                        }
+                        Img.SaveAs(Path.Combine(path, fileName));
+                    }
+                    else
+                    {
+                        Directory.CreateDirectory(path);
+                        Img.SaveAs(Path.Combine(path, fileName));
+                    }
+                    db.company_details.FirstOrDefault().homepage_bottom_img = imgpath;
+                    db.SaveChanges();
+
+                }
+
+
+            }
+            catch (Exception)
+            {
+
+                return Json(new { success = false, message = "Bir hata oluştu" });
+
+            }
+
+            return Json(new { success = true, message = "Başarıyla Güncellendi" });
+
+
+
+        }
 
 
     }

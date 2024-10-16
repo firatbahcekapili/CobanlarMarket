@@ -30,8 +30,8 @@ namespace CobanlarMarket.Models
         public Nullable<bool> isCargoFree { get; set; }
     
         public virtual coupons coupons { get; set; }
+        public virtual users users { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<cart_item> cart_item { get; set; }
-        public virtual users users { get; set; }
     }
 }

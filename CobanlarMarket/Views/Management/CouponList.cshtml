@@ -16,10 +16,7 @@
   
 </style>
 <div class=" mt-5 ml-5 mr-5">
-    <h2>Kupon Listesi</h2>
-
-
-    <!-- Table Product -->
+   
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
@@ -33,7 +30,7 @@
                 <div class="card-body">
                     <table id="couponTable" class="table table-hover table-product couponTable" style="width:100%">
                         <thead>
-                            <tr >
+                            <tr>
                                 <th>Kupon Kodu</th>
                                 <th>İndirim Türü</th>
                                 <th>İndirim Miktarı</th>
@@ -42,6 +39,8 @@
                                 <th>Başlangıç Tarihi</th>
                                 <th>Bitiş Tarihi</th>
                                 <th>Oluşturulma Tarihi</th>
+                                <th>Durum</th>
+
                                 <th></th>
 
                             </tr>
@@ -50,7 +49,7 @@
                             @{
                                 int i = 1;
                             }
-                            @foreach (var item in Model.coupons.Where(x => x.IsActive == true))
+                            @foreach (var item in Model.coupons)
                             {
                                 <tr>
                                     <td class="">
@@ -65,12 +64,10 @@
                                     <td>@item.StartDate</td>
                                     <td>@item.EndDate</td>
                                     <td>@item.CreatedAt</td>
+                                    <td> <span class="badge @(item.IsActive==true?"badge-success":"badge-danger")">@(item.IsActive==true?"Aktif":"Pasif")</span> </td>
 
                                     <td>
-                                        <a href="#">
-                                            <span class="mdi mdi-eye text-primary "></span>
 
-                                        </a>
                                         <a href="/Management/EditCoupon/@item.Id">
                                             <span class="mdi mdi-pen text-success"></span>
 
@@ -125,10 +122,11 @@
                             "<td>" + coupon.MaxDiscountAmount + "</td>" +
                             "<td>" + coupon.StartDate + "</td>" +
                             "<td>" + coupon.EndDate + "</td>" +
-                            "<td>" + coupon.CreatedAt + "</td>" +
+                            "<td>" + coupon.CreatedAt + "</td>" + 
+                            "<td><span class='badge " + (coupon.IsActive ? "badge-success" : "badge-danger") + "'>" +
+                            (coupon.IsActive ? "Aktif" : "Pasif") + "</span></td>" +
                             "<td>" +
-                            "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
-                            "<a  href='/Management/EditCoupon/" + coupon.Id + "><span class='mdi mdi-pen text-success'></span></a>" +
+                            "<a  href='/Management/EditCoupon/" + coupon.Id + "'><span class='mdi mdi-pen text-success'></span></a>" +
                             "<a onclick='Remove(" + coupon.Id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
                             "</td>" +
                             "</tr>";

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WEBSITE: https://themefisher.com
  * TWITTER: https://twitter.com/themefisher
  * FACEBOOK: https://www.facebook.com/themefisher
@@ -502,7 +502,7 @@ $(document).ready(function () {
 
 
 
-   
+
     var couponTable = $("#couponTable");
     if (couponTable.length != 0) {
         couponTable.DataTable({
@@ -571,7 +571,11 @@ $(document).ready(function () {
                     orderable: false,
                     targets: [-1],
                 },
-            ],
+            ], language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Ara...",
+            }
+
         });
     }
 
@@ -703,4 +707,610 @@ $(document).ready(function () {
             emptyFill: [gray],
         });
     }
+
+
+    //----------------------------------------------------------------------------------------------
+    var orderTable = $("#orderTable").DataTable({
+
+        order: [
+            [2, 'desc']
+        ],
+        rowGroup: {
+            dataSrc: 2,
+            startRender: function (rows, group) {
+                var payId = $("#orderTable").find("[orderId='" + group + "']").attr("payId");
+                var groupHtml = $(`
+                <div class="float-right d-flex align-items-center">
+               <span id="icon-${group}" class="mdi mdi-package-variant-closed-remove"></span>
+               <label class="switch switch-icon switch-primary switch-pill form-control-label mr-2">
+                      <input type="checkbox" class="switch-input form-check-input deliver-switch" id="delivered-${group}" >
+                      <span class="switch-label"></span>
+                      <span class="switch-handle">
+                      </span>
+                </label>
+
+
+                     
+                    <a class="mr-2" href="/Management/OrderDetail/${group}"><span class="mdi mdi-eye text-bg-warning"></span></a>
+                    <a class="btn btn-danger" href="javascript:void(0);" onclick="Refund('${payId}')">İade Et</a>
+                </div>
+            `);
+
+                $.ajax({
+                    url: '/Management/isDelivered/',
+                    type: 'POST',
+                    data: { Id: parseInt(group) },
+                    success: function (response) {
+                        var isDelivered = response.toString();
+                        if (isDelivered === "True") {
+
+                            $(`#delivered-${group}`).prop('checked', true);
+                            $(`#delivered-${group}`).prop('value', "on");
+                            $(`#icon-${group}`).removeClass();
+                            $(`#icon-${group}`).addClass("mdi mdi-package-variant-closed-check")
+
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                });
+
+                return groupHtml;
+            }
+        },
+        responsive: true,
+        info: false,
+        lengthChange: false,
+        scrollX: true,
+        columnDefs: [
+            {
+                orderable: false,
+                targets: [0, 4, -1],
+            },
+        ],
+        language: {
+            search: "_INPUT_",
+            "emptyTable": "Sipariş Bulunmamaktadır",
+            searchPlaceholder: "Ara..",
+        }
+    });
+
+    $(document).on('change', '.deliver-switch', function (e) {
+
+        var element = $(e.target);
+
+        var id = element.attr("id").split("-")[1];
+        var status = element.is(':checked') ? 'delivered' : 'undelivered';
+
+        $.ajax({
+            url: '/Management/ChangeDeliveryStatus/',
+            type: 'POST',
+            data: { Id: parseInt(id) },
+            success: function (response) {
+
+                if (response.success) {
+                    toastr.success(response.message);
+                    if (response.status == true) {
+                        $('#orderTable [orderid="' + id + '"]').removeClass('notDelivered blink-effect');
+                        $(`#icon-${id}`).removeClass();
+                        $(`#icon-${id}`).addClass("mdi mdi-package-variant-closed-check")
+
+                    } else {
+                        $('#orderTable [orderid="' + id + '"]').addClass('notDelivered blink-effect');
+                        $(`#icon-${id}`).removeClass();
+                        $(`#icon-${id}`).addClass("mdi mdi-package-variant-closed-remove")
+                    }
+
+                }
+                else {
+                    toastr.error(response.message);
+                    if (status=="delivered") {
+                        element.removeAttr("checked");
+                    } else {
+                        element.attr("checked","checked");
+                    }
+                }
+
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+      
+    });
+
+
+    var notificationHub = $.connection.notificationHub;
+
+    notificationHub.client.receiveNotification = function (message, orderItems, paymentDetails, orderDetails, notifications) {
+        toastr.success(message, "Yeni Sipariş");
+
+        paymentDetails.forEach(function (p) {
+
+            toastr.success("₺" + p.paidPrice + "'lik bir sipariş aldınız.");
+
+        });
+        $('#myTabContent #all').empty();
+        var anyUnread = false;
+        notifications.forEach(function (notification) {
+
+            var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                '  <div class="media-sm-wrapper" >' +
+                ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                ' </div >' +
+                ' <div class="media-body">' +
+                '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                '<span class="discribe">' + notification.text + '</span>' +
+                ' </a>  ' +
+                '</div > ' +
+                '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+                '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                '</a> ' +
+                '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                '</a> ';
+
+
+            $('#myTabContent #all').append(element);
+
+            if (notification.is_read == false) {
+                anyUnread = true;
+            }
+        });
+
+
+
+
+        if (orderTable != null) {
+            orderItems.forEach(function (order) {
+                var orderId = order.order_id;
+
+
+                var rowData = [
+                    '<img src="' + (order.products ? order.products.cover : '') + '" alt="Alternate Text" />', // 1. sütun
+                    order.id, // 2. sütun
+                    order.order_id, // 3. sütun
+                    order.orderDetails && order.orderDetails.User ? order.orderDetails.User.username : '', // 4. sütun
+                    order.products ? order.products.name : '', // 5. sütun
+                    order.quantity, // 6. sütun
+                    order.products && order.products.price ? (order.quantity * order.products.price) : 0, // 7. sütun
+                    order.orderDetails ? order.orderDetails.payment_details.status : '', // 8. sütun
+                    order.orderDetails ? order.orderDetails.created_at : '', // 9. sütun
+                    '' // 10. sütun
+                ];
+
+
+                var addedRow = orderTable.row.add(rowData).draw(false).node();
+
+                addedRow.classList.add("notDelivered", "blink-effect");
+            });
+
+        }
+
+
+
+        $('.notify-toggler .badge').text(notifications.length);
+        $('#all-tabs').text("Bildirimler (" + notifications.length + ")");
+        if (anyUnread) {
+            startBlinking(); // Animasyonu başlat
+        } else {
+            stopBlinking(); // Animasyonu durdur
+        }
+
+    };
+
+    $.connection.hub.start().done(function () {
+        console.log("SignalR bağlantısı kuruldu.");
+    }).fail(function (error) {
+        console.error('SignalR bağlantı hatası: ' + error);
+    });
+
+
 });
+
+$.ajax({
+    url: '/Management/GetNotification/',
+    type: 'POST',
+
+    success: function (response) {
+
+
+        if (response.success) {
+
+
+            $('#myTabContent #all').empty();
+            var anyUnread = false;
+
+            response.list.forEach(function (notification) {
+
+                var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                    '  <div class="media-sm-wrapper" >' +
+                    ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                    ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                    ' </div >' +
+                    ' <div class="media-body">' +
+                    '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                    ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                    '<span class="discribe">' + notification.text + '</span>' +
+                    ' </a>  ' +
+                    '</div > ' +
+                    '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+
+                    '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                    '</a> ' +
+                    '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                    '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                    '</a> ';
+
+                $('#myTabContent #all').append(element);
+
+                if (notification.is_read == false) {
+                    anyUnread = true;
+                }
+            });
+
+            $('.notify-toggler .badge').text(response.list.length);
+            $('#all-tabs').text("Bildirimler (" + response.list.length + ")");
+
+            if (anyUnread) {
+                startBlinking(); // Animasyonu başlat
+            } else {
+                stopBlinking(); // Animasyonu durdur
+            }
+
+        }
+
+
+
+    }, error: function (e) {
+        console.log(e)
+
+    }
+
+
+
+});
+function blink() {
+    $('.notify-toggler .badge').fadeOut(1000).fadeIn(1000);
+}
+
+$('#refress-button').on("click", function () {
+
+
+    $.ajax({
+        url: "/Management/GetNotification",
+        type: "POST",
+        success: function (response) {
+            if (response.success) {
+
+                $('#myTabContent #all').empty();
+                var anyUnread = false;
+
+                response.list.forEach(function (notification) {
+
+                    var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                        '  <div class="media-sm-wrapper" >' +
+                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                        ' </div >' +
+                        ' <div class="media-body">' +
+                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                        '<span class="discribe">' + notification.text + '</span>' +
+                        ' </a>  ' +
+                        '</div > ' +
+                        '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+
+                        '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                        '</a> ' +
+                        '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                        '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                        '</a> ';
+
+                    $('#myTabContent #all').append(element);
+
+                    if (notification.is_read == false) {
+                        anyUnread = true;
+                    }
+                });
+
+                $('.notify-toggler .badge').text(response.list.length);
+                $('#all-tabs').text("Bildirimler (" + response.list.length + ")");
+
+
+                if (anyUnread) {
+                    startBlinking(); // Animasyonu başlat
+                } else {
+                    stopBlinking(); // Animasyonu durdur
+                }
+            }
+
+        }
+
+
+
+    });
+
+});
+function startBlinking() {
+    $('.notify-toggler .badge').addClass('blink-effect'); // Blink efektini başlat
+}
+
+function stopBlinking() {
+    $('.notify-toggler .badge').removeClass('blink-effect'); // Blink efektini durdur
+}
+
+
+
+
+function RemoveNotification(id) {
+    $.ajax({
+        url: "/Management/RemoveNotification",
+        type: "POST",
+        data: { id: parseInt(id) },
+        success: function (response) {
+            if (response.success) {
+                toastr.success("Bildirim silindi");
+
+                $('#myTabContent #all').empty();
+                var anyUnread = false;
+
+                response.list.forEach(function (notification) {
+
+                    var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                        '  <div class="media-sm-wrapper" >' +
+                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                        ' </div >' +
+                        ' <div class="media-body">' +
+                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                        '<span class="discribe">' + notification.text + '</span>' +
+                        ' </a>  ' +
+                        '</div > ' +
+                        '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+
+                        '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                        '</a> ' +
+
+                        '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                        '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                        '</a> ';
+
+                    $('#myTabContent #all').append(element);
+
+                    if (notification.is_read == false) {
+                        anyUnread = true;
+                    }
+                });
+
+                $('.notify-toggler .badge').text(response.list.length);
+                $('#all-tabs').text("Bildirimler (" + response.list.length + ")");
+
+
+                if (anyUnread) {
+                    startBlinking(); // Animasyonu başlat
+                } else {
+                    stopBlinking(); // Animasyonu durdur
+                }
+
+
+            } else {
+                toastr.error("Bir Hata Oluştu");
+            }
+
+        }
+
+
+
+    });
+}
+
+function RemoveAllNotifiactions() {
+    $.ajax({
+        url: "/Management/RemoveAllNotification",
+        type: "POST",
+        success: function (response) {
+            if (response.success) {
+                toastr.success("Bildirimler silindi");
+
+                $('#myTabContent #all').empty();
+                var anyUnread = false;
+
+                response.list.forEach(function (notification) {
+
+                    var element = '<div class="media media-sm' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                        '  <div class="media-sm-wrapper" >' +
+                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                        ' </div >' +
+                        ' <div class="media-body">' +
+                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                        '<span class="discribe">' + notification.text + '</span>' +
+                        ' </a>  ' +
+                        '</div > ' +
+                        '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+
+                        '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                        '</a> ' +
+                        '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                        '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                        '</a> ';
+
+                    $('#myTabContent #all').append(element);
+                    if (notification.is_read == false) {
+                        anyUnread = true;
+                    }
+                });
+
+                $('.notify-toggler .badge').text(response.list.length);
+                $('#all-tabs').text("Bildirimler (" + response.list.length + ")");
+
+
+                if (anyUnread) {
+                    startBlinking(); // Animasyonu başlat
+                } else {
+                    stopBlinking(); // Animasyonu durdur
+                }
+
+            } else {
+                toastr.error("Bir Hata Oluştu");
+            }
+
+        }
+
+
+
+    });
+}
+function ReadNotification(id) {
+    $.ajax({
+        url: "/Management/ReadNotification",
+        type: "POST",
+        data: { id: parseInt(id) },
+        success: function (response) {
+            if (response.success) {
+
+                $('#myTabContent #all').empty();
+                var anyUnread = false;
+
+                response.list.forEach(function (notification) {
+
+                    var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                        '  <div class="media-sm-wrapper" >' +
+                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                        ' </div >' +
+                        ' <div class="media-body">' +
+                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                        '<span class="discribe">' + notification.text + '</span>' +
+                        ' </a>  ' +
+                        '</div > ' +
+                        '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+
+                        '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                        '</a> ' +
+                        '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                        '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                        '</a> ';
+
+                    $('#myTabContent #all').append(element);
+
+                    if (notification.is_read == false) {
+                        anyUnread = true;
+                    }
+                });
+
+                $('.notify-toggler .badge').text(response.list.length);
+                $('#all-tabs').text("Bildirimler (" + response.list.length + ")");
+
+                if (anyUnread) {
+                    startBlinking(); // Animasyonu başlat
+                } else {
+                    stopBlinking(); // Animasyonu durdur
+                }
+
+
+            } else {
+                toastr.error("Bir Hata Oluştu");
+            }
+
+        }
+
+
+
+    });
+}
+
+
+
+function ReadAllNotifiactions() {
+    $.ajax({
+        url: "/Management/ReadAllNotification",
+        type: "POST",
+        success: function (response) {
+            if (response.success) {
+
+                $('#myTabContent #all').empty();
+                var anyUnread = false;
+
+                response.list.forEach(function (notification) {
+
+                    var element = '<div class="media media-sm' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
+                        '  <div class="media-sm-wrapper" >' +
+                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+
+
+                        ' </div >' +
+                        ' <div class="media-body">' +
+                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
+                        '<span class="discribe">' + notification.text + '</span>' +
+                        ' </a>  ' +
+                        '</div > ' +
+                        '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+
+                        '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
+
+                        '</a> ' +
+                        '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
+                        '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
+
+                        '</a> ';
+
+                    $('#myTabContent #all').append(element);
+                    if (notification.is_read == false) {
+                        anyUnread = true;
+                    }
+                });
+
+                $('.notify-toggler .badge').text(response.list.length);
+                $('#all-tabs').text("Bildirimler (" + response.list.length + ")");
+
+
+                if (anyUnread) {
+                    startBlinking(); // Animasyonu başlat
+                } else {
+                    stopBlinking(); // Animasyonu durdur
+                }
+
+            } else {
+                toastr.error("Bir Hata Oluştu");
+            }
+
+        }
+
+
+
+    });
+}

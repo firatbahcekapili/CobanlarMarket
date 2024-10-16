@@ -11,7 +11,7 @@
 <div class=" mt-5 ml-5 mr-5">
   
     <form id="couponForm">
-        <div class="row justify-content-center  bg-white mb-5">
+        <div class="row justify-content-center position-relative bg-white mb-5">
             <div class="col-12  pt-4 pb-4 pl-5  ">
                 <h3>Kupon Düzenle</h3>
 
@@ -114,7 +114,7 @@
                                 <ul>
                                     @foreach (var category in Model.categories)
                                     {
-                                        <li id="c-@category.id"class=" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "selected" : "")">
+                                        <li id="c-@category.id" class=" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "selected" : "")">
                                             @category.name
                                             <ul>
                                                 @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
@@ -136,42 +136,42 @@
                             </div>
 
                             @*<div id="categories" style="max-height:300px;overflow:auto;">
-                                @foreach (var category in Model.categories)
-                                {
-                                    if (Model.sub_categories.Any(x => x.parent_id == category.id))
-                                    {
-                                        <div class="category-group">
-                                            <div class="pretty p-default  p-curve p-smooth">
-                                                <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") />
-                                                <div class="state p-primary">
-                                                    <label>@category.name</label>
-                                                </div>
-                                            </div>
+                    @foreach (var category in Model.categories)
+                    {
+                        if (Model.sub_categories.Any(x => x.parent_id == category.id))
+                        {
+                            <div class="category-group">
+                                <div class="pretty p-default  p-curve p-smooth">
+                                    <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") />
+                                    <div class="state p-primary">
+                                        <label>@category.name</label>
+                                    </div>
+                                </div>
 
-                                            <div class="subcategories">
-                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
-                                                {
-                                                    <div class="pretty p-default p-curve p-smooth">
-                                                        <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" @(subcategory.coupon_categories.Any(p => p.subcategory_id == subcategory.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked disabled" : "") />
-                                                        <div class="state p-primary">
-                                                            <label>@subcategory.name</label>
-                                                        </div>
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
-                                    }
-                                    else
+                                <div class="subcategories">
+                                    @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
                                     {
                                         <div class="pretty p-default p-curve p-smooth">
-                                            <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") />
+                                            <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" @(subcategory.coupon_categories.Any(p => p.subcategory_id == subcategory.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked disabled" : "") />
                                             <div class="state p-primary">
-                                                <label>@category.name</label>
+                                                <label>@subcategory.name</label>
                                             </div>
                                         </div>
                                     }
-                                }
-                            </div>*@
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="pretty p-default p-curve p-smooth">
+                                <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" @(category.coupon_categories.Any(p => p.category_id == category.id && p.coupon_id == Model.coupons.FirstOrDefault().Id) ? "checked" : "") />
+                                <div class="state p-primary">
+                                    <label>@category.name</label>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>*@
                         </div>
                         <div class="form-group col-md-6">
                             <label>Kuponun Geçerli Olacağı Ürünleri Seçin</label>
@@ -187,6 +187,11 @@
                         </div>
                     </div>
 
+                    <label class="switch switch-text switch-secondary switch-pill form-control-label position-absolute " style="top:0;right:25px;">
+                        <input type="checkbox" class="switch-input form-check-input" id="status" @(Model.coupons.FirstOrDefault().IsActive == true ? " checked" : "")>
+                        <span class="switch-label" data-on="Aktif" data-off="Pasif"></span>
+                        <span class="switch-handle"></span>
+                    </label>
 
 
                     <div class="form-group">
@@ -315,7 +320,7 @@
             var startdateFromServer = '@Model.coupons.FirstOrDefault().StartDate'
             var enddateFromServer = '@Model.coupons.FirstOrDefault().EndDate'
 
-        // Moment.js kullanarak tarihi biçimlendirin
+        // Moment.js kullanarak tarihi biçimlendirme
         var formattedStartdate = moment(startdateFromServer, "DD.MM.YYYY HH:mm:ss").format("YYYY-MM-DD");
         document.getElementById('StartDate').value = formattedStartdate;
 
@@ -333,6 +338,7 @@
             var maxprice = $('#maxprice').val() || "";
             var startdate = $('#StartDate').val() || "";
             var enddate = $('#EndDate').val() || "";
+            var status = $('#status').is(':checked') ? 'Aktif' : 'Pasif';
 
             var formData = new FormData();
             formData.append("Id", parseInt(id));
@@ -343,13 +349,13 @@
             formData.append("MaxPrice", maxprice);
             formData.append("StartDate", startdate);
             formData.append("EndDate", enddate);
+            formData.append("Status", status);
 
 
 
             var selectedNodes = $('#categoryTree').jstree('get_checked', true);
             var selectedIds = [];
 
-            // Seçili düğümlerin ID'lerini ve parent'larını almak için bir dizi
             var parentIds = selectedNodes.map(function (node) {
                 return node.id; // Her düğümün ID'sini al
             });
@@ -366,7 +372,6 @@
                 return !parentIds.includes(node.parent);
             });
 
-            // Yeni diziyi gönderebilirsiniz
             console.log("Filtered selected IDs:", selectedIds);
             formData.append("CategoryIds", selectedIds.join(','));
 

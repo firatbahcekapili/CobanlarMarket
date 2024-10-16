@@ -14,14 +14,7 @@
 
 
         <div class="col-lg-4 col-md-5 d-flex justify-content-lg-start justify-content-center mb-2 mb-md-0">
-            @*<div class="filter__sort">
-            <span>Sırala</span>
-            <select>
-                <option disabled selected> Sıralama Seçiniz</option>
-                <option orderType="price_desc">Artan Fiyat</option>
-                <option orderType="price_asc">Azalan Fiyat</option>
-            </select>
-        </div>*@
+   
 
 
 
@@ -66,7 +59,6 @@
 
 
                         @{
-                            // Mevcut protokol ve domaini al
                             string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
                             // Ürün yolunu dinamik olarak oluştur
                             string productPath = Url.Action("Product", "Home", new { id = product.id });

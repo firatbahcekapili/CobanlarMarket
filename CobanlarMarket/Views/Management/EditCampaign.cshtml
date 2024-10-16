@@ -11,7 +11,7 @@
 <div class=" mt-5 ml-5 mr-5">
    
     <form id="campaignForm">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center position-relative">
             <div class="col-12 bg-white mb-5">
                 <div class="col-12 pt-4 pb-4 ">
                     <h3>Kampanya Düzenle</h3>
@@ -80,6 +80,12 @@
                         </select>
                     </div>
 
+                        <label class="switch switch-text switch-secondary switch-pill form-control-label position-absolute " style="top:0;right:15px;">
+                            <input type="checkbox" class="switch-input form-check-input" id="status" @(Model.campaigns.FirstOrDefault().is_active==true?" checked":"") >
+                            <span class="switch-label" data-on="Aktif" data-off="Pasif"></span>
+                            <span class="switch-handle"></span>
+                        </label>
+                   
                     <div class="form-group" style="height:35px;">
                         <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
                     </div>
@@ -105,7 +111,7 @@
         var startdateFromServer = '@Model.campaigns.FirstOrDefault().campaign_start_date';
         var enddateFromServer = '@Model.campaigns.FirstOrDefault().campaign_end_date';
 
-        // Moment.js kullanarak tarihi biçimlendirin
+        // Moment.js kullanarak tarihi biçimlendirme
         var formattedStartdate = moment(startdateFromServer, "DD.MM.YYYY HH:mm:ss").format("YYYY-MM-DD");
         document.getElementById('startdate').value = formattedStartdate;
 
@@ -156,23 +162,25 @@
             var startdate = $('#startdate').val() || "";
             var enddate = $('#enddate').val() || "";
             var selectedProducts = products.getValue(true);
+            var status = $('#status').is(':checked') ? 'Aktif' : 'Pasif';
+
 
             formData.append("Title", title);
             formData.append("StartDate", startdate);
             formData.append("EndDate", enddate);
             formData.append("Products", selectedProducts);
+            formData.append("Status", status);
 
             // Eğer img boşsa image-container'daki mevcut resmi kullan
             if (!img) {
                 var existingImg = $('#image-container img').attr('src');
                 if (existingImg) {
-                    // Mevcut resmi bir blob olarak oluşturuyoruz
                     fetch(existingImg)
                         .then(response => response.blob())
                         .then(blob => {
                             img = new File([blob], "existing-image.jpg", { type: blob.type });
                             formData.append("Img", img);
-                            sendFormData(formData); // Resim hazır olduğunda formu gönder
+                            sendFormData(formData); 
                         });
                 } else {
                     formData.append("Img", null);
@@ -229,7 +237,6 @@
         });
     }
     function removeImage(fileToRemove) {
-        // Dosya verisini base64 formatına dönüştür
         var reader = new FileReader();
         reader.onload = function (e) {
             var fileDataURL = e.target.result;
@@ -244,7 +251,6 @@
                 }
             });
 
-            // Input dosya listesini güncelle
 
             $("#campaignImg").remove();
             $(".img-parent").append("  <input type='file' class='form-control' id='campaignImg' accept='.jpg,.jpeg,.png' aria-describedby='campaignImg' onchange='dosyaOnizlemeNew(this);'>")

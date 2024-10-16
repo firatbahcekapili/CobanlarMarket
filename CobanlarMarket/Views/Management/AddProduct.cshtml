@@ -10,8 +10,8 @@
 
     .img-thumbnail {
         position: relative;
-        width: 100px; /* Genişlik ihtiyaca göre ayarlanabilir */
-        height: 100px; /* Yükseklik ihtiyaca göre ayarlanabilir */
+        width: 100px;
+        height: 100px; 
     }
 
         .img-thumbnail .remove-btn {
@@ -98,7 +98,6 @@
                         <select class="form-control" id="subCategory" disabled>
                             <option disabled>Alt Kategori Seçiniz</option>
 
-                            <!-- Add more options here -->
                         </select>
                     </div>
                     <div class="form-group col-lg-4 col-md-12">
@@ -106,7 +105,6 @@
                         <select class="form-control" id="subsubCategory" disabled>
                             <option disabled>Alt Alt Kategori Seçiniz</option>
 
-                            <!-- Add more options here -->
                         </select>
                     </div>
                     <small class="form-text text-muted col-12">Kategori ve Alt Kategori alanlarının seçilmesi zorunludur. Yoksa ekleyebilirsiniz <a href="/Management/AddCategory">Ekle</a> </small>
@@ -209,7 +207,7 @@
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
                 var removeBtn = $('<button>').addClass('remove-img-btn').html('<i class="mdi mdi-close icon"></i>').on('click', function (event) {
-                    event.preventDefault(); // Varsayılan davranışı engelle
+                    event.preventDefault(); 
                     removeImage(file);
                 });
                 var wrapper = $('<div>').addClass('p-2 position-relative col-auto').append(img).append(removeBtn);
@@ -220,7 +218,6 @@
     }
 
     function removeImage(fileToRemove) {
-        // Dosya verisini base64 formatına dönüştür
         var reader = new FileReader();
         reader.onload = function (e) {
             var fileDataURL = e.target.result;
@@ -284,7 +281,6 @@
                 });
 
 
-                // Diğer form verilerini al
                 var name = $('#productName').val() || "";
                 var subCategory = $("#subCategory").find('option:selected').val() || "";
 
@@ -366,7 +362,6 @@
                         formData.append('CategoryType', 1);
                     }
 
-                    // AJAX isteği gönder
                     $.ajax({
                         url: '/Management/AddProduct/',
                         type: 'POST',
@@ -401,7 +396,7 @@
         }
         else if (categoryId) {
             $.ajax({
-                url: '/Management/GetSubCategories', // Metodun URL'si
+                url: '/Management/GetSubCategories', 
                 type: 'GET',
                 data: { categoryId: categoryId },
                 success: function (data) {

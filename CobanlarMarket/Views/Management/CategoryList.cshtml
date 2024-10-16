@@ -39,7 +39,7 @@
                                 }
                                 @foreach (var item in Model.categories)
                                 {
-                                    <tr>
+                                    <tr CatId="@item.id">
                                         <td>@item.id</td>
                                         <td>
                                             @if (item.cover != null)
@@ -117,7 +117,7 @@
 
                                 @foreach (var item in Model.sub_categories)
                                 {
-                                    <tr>
+                                    <tr subCatId="@item.id">
                                         <td>@item.id</td>
 
                                         <td>@item.name</td>
@@ -181,7 +181,7 @@
 
                                 @foreach (var item in Model.sub_subcategories)
                                 {
-                                    <tr>
+                                    <tr subSubCatId="@item.id">
                                         <td>@item.id</td>
 
                                         <td>@item.name</td>
@@ -299,31 +299,25 @@
             type: 'POST',
             data: { Id: id },
             success: function (result) {
-                console.log("success");
-                toastr.success('Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                var tbody = $("#categoryTable tbody");
-                tbody.empty();
+                if (result.success) {
+
+                    toastr.success('Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                result.forEach(function (category) {
-                    var row = "<tr>" +
-                        "<td>" + category.id + "</td>" +
-                        "<td>" + category.name + "</td>" +
-                        "<td>" + category.description + "</td>" +
+                    var tbody = $("#categoryTable tbody");
 
-                        "<td>" + category.created_at + "</td>" +
-                        "<td>" +
-                        "<a href='/Management/EditCategory/" + category.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
-                        "<a onclick='Remove(" + category.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                        "</td>" +
-                        "</tr>";
-                    tbody.append(row);
-                });
+                    tbody.find('[CatId=' + id + ']').remove();
 
 
-                $('#RemoveCModal').modal('hide');
+                    $('#RemoveCModal').modal('hide');
+                } else {
+                    toastr.error('Kategori Silinirken Bir Hata Oluştu', 'Başarısız');
+                    $('#RemoveCModal').modal('hide');
+
+                }
+
 
 
 
@@ -342,32 +336,22 @@
             type: 'POST',
             data: { Id: id },
             success: function (result) {
-                console.log("success");
-                toastr.success('Alt Kategori Başarıyla Silindi', 'Başarılı');
+
+                if (result.success) {
+                    toastr.success('Alt Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                var tbody = $("#subCategoryTable tbody");
-                tbody.empty();
+                    var tbody = $("#subCategoryTable tbody");
 
+                    tbody.find('[subCatId=' + id + ']').remove();
 
-                result.forEach(function (category) {
-                    var row = "<tr>" +
-                        "<td>" + category.id + "</td>" +
-                        "<td>" + category.name + "</td>" +
-                        "<td>" + category.description + "</td>" +
+                    $('#RemoveSCModal').modal('hide');
+                } else {
+                    toastr.error('Alt Kategori Silinirken Bir Hata Oluştu', 'Başarısız');
+                    $('#RemoveSCModal').modal('hide');
 
-                        "<td>" + category.parentCategory + "</td>" +
-                        "<td>" + category.created_at + "</td>" +
-                        "<td>" +
-                        "<a href='/Management/EditSubCategory/" + category.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
-                        "<a onclick='RemoveSub(" + category.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                        "</td>" +
-                        "</tr>";
-                    tbody.append(row);
-                });
-
-
-                $('#RemoveSCModal').modal('hide');
+                }
+             
 
 
             }
@@ -384,31 +368,23 @@
             type: 'POST',
             data: { Id: id },
             success: function (result) {
-                console.log("success");
-                toastr.success('Alt Alt Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                var tbody = $("#subsubCategoryTable tbody");
-                tbody.empty();
+                if (result.success) {
+                    toastr.success('Alt Alt Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                result.forEach(function (category) {
-                    var row = "<tr>" +
-                        "<td>" + category.id + "</td>" +
-                        "<td>" + category.name + "</td>" +
-                        "<td>" + category.description + "</td>" +
+                    var tbody = $("#subsubCategoryTable tbody");
 
-                        "<td>" + category.parentCategory + "</td>" +
-                        "<td>" + category.created_at + "</td>" +
-                        "<td>" +
-                        "<a href='/Management/EditSubSubCategory/" + category.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
-                        "<a onclick='RemoveSubSub(" + category.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                        "</td>" +
-                        "</tr>";
-                    tbody.append(row);
-                });
+                    tbody.find('[subSubCatId=' + id + ']').remove();
 
-                $('#RemoveSCCModal').modal('hide');
+                    $('#RemoveSCCModal').modal('hide');
+                } else {
+                    toastr.error('Alt Alt Kategori Silinirken Bir Hata Oluştu', 'Başarısız');
+                    $('#RemoveSCCModal').modal('hide');
+
+                }
+               
 
 
 

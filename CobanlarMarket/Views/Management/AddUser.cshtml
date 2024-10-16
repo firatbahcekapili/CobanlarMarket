@@ -103,7 +103,6 @@
                 var img = $('#userImg')[0].files[0];
                 formData.append('Img', img);
 
-                // Diğer form verilerini al
                 var name = $('#name').val() || "";
                 var surname = $('#surname').val() || "";
                 var username = $('#userName').val() || "";
@@ -120,13 +119,12 @@
                 formData.append('Tel', tel);
                 formData.append('Birthdate', birthdate);
 
-                // AJAX isteği gönder
                 $.ajax({
                     url: '/Management/AddUser/',
                     type: 'POST',
                     data: formData,
-                    processData: false,  // processData false olarak ayarlanmalıdır!
-                    contentType: false,  // contentType false olarak ayarlanmalıdır!
+                    processData: false,  
+                    contentType: false, 
                     success: function (result) {
 
 
@@ -138,7 +136,6 @@
 
                     },
                     error: function (xhr, status, error) {
-                        // Hata durumunda burada işlem yapabilirsiniz
                         console.error('AJAX Error: ' + error);
                     }
                 });

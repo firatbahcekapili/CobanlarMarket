@@ -11,8 +11,8 @@
 
     .img-thumbnail {
         position: relative;
-        width: 100px; /* Genişlik ihtiyaca göre ayarlanabilir */
-        height: 100px; /* Yükseklik ihtiyaca göre ayarlanabilir */
+        width: 100px; 
+        height: 100px; 
     }
 
         .img-thumbnail .remove-btn {
@@ -52,14 +52,17 @@
 </style>
 
 <div class=" mt-5 ml-5 mr-5">
-    <h2>Ürün Düzenle</h2>
 
     <form id="ProductForm">
         @{
             CobanlarMarket.Models.products p = new CobanlarMarket.Models.products();
             CobanlarMarket.Models.products_skus ps = new CobanlarMarket.Models.products_skus();
         }
-        <div class="row justify-content-center">
+        <div class="row justify-content-center  bg-white mb-5">
+            <div class="col-12 col-xl-10  pt-4 pb-4 pl-5 ">
+                <h3>Ürün Ekle</h3>
+
+            </div>
             <!-- Left Column -->
             <div class="col-xl-5 mr-xl-5 mb-xl-0 mb-5 bg-white p-5">
                 <div class="form-group">
@@ -76,7 +79,6 @@
                         <label for="category">Kategori *</label>
                         <select class="form-control" id="category">
                             <option disabled>Kategori Seçiniz</option>
-                            <!-- Add categories here -->
 
                         </select>
 
@@ -86,15 +88,13 @@
                         <select class="form-control" id="subCategory" disabled>
                             <option disabled>Alt Kategori Seçiniz</option>
 
-                            <!-- Add more options here -->
                         </select>
                     </div>
                     <div class="form-group col-lg-4 col-md-12">
                         <label for="gender">Alt Alt Kategori </label>
-                        <select class="form-control" id="subsubCategory" >
+                        <select class="form-control" id="subsubCategory">
                             <option disabled>Alt Alt Kategori Seçiniz</option>
 
-                            <!-- Add more options here -->
                         </select>
                     </div>
                     <small class="form-text text-muted col-12">Kategori ve Alt Kategori alanlarının seçilmesi zorunludur. Yoksa ekleyebilirsiniz <a href="/Management/AddCategory">Ekle</a> </small>
@@ -122,7 +122,6 @@
                             @foreach (var item in Model.products.FirstOrDefault().product_images)
                             {
                                 <div class="p-2 position-relative col-auto" imgid="@item.id">
-                                    <!-- position-relative ekledik -->
                                     <img src="@item.image_path" alt="" class="img-thumbnail" />
                                     <button type="button" class="remove-img-btn" onclick="removeImgDatabase(@item.id)">
                                         <i class="mdi mdi-trash-can icon"></i>
@@ -211,7 +210,6 @@
                  var categoryId = '@(Model.products.FirstOrDefault().subcategory_id)';
                  var parentId = '@(Model.products.FirstOrDefault().sub_categories?.parent_id)';
 
-                // Razor değişkenlerini doğru şekilde JavaScript değişkenlerine dönüştürün
                 if (categoryId === 'null') categoryId = null;
                 if (parentId === 'null') parentId = null;
 
@@ -418,7 +416,7 @@
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
                 var removeBtn = $('<button>').addClass('remove-img-btn').html('<i class="mdi mdi-close icon"></i>').on('click', function (event) {
-                    event.preventDefault(); // Varsayılan davranışı engelle
+                    event.preventDefault(); 
                     removeImage(file);
                 });
                 var wrapper = $('<div>').addClass('p-2 position-relative').append(img).append(removeBtn);
@@ -430,7 +428,6 @@
 
     // Ekrandaki resmi kaldır ve selectedFiles dizisini güncelle
     function removeImage(fileToRemove) {
-        // Dosya verisini base64 formatına dönüştür
         var reader = new FileReader();
         reader.onload = function (e) {
             var fileDataURL = e.target.result;
@@ -445,7 +442,6 @@
                 }
             });
 
-            // Input dosya listesini güncelle
             updateFileInput();
         };
         reader.readAsDataURL(fileToRemove);
@@ -484,7 +480,6 @@ function updateFileInput() {
     $('#productImg')[0].files = dataTransfer.files;
 }
 
-// Formu gönderirken dosyaları formData'ya ekleyin
    $(document).ready(function () {
     $('#submitbtn').on("click", function (e) {
         e.preventDefault();
@@ -644,7 +639,6 @@ function updateFileInput() {
 
 
 
-                // AJAX isteği gönder
                 $.ajax({
                     url: '/Management/EditProduct/',
                     type: 'POST',
@@ -699,7 +693,6 @@ function updateFileInput() {
             var img = $('<img>').attr('src', filePath).addClass('img-thumbnail');
             var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
                 event.preventDefault();
-                // Dosyayı sunucudan kaldır ve UI'dan sil
                 removeImgDatabase(filePath);
             });
             var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);

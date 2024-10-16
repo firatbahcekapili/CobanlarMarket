@@ -5,10 +5,24 @@
 
 
 }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css" integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <link href="~/Content/css/main.css" rel="stylesheet" />
+
+<style>
+    .form-control {
+    
+    width:100%;
+    }
+    .form-group button {
+    width:100%;
+    }
+    .ajax-form{
+        width:400px;
+    }
+</style>
 <body cz-shortcut-listen="true">
-  
+
     <div id="root">
         <div>
             <div class="main-layout">
@@ -46,32 +60,8 @@
                 <section class="account-page">
                     <div class="container">
                         <div class="account-wrapper">
-                            <div class="account-column">
-                                <h2>Login</h2>
+                            <div class="account-column d-flex justify-content-center">
 
-                                @*<form>
-                                        <div>
-                                            <label>
-                                                <span>
-                                                    Username or email adres <span class="required">*</span>
-                                                </span><input type="text"
-                                                              name="email">
-                                            </label>
-                                        </div>
-                                        <div>
-                                            <label>
-                                                <span>Password <span class="required">*</span></span><input type="password" name="password">
-                                            </label>
-                                        </div>
-                                        <p class="remember">
-                                            <label>
-                                                <input type="checkbox"><span>
-                                                    Remember
-                                                    me
-                                                </span>
-                                            </label><button class="btn btn-sm btn-red">Login</button>
-                                        </p><a href="#" class="form-link">Lost your password?</a>
-                                    </form>*@
 
 
                                 @using (Ajax.BeginForm("Giris", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "GirisSuccess" }, new { @class = "ajax-form w-100", id = "GirisForm" }))
@@ -80,19 +70,21 @@
 
                                     CobanlarMarket.Models.users u = new CobanlarMarket.Models.users();
 
+                                    <div class="form-row row">
+                                        <h2>Giriş Yap</h2>
+                                    </div>
 
-                                
                                     <div class="form-group">
                                         <span>
-                                            Username or email adres <span class="required">*</span>
+                                            Kullanıcı Adı veya Email Adresi <span class="required">*</span>
                                         </span><br />
-                                        @Html.EditorFor(model => u.username, new { htmlAttributes = new { @class = "form-control", placeholder = "Kullanıcı Adı", required = "required", id = "username" } })
+                                        @Html.EditorFor(model => u.username, new { htmlAttributes = new { @class = "form-control", placeholder = "Kullanıcı Adı veya Email Adresi", required = "required", id = "username" } })
                                         @Html.ValidationMessageFor(model => u.username, "", new { @class = "text-danger" })
                                     </div>
 
                                     <div class="form-group">
                                         <label>
-                                            <span>Password <span class="required">*</span></span>
+                                            <span>Şifre <span class="required">*</span></span>
                                         </label>
                                         @Html.EditorFor(model => u.password, new { htmlAttributes = new { @class = "form-control", placeholder = "Şifre", required = "required", id = "password" } })
                                         @Html.ValidationMessageFor(model => u.password, "", new { @class = "text-danger" })
@@ -104,37 +96,76 @@
 
 
                             </div>
-                            <div class="account-column">
-                                <h2>Register</h2>
-                                <form>
-                                    <div>
-                                        <label>
-                                            <span>Username <span class="required">*</span></span><input type="text"
-                                                                                                        name="username">
-                                        </label>
+                            <div class="account-column  d-flex justify-content-center" id="registerParent">
+
+
+
+                                @using (Ajax.BeginForm("Register", "Home", new AjaxOptions { HttpMethod = "POST", OnSuccess = "GirisSuccess" }, new { @class = "ajax-form w-100", id = "RegisterForm" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    CobanlarMarket.Models.users u = new CobanlarMarket.Models.users();
+
+                                    <div class="form-row row">
+                                        <h2>Kayıt Ol</h2>
                                     </div>
-                                    <div>
-                                        <label>
-                                            <span>Email Adress <span class="required">*</span></span><input type="email" name="email">
-                                        </label>
+
+                                    <div class="form-row row">
+                                        <div class="form-group col-md-6">
+                                            <span>
+                                                Ad <span class="required">*</span>
+                                            </span><br />
+                                            @Html.EditorFor(model => u.first_name, new { htmlAttributes = new { @class = "form-control", placeholder = "Ad", required = "required", id = "rFirstname" } })
+                                            @Html.ValidationMessageFor(model => u.first_name, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <span>
+                                                Soyad <span class="required">*</span>
+                                            </span><br />
+                                            @Html.EditorFor(model => u.last_name, new { htmlAttributes = new { @class = "form-control", placeholder = "Soyad", required = "required", id = "rLastname" } })
+                                            @Html.ValidationMessageFor(model => u.last_name, "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label>
-                                            <span>Password <span class="required">*</span></span><input type="password" name="password">
-                                        </label>
+
+
+
+
+                                    <div class="form-group col-12">
+
+                                        <span>Email <span class="required">*</span></span><br />
+
+                                        @Html.EditorFor(model => u.email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email", type = "email", required = "required", id = "rEmail" } })
+                                        @Html.ValidationMessageFor(model => u.email, "", new { @class = "text-danger" })
                                     </div>
-                                    <div class="privacy-policy-text remember">
-                                        <p>
-                                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Deserunt
-                                            dignissimos exercitationem molestias provident <a href="#">
-                                                distinctio
-                                                quis.
-                                            </a>
-                                        </p><button class="btn btn-sm btn-red">Register</button>
+
+                                    <div class="form-row row">
+                                        <div class="form-group col-md-6">
+
+                                            <span>
+                                                Kullanıcı Adı <span class="required">*</span>
+                                            </span><br />
+                                            @Html.EditorFor(model => u.username, new { htmlAttributes = new { @class = "form-control", placeholder = "Kullanıcı Adı", required = "required", id = "rUsername" } })
+                                            @Html.ValidationMessageFor(model => u.username, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="form-group col-md-6">
+
+                                            <span>Şifre <span class="required">*</span></span><br />
+
+                                            @Html.EditorFor(model => u.password, new { htmlAttributes = new { @class = "form-control", placeholder = "Şifre", required = "required", id = "rPassword" } })
+                                            @Html.ValidationMessageFor(model => u.password, "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
-                                </form>
+
+                                    <div class="form-group">
+                                        <button id="registerBtn" type="submit" class="btn btn-sm btn-red">Kayıt Ol</button>
+                                    </div>
+
+
+                                }
+
+
                             </div>
-                        </div>
+                            </div>
                     </div>
                 </section>
 
@@ -153,7 +184,6 @@
 
 
 
-                // FormData nesnesi oluştur
                 var formData = new FormData();
 
                 formData.append('username', username);
@@ -192,10 +222,183 @@
 
             });
 
+
+
+
+
+            $('#RegisterForm').submit(function (e) {
+
+                e.preventDefault();
+                var name = $('#rFirstname').val();
+                var lastname = $('#rLastname').val();
+                var username = $('#rUsername').val();
+                var password = $('#rPassword').val();
+                var email = $('#rEmail').val();
+
+
+                var formData = new FormData();
+                formData.append('Name', name);
+                formData.append('Lastname', lastname);
+                formData.append('username', username);
+                formData.append('password', password);
+                formData.append('Email', email);
+
+
+
+
+                if ($('#RegisterForm').valid()) {
+
+                    console.log("valid");
+                    $.ajax({
+                        url: '/Home/Register/',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+
+                            if (result.success) {
+
+
+                                $('.confirmation').remove();
+
+                                var element = '  <div class="confirmation">' +
+                                    ' <input type = "number" name = "code" id="confirmcode" value = "" />' +
+                                    '<span class="text-danger" id="confirm-message"></span>' +
+                                    '<button id="confirmbtn" class="btn btn-sm btn-red" required>Onayla</button>' +
+                                    '<button id="confirmcancelbtn" class="btn btn-sm btn-red" required>İptal</button>' +
+                                    ' <div id="countdown"></div>' +
+                                    '</div>';
+
+                                $('#registerParent').append(element);
+                                var countdownSeconds = 100;
+                                startCountdown(countdownSeconds);
+
+                                $('#RegisterForm').hide();
+
+
+
+
+
+
+                            } else {
+                                toastr.error(result.message);
+                            }
+
+
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+
+
+
+
+
+                    });
+                }
+
+
+
+            });
+
+
+            $(document).on('click', '#confirmbtn', function (e) {
+                e.preventDefault();
+                var code = $('#confirmcode').val();
+                console.log(code);
+
+                if (code != "") {
+                    $.ajax({
+                        url: '/Home/ConfirmCode/',
+                        type: 'POST',
+                        data: { Code: code },
+                        success: function (result) {
+
+                            if (result.success) {
+                                toastr.success(result.message);
+                                window.location = result.redirectUrl;
+                            } else {
+                                toastr.error(result.message);
+                            }
+
+
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+
+
+
+
+
+                    });
+                }
+
+
+            });
+
+
+
+            $(document).on('click', '#confirmcancelbtn', function (e) {
+
+                $.ajax({
+                    url: '/Home/ResetConfirmCode/',
+                    type: 'POST',
+
+                    success: function (result) {
+
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+
+                });
+                clearInterval(countdownInterval);
+                $('.confirmation').remove();
+                $('#RegisterForm').show();
+
+            });
         });
+        var countdownInterval;
+        function startCountdown(duration) {
+            var timer = duration, minutes, seconds;
+            countdownInterval = setInterval(function () {
+                minutes = Math.floor(timer / 60);
+                seconds = Math.floor(timer % 60);
 
+                // Tek basamaklı sayıları düzgün göstermek için sıfır ekleme işlemi
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
 
+                document.getElementById('countdown').textContent = minutes + ":" + seconds;
+                console.log(timer);
+                if (--timer < 0) {
+                    timer = 0;
+                    clearInterval(countdownInterval);
+                    $('#countdown').empty();
+                    $('#countdown').append('<a onclick="SubmitRegisterForm()">Tekrar Gönder</a>');
 
+                    $.ajax({
+                        url: '/Home/ResetConfirmCode/',
+                        type: 'POST',
+
+                        success: function (result) {
+
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+
+                    });
+
+                }
+            }, 1000);
+        }
+
+        function SubmitRegisterForm() {
+            $('#RegisterForm').submit();
+        }
 
     </script>
 </body>

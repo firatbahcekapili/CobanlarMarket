@@ -95,56 +95,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label>Kuponun Geçerli Olacağı Kategorileri Seçin</label>
-                            @*<div id="categories" style="max-height:300px;overflow:auto;">
-            @foreach (var category in Model.categories)
-            {
-                if (Model.sub_categories.Any(x => x.parent_id == category.id))
-                {
-                    <div class="category-group">
-                        <div class="pretty p-default  p-curve p-smooth">
-                            <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" />
-                            <div class="state p-primary">
-                                <label>@category.name</label>
-                            </div>
-                        </div>
-
-                        <div class="subcategories">
-                            @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
-                            {
-                                <div class="pretty p-default p-curve p-smooth">
-                                    <input type="checkbox" class="subcategory-checkbox" data-parent-id="@category.id" id="@subcategory.id" />
-                                    <div class="state p-primary">
-                                        <label>@subcategory.name</label>
-                                    </div>
-                                </div>
-
-                                <div class="subsubcategories">
-                                    @foreach (var subsubcategory in Model.sub_subcategories.Where(x => x.parent_sub_category_id == subcategory.id))
-                                    {
-                                        <div class="pretty p-default p-curve p-smooth">
-                                            <input type="checkbox" class="subsubcategory-checkbox" data-parent-subcategory-id="@subcategory.id" id="@subsubcategory.id" />
-                                            <div class="state p-primary">
-                                                <label>@subsubcategory.name</label>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <div class="pretty p-default p-curve p-smooth">
-                        <input type="checkbox" class="category-checkbox" data-category-id="@category.id" id="@category.id" />
-                        <div class="state p-primary">
-                            <label>@category.name</label>
-                        </div>
-                    </div>
-                }
-            }
-        </div>*@
-
+                      
                             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
 
@@ -211,7 +162,8 @@
             "plugins": ["checkbox"],
             "core": {
                 "themes": {
-                    "responsive": false
+                    "responsive": false,
+                    "icons": false
                 }
             },
             "checkbox": {
@@ -256,7 +208,8 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        //var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+       @*
+           //var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
         //var subcategoryCheckboxes = document.querySelectorAll('.subcategory-checkbox');
         //var subsubcategoryCheckboxes = document.querySelectorAll('.subsubcategory-checkbox');
 
@@ -337,6 +290,7 @@
         //        }
         //    });
         //});
+           *@
 
         var element = document.getElementById('products');
         var products = new Choices('#products', {
@@ -369,7 +323,6 @@
             var selectedNodes = $('#categoryTree').jstree('get_checked', true);
             var selectedIds = [];
 
-            // Seçili düğümlerin ID'lerini ve parent'larını almak için bir dizi
             var parentIds = selectedNodes.map(function (node) {
                 return node.id; // Her düğümün ID'sini al
             });
@@ -386,60 +339,9 @@
                 return !parentIds.includes(node.parent);
             });
 
-            // Yeni diziyi gönderebilirsiniz
             console.log("Filtered selected IDs:", selectedIds);
                
-            //var selectedCategories = [];
-            //var selectedSubcategories = [];
-            //var selectedSubsubcategories = [];
-
-            //// Tüm kategoriler üzerinde gezin
-            //categoryCheckboxes.forEach(function (categoryCheckbox) {
-            //    var categoryId = categoryCheckbox.id;
-
-            //    if (categoryCheckbox.checked) {
-            //        var siblingSubcategories = document.querySelectorAll('.subcategory-checkbox[data-parent-id="' + categoryId + '"]');
-            //        var allSubcategoriesChecked = Array.from(siblingSubcategories).every(function (subCheckbox) {
-            //            return subCheckbox.checked;
-            //        });
-
-            //        if (allSubcategoriesChecked) {
-            //            // Eğer tüm alt kategoriler seçiliyse sadece kategoriyi gönder
-            //            selectedCategories.push(categoryId);
-            //        } else {
-            //            // Eğer tüm alt kategoriler seçili değilse, her bir alt kategori için kontrol et
-            //            siblingSubcategories.forEach(function (subCheckbox) {
-            //                if (subCheckbox.checked) {
-            //                    var subcategoryId = subCheckbox.id;
-            //                    var siblingSubsubcategories = document.querySelectorAll('.subsubcategory-checkbox[data-parent-id="' + subcategoryId + '"]');
-            //                    var allSubsubcategoriesChecked = Array.from(siblingSubsubcategories).every(function (subsubCheckbox) {
-            //                        return subsubCheckbox.checked;
-            //                    });
-
-            //                    if (allSubsubcategoriesChecked) {
-            //                        // Eğer tüm alt alt kategoriler seçiliyse, sadece alt kategoriyi gönder
-            //                        selectedSubcategories.push(subcategoryId);
-            //                    } else {
-            //                        // Eğer tüm alt alt kategoriler seçili değilse, sadece seçilen alt alt kategorileri gönder
-            //                        siblingSubsubcategories.forEach(function (subsubCheckbox) {
-            //                            if (subsubCheckbox.checked) {
-            //                                selectedSubsubcategories.push(subsubCheckbox.id);
-            //                            }
-            //                        });
-
-            //                        // Ayrıca seçili olan alt kategoriyi de gönder
-            //                        selectedSubcategories.push(subcategoryId);
-            //                    }
-            //                }
-            //            });
-            //        }
-            //    }
-            //});
-
-
-            //    console.log('Selected Categories:', selectedCategories);
-            //console.log('Selected Subcategories:', selectedSubcategories);
-            //console.log('Selected Subsubcategories:', selectedSubsubcategories);
+    
 
 
             formData.append("CategoryIds", selectedIds.join(','));

@@ -21,6 +21,9 @@ namespace CobanlarMarket.Models
         public Nullable<int> quantity { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> updated_at { get; set; }
+        public string payment_transaction_id { get; set; }
+        public string status { get; set; }
+        public Nullable<decimal> ordered_price { get; set; }
     
         public virtual order_details order_details { get; set; }
         public virtual products products { get; set; }

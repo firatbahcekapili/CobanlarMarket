@@ -1,0 +1,615 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "PageManagement";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+    var company = Model.company_details.FirstOrDefault();
+
+}
+
+<style>
+    .global-notification {
+        background-color: red;
+        padding: 14px 0;
+        text-align: center;
+        font-size: 12px;
+        color: white;
+    }
+
+        .global-notification a {
+            color: white;
+            font-weight: 600;
+        }
+
+
+
+
+    .slider-item {
+        position: relative;
+        height: calc(100vh - 137px);
+        display: flex;
+        align-items: center;
+    }
+
+        .slider-item .slider-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            object-fit: cover;
+            object-position: 60%;
+            z-index: -1;
+        }
+
+        .slider-item .slider-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .slider-item .slider-heading {
+            font-size: 60px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .slider-item a {
+            z-index: 1;
+            position: relative;
+        }
+
+    .slider {
+        position: relative;
+    }
+
+        .slider .slider-buttons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+            .slider .slider-buttons button {
+                width: 60px;
+                height: 60px;
+                border-radius: 100%;
+                border: 1px solid #dee0ea;
+                background-color: #fff;
+                opacity: 0.5;
+                transition: 0.2s ease all;
+            }
+
+                .slider .slider-buttons button:hover {
+                    background-color: red;
+                    opacity: 1;
+                    color: #fff;
+                    border-color: #dee0ea;
+                }
+
+                .slider .slider-buttons button i {
+                    font-size: 30px;
+                }
+
+        .slider .slider-dots {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            column-gap: 6px;
+        }
+
+            .slider .slider-dots .slider-dot {
+                border: none;
+                display: flex;
+                opacity: 0.4;
+            }
+
+                .slider .slider-dots .slider-dot:hover {
+                    opacity: 1;
+                    transition: 0.2s ease all;
+                }
+
+                .slider .slider-dots .slider-dot span {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    background-color: red;
+                    border-radius: 100%;
+                }
+
+                .slider .slider-dots .slider-dot.active {
+                    opacity: 1;
+                }
+
+
+
+
+
+
+    .campaing-single {
+        background-image: url(../../img/single-campaign.png);
+        background-attachment: fixed;
+        padding: 140px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 40px;
+    }
+
+        .campaing-single .campaing-wrapper {
+            color: white !important;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+            .campaing-single .campaing-wrapper h2 {
+                font-size: 25px;
+            }
+
+            .campaing-single .campaing-wrapper strong {
+                font-size: 55px;
+                font-weight: 600;
+                margin: 20px 0;
+            }
+
+            .campaing-single .campaing-wrapper span {
+                display: inline-block;
+                width: 50px;
+                height: 5px;
+                background-color: white;
+            }
+
+            .campaing-single .campaing-wrapper > a {
+                margin-top: 60px;
+            }
+
+                .campaing-single .campaing-wrapper > a:hover {
+                    background-color: black;
+                }
+
+
+
+
+    button {
+        cursor: pointer;
+        border: none;
+    }
+
+        button:disabled {
+            opacity: 0.4 !important;
+            cursor: no-drop;
+        }
+
+    .btn {
+        display: inline-block;
+        padding: 0 25px;
+        border: 1px solid black;
+        font-weight: 500;
+        line-height: 40px;
+        transition: 0.2s ease all;
+    }
+
+    .btn-sm {
+        line-height: 33px;
+    }
+
+    .btn-lg {
+        line-height: 45px;
+    }
+
+    .btn-red {
+        background-color: red;
+        color: white;
+        border: red;
+    }
+</style>
+
+
+
+<div class="container" style="max-width:unset">
+
+
+
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-10">
+            <div class="card text-white bg-success mb-3 mt-3">
+                <h5 class="card-header text-white border-bottom-0">Bilgilendirme</h5>
+                <div class="card-body">
+                    <p class="card-text" style="font-size:17px;">
+                        Fareyi üzerine getirdiğinizde <span class='mdi mdi-tooltip-edit-outline ' style='font-size:20px'></span> ikonu çıkan elementlerin üzerine tıklayarak düzenleyebilirsiniz. Düzenlemenizi yaptıktan sonra boş bir yere tıkladığınızda düzenleme tamamlanacaktır. Yapılan değişiklikler anında site üzerinde güncellenir.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+
+        <div class="col-12 p-0">
+
+
+            <div class="global-notification ">
+                <p>
+
+                    <span id="editable-content-top" contenteditable="true" data-toggle="tooltip" data-placement="left" data-html="true" title="<span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>">
+                        @company.homepage_top_text
+
+                    </span>
+
+                    <a href="/Home/Shop">ALİSVERİS YAP</a>
+                </p>
+            </div>
+        </div>
+
+
+
+
+        <div class="col-12 p-0">
+
+            <section class="slider">
+
+
+
+                <div class="slider-elements">
+                    <a class="text-white bg-dark p-1" style="width:fit-content; position:absolute ; margin:20px; z-index:2" data-toggle="modal" data-target="#sliderImgForm">
+                        <span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>
+                    </a>
+
+                    <div class="slider-item ">
+                        <div class="slider-image w-100">
+                            <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" style="width:100%" />
+
+                            <div class="" style="margin-left:80px;">
+                                <p class="slider-title" contenteditable="true" id="editable-content-slider-title" data-toggle="tooltip" data-placement="left" data-html="true" title="<span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>">@company.homepage_slider_title</p>
+                                <h2 class="slider-heading" contenteditable="true" id="editable-content-slider-text" data-toggle="tooltip" data-placement="left" data-html="true" title="<span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>">@company.homepage_slider_text</h2>
+                                <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </section>
+
+
+
+        </div>
+
+
+
+        <div class="col-12 p-0">
+
+            <section class="campaing-single" style="background-image:url(@(company.homepage_bottom_img != null ? company.homepage_bottom_img : "/img/single-campaign.png"))">
+
+
+                <a class="text-white bg-dark p-1" style="width:fit-content; position:absolute ; top:20px;left:20px; z-index:2" data-toggle="modal" data-target="#bottomImgForm">
+                    <span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>
+                </a>
+
+                <div class="container">
+
+                    <div class="campaing-wrapper">
+                        <h2 class="text-white" contenteditable="true" id="editable-content-bottom-header" data-toggle="tooltip" data-placement="left" data-html="true" title="<span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>">@company.homepage_bottom_header</h2>
+                        <strong contenteditable="true" id="editable-content-bottom-text" data-toggle="tooltip" data-placement="left" data-html="true" title="<span class='mdi mdi-tooltip-edit-outline ' style='font-size:25px'></span>">@company.homepage_bottom_text</strong><span></span><a href="#" class="btn btn-lg btn-red">
+                            ALIŞVERIS YAP<i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+    <div class="modal fade" id="sliderImgForm" tabindex="-1" role="dialog" aria-labelledby="sliderImgFormTitle"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sliderImgFormTitle">Ana Sayfa Resim Güncelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="sliderForm">
+
+                        <div class="form-group">
+                            <div class="img" id="imgpre" style="height:300px; width:auto">
+                                <img class="img" src="@company.homepage_slider_img" alt="Slider Img" style="block-size:300px; width:100%;object-fit:contain;" />
+                            </div>
+
+                            <input type="file" class="form-control" id="sliderImg" accept=".jpg,.jpeg,.png" aria-describedby="sliderImg" onchange="dosyaOnizlemeNewS(this);">
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-pill border-0" data-dismiss="modal">İptal</button>
+                    <button type="button" id="submitsliderbtn" class="btn btn-primary btn-pill border-0">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="modal fade" id="bottomImgForm" tabindex="-1" role="dialog" aria-labelledby="bottomImgFormTitle"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bottomImgFormTitle">Anasayfa Alt Resim Güncelle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="bottomForm">
+
+                        <div class="form-group">
+                            <div class="img " id="bimgpre" style="height:300px;width:auto;">
+                                <img class="img" src="@company.homepage_bottom_img" alt="Bottom Img" style="block-size:300px; width:100%;object-fit:contain" />
+                            </div>
+
+                            <input type="file" class="form-control" id="bottomImg" accept=".jpg,.jpeg,.png" aria-describedby="bottomImg" onchange="dosyaOnizlemeNewB(this);">
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-pill border-0" data-dismiss="modal">İptal</button>
+                    <button type="button" id="submitbottombtn" class="btn btn-primary btn-pill border-0">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    $('#editable-content-top').on('blur', function () {
+        var updatedContent = $(this).text();
+
+        console.log(updatedContent);
+
+        $.ajax({
+            url: '/Management/EditTop',
+            type: 'POST',
+            data: {
+                content: updatedContent
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                $('#result-message').text('Bir hata oluştu.');
+            }
+        });
+    });
+
+
+    $('#editable-content-slider-title').on('blur', function () {
+        var updatedContent = $(this).text();
+
+        console.log(updatedContent);
+
+        $.ajax({
+            url: '/Management/EditSliderTitle',
+            type: 'POST',
+            data: {
+                content: updatedContent
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                $('#result-message').text('Bir hata oluştu.');
+            }
+        });
+    });
+
+    $('#editable-content-slider-text').on('blur', function () {
+        var updatedContent = $(this).text();
+
+        console.log(updatedContent);
+
+        $.ajax({
+            url: '/Management/EditSliderText',
+            type: 'POST',
+            data: {
+                content: updatedContent
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                $('#result-message').text('Bir hata oluştu.');
+            }
+        });
+    });
+    $('#editable-content-bottom-header').on('blur', function () {
+        var updatedContent = $(this).text();
+
+        console.log(updatedContent);
+
+        $.ajax({
+            url: '/Management/EditBottomHeader',
+            type: 'POST',
+            data: {
+                content: updatedContent
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                $('#result-message').text('Bir hata oluştu.');
+            }
+        });
+    });
+    $('#editable-content-bottom-text').on('blur', function () {
+        var updatedContent = $(this).text();
+
+        console.log(updatedContent);
+
+        $.ajax({
+            url: '/Management/EditBottomText',
+            type: 'POST',
+            data: {
+                content: updatedContent
+            },
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                $('#result-message').text('Bir hata oluştu.');
+            }
+        });
+    });
+
+
+
+
+    function dosyaOnizlemeNewS(input) {
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var preview = document.getElementById('imgpre');
+                preview.innerHTML = "";
+                preview.style.width = 'auto';
+                var imgElement = document.createElement('img');
+                imgElement.src = e.target.result;
+                imgElement.style.height = 'inherit';
+                imgElement.style.width = "100%";
+                imgElement.style.objectFit = "contain";
+                preview.append(imgElement);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+    function dosyaOnizlemeNewB(input) {
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                var preview = document.getElementById('bimgpre');
+                preview.innerHTML = "";
+                preview.style.width = 'auto';
+                var imgElement = document.createElement('img');
+                imgElement.src = e.target.result;
+                imgElement.style.height = 'inherit';
+                imgElement.style.width = "100%";
+                imgElement.style.objectFit = "contain";
+                preview.append(imgElement);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+    $('#submitsliderbtn').on("click", function (e) {
+        e.preventDefault();
+
+        if ($('#sliderForm').valid()) {
+            var formData = new FormData();
+            var img = $('#sliderImg')[0].files[0];
+            formData.append('Img', img);
+
+            $.ajax({
+                url: '/Management/EditSliderImg/',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (result.success) {
+                        toastr.success(result.message);
+                        window.location.reload();
+
+                    } else {
+                        toastr.error(result.message);
+                    }
+
+
+                },
+                error: function (xhr, status, error) {
+
+                    console.error('AJAX Error: ' + error);
+                }
+            });
+        }
+    });
+
+    $('#submitbottombtn').on("click", function (e) {
+        e.preventDefault();
+
+        if ($('#bottomForm').valid()) {
+            var formData = new FormData();
+            var img = $('#bottomImg')[0].files[0];
+            formData.append('Img', img);
+
+            $.ajax({
+                url: '/Management/EditBottomImg/',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (result.success) {
+                        toastr.success(result.message);
+                        window.location.reload();
+                    } else {
+                        toastr.error(result.message);
+                    }
+
+
+                },
+                error: function (xhr, status, error) {
+
+                    console.error('AJAX Error: ' + error);
+                }
+            });
+        }
+    });
+</script>

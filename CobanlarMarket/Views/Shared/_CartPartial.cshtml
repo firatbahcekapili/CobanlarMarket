@@ -1,14 +1,19 @@
 ﻿@model List<CobanlarMarket.Models.cart_item>
 @{
     decimal? toplam = 0;
-    var kisi = Session["user"];
+    var kisi = Session["User"];
     if (kisi != null)
     {
         CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
         toplam = 0;
-        var kargo = 30;
-        decimal? couponDiscount = 0;
 
+
+
+        var companydetails = ViewBag.CompanyDetails as CobanlarMarket.Models.company_details;
+        var kargo = companydetails.shipping_cost.GetValueOrDefault(30);
+        var minAmount = companydetails.min_amonunt_for_free_shipping.GetValueOrDefault(300);
+        decimal? couponDiscount = 0;
+        
 
 
         <section class="cart-page">
@@ -67,11 +72,11 @@
                             <div class="free-progress-bar">
                                 <p class="progress-bar-title">
                                     @{
-                                        if (toplam <= 300)
+                                        if (toplam < minAmount)
                                         {
-                                            decimal bar = (toplam.HasValue) ? (toplam.Value / 300 * 100) : 0;
+                                            decimal bar = (toplam.HasValue) ? (toplam.Value / minAmount * 100) : 0;
                                             string formattedBar = bar.ToString("F2").Replace(',', '.');
-                                            <strong>@(300 - toplam)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
+                                            <strong>@(minAmount - toplam)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
                                             <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
                                         }
                                         else
@@ -87,7 +92,7 @@
                             </div>
                             <div class="actions-wrapper">
                                 <div class="coupon">
-                                    <input type="text " class="input-text"
+                                    <input type="text" class="input-text"
                                            placeholder="Coupon code"><button class="btn btn-black">
                                         Appyl
                                         Coupon
@@ -150,7 +155,6 @@
 
                                                 string discountValue = carts.FirstOrDefault(x => x.user_id == user.id).discount_value;
 
-                                                // "en-US" kültürüne göre decimal parse işlemi
                                                 couponDiscount = decimal.Parse(discountValue, new System.Globalization.CultureInfo("en-US"));
 
                                             }
@@ -161,11 +165,11 @@
 
 
                                     @{
-                                        if (toplam >= 300)
+                                        if (toplam >= minAmount)
                                         {
                                             <tr class="cargo">
                                                 <th>Kargo</th>
-                                                <td><del>₺@kargo</del> <strong>0₺</strong></td>
+                                                <td><del>₺@kargo</del> <strong>₺0</strong></td>
                                             </tr>
                                             kargo = 0;
 

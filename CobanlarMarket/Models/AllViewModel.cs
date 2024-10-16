@@ -24,6 +24,8 @@ namespace CobanlarMarket.Models
         public List<campaigns> campaigns;
         public List<addresses> addresses;
         public List<payment_details> payment_details;
+        public List<company_details> company_details;
+
 
 
 

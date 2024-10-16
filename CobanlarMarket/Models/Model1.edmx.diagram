@@ -7,9 +7,7 @@
       <Diagram DiagramId="b82135c607c44c5182d71f5fc94c3532" Name="Diagram1">
         <EntityTypeShape EntityType="CobanlarMarketModel.addresses" Width="1.5" PointX="9.75" PointY="40" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.campaign_products" Width="1.5" PointX="9.75" PointY="21.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="CobanlarMarketModel.campaigns" Width="1.5" PointX="7.5" PointY="16.75" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.cart" Width="1.5" PointX="9.75" PointY="28" IsExpanded="true" />
-        <EntityTypeShape EntityType="CobanlarMarketModel.cart_item" Width="1.5" PointX="12" PointY="28.125" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.categories" Width="1.5" PointX="0.75" PointY="15.125" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.coupon_categories" Width="1.5" PointX="5.25" PointY="16.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.coupon_products" Width="1.5" PointX="9.75" PointY="18.875" IsExpanded="true" />
@@ -25,13 +23,9 @@
         <EntityTypeShape EntityType="CobanlarMarketModel.users" Width="1.5" PointX="7.5" PointY="26.75" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.wishlist" Width="1.5" PointX="9.75" PointY="24.75" IsExpanded="true" />
         <AssociationConnector Association="CobanlarMarketModel.FK_addresses_user_id" ManuallyRouted="false" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_campaign_products_campaign" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_campaign_products_products" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_cart_coupons" ManuallyRouted="false" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_cart_id" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_cart_user_id" ManuallyRouted="false" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_product_id" ManuallyRouted="false" />
-        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_products_sku_id" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_coupon_categories_categories" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_sub_categories_parent_id" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_coupon_categories_coupon_categories" ManuallyRouted="false" />
@@ -55,6 +49,15 @@
         <AssociationConnector Association="CobanlarMarketModel.FK_products_sub_subcategories" />
         <AssociationConnector Association="CobanlarMarketModel.FK_sub_subcategories_sub_categories" />
         <AssociationConnector Association="CobanlarMarketModel.FK_coupon_categories_sub_subcategories" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.cart_item" Width="1.5" PointX="12" PointY="28.125" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_cart_id" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_product_id" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_cart_item_products_sku_id" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.notification" Width="1.5" PointX="10.875" PointY="14.875" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_notification_users" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.campaigns" Width="1.5" PointX="0.75" PointY="4" />
+        <AssociationConnector Association="CobanlarMarketModel.FK_campaign_products_campaign" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.company_details" Width="2.75" PointX="3.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -22,7 +22,7 @@
 
     var monthlyUser = new int[12];
 
-    foreach (var user in Model.users)
+    foreach (var user in Model.users.Where(x => x.status == true))
     {
         if (user.created_at.HasValue)
         {
@@ -36,7 +36,7 @@
 
 
 
-    var monthlyOrder= new int[12];
+    var monthlyOrder = new int[12];
 
     foreach (var order in Model.order_details)
     {
@@ -54,7 +54,7 @@
 
     var monthlyProduct = new int[12];
 
-    foreach (var product in Model.products)
+    foreach (var product in Model.products.Where(x => x.status == true))
     {
         if (product.created_at.HasValue)
         {
@@ -69,7 +69,8 @@
 
 }
 <link href="~/Content/theme/css/style.css" rel="stylesheet" />
-}
+
+
 <style>
     .mdi {
         font-size: 22px;
@@ -88,15 +89,15 @@
                     <div class="card-header">
                         <h2>@thisYearTotal  &#8378;</h2>
                         @*<div class="dropdown">
-                            <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            </a>
+                                <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                </a>
 
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </div>*@
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>*@
                         <div class="sub-title">
                             <span class="mr-1">Bu Yıl Yapılan Satış</span> |
                             @*<i class="mdi mdi-arrow-up-bold text-success"></i>*@
@@ -114,21 +115,21 @@
             <div class="col-xl-3 col-sm-6">
                 <div class="card card-default card-mini">
                     <div class="card-header">
-                        <h2>@Model.users.Count() adet</h2>
+                        <h2>@Model.users.Where(x => x.status == true).Count() adet</h2>
                         @*<div class="dropdown">
-                            <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            </a>
+                                <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                </a>
 
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </div>*@
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>*@
                         <div class="sub-title">
                             <span class="mr-1">Kayıtlı Kullanıcı</span> |
                             @*<span class="mx-1">50%</span>
-                            <i class="mdi mdi-arrow-down-bold text-danger"></i>*@
+                                <i class="mdi mdi-arrow-down-bold text-danger"></i>*@
                         </div>
                     </div>
                     <div class="card-body">
@@ -143,21 +144,21 @@
             <div class="col-xl-3 col-sm-6">
                 <div class="card card-default card-mini">
                     <div class="card-header">
-                        <h2>Bu Yıl @Model.order_details.Where(x=>x.created_at.Value.Year==DateTime.Now.Year).Count()</h2>
+                        <h2>Bu Yıl @Model.order_details.Where(x => x.created_at.Value.Year == DateTime.Now.Year).Count()</h2>
                         @*<div class="dropdown">
-                            <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            </a>
+                                <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                </a>
 
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </div>*@
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>*@
                         <div class="sub-title">
                             <span class="mr-1">Adet Sipariş Verilmiş</span> |
                             @*<span class="mx-1">20%</span>
-                            <i class="mdi mdi-arrow-down-bold text-danger"></i>*@
+                                <i class="mdi mdi-arrow-down-bold text-danger"></i>*@
                         </div>
                     </div>
                     <div class="card-body">
@@ -172,11 +173,11 @@
             <div class="col-xl-3 col-sm-6">
                 <div class="card card-default card-mini">
                     <div class="card-header">
-                        <h2>@Model.products.Count() Adet</h2>
-                      
+                        <h2>@Model.products.Where(x => x.status == true).Count() Adet</h2>
+
                         <div class="sub-title">
                             <span class="mr-1">Satışta Olan Ürün</span> |
-                           
+
                         </div>
                     </div>
                     <div class="card-body">
@@ -192,12 +193,14 @@
 
 
         <div class="row">
-            <div class="col-xl-8">
+            <div class="col-xl-12">
 
                 <!-- Income and Express -->
                 <div class="card card-default">
                     <div class="card-header">
-                        <h2>Income And Expenses</h2>
+                        <h2>
+                            Aktif (Teslim Edilmemiş) Siparişler
+                        </h2>
                         <div class="dropdown">
                             <a class="dropdown-toggle icon-burger-mini" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false" data-display="static">
@@ -212,18 +215,67 @@
 
                     </div>
                     <div class="card-body">
-                        <div class="chart-wrapper">
-                            <div id="mixed-chart-1"></div>
-                        </div>
+
+                        <table id="orderTable" class="table table-product" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Id</th>
+                                    <th>Sipariş Id</th>
+                                    <th>Kullanıcı Adı</th>
+                                    <th>Ürün Adı</th>
+                                    <th>Adet</th>
+                                    <th>Toplam Tutar</th>
+                                    <th>Sipariş Durumu</th>
+                                    <th>Sipariş Tarihi</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.order_item.Where(x => x.order_details.is_delivered == false))
+                                {
+                                    <tr orderId="@item.order_id" payId="@Model.payment_details.FirstOrDefault(x=>x.order_id == item.order_id).paymentId" class="@(item.order_details.is_delivered!=true ? "notDelivered blink-effect":"")">
+                                        <td class="py-0">
+                                            <img src="@item.products.cover" alt="Alternate Text" />
+                                        </td>
+                                        <td>@item.id</td>
+                                        <td>@item.order_id</td>
+                                        <td>@item.order_details.users.username</td>
+                                        <td>@item.products.name</td>
+                                        <td>@item.quantity</td>
+                                        <td>@(Model.products_skus.FirstOrDefault(p => p.product_id == item.product_id).price * item.quantity)</td>
+                                        <td class="paymentstatus">@Model.payment_details.FirstOrDefault(x => x.order_id == item.order_id).status</td>
+                                        <td>@item.created_at</td>
+
+
+
+                                        <td>
+                                            @*<a href="/Management/OrderDetail/@item.order_id">
+                                                    <span class="mdi mdi-eye text-bg-warning "></span>
+
+                                                </a>*@
+
+                                        </td>
+                                    </tr>
+
+                                }
+
+
+
+
+                            </tbody>
+                        </table>
+
                     </div>
 
                 </div>
 
 
             </div>
-            <div class="col-xl-4">
-                <!-- Current Users  -->
-                <div class="card card-default">
+            <!--<div class="col-xl-4">-->
+            <!-- Current Users  -->
+            <!--<div class="card card-default">
                     <div class="card-header">
                         <h2>Current Users</h2>
                         <span>Realtime</span>
@@ -235,7 +287,7 @@
                         <a href="#" class="text-uppercase">Current Users Overview</a>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
 
 
@@ -246,18 +298,18 @@
                 <div class="card card-default">
                     <div class="card-header">
                         <h2>Ürünler</h2>
-                        <div class="dropdown">
-                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
-                               aria-expanded="false">
-                                Yearly Chart
-                            </a>
+                        @*<div class="dropdown">
+                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                                   aria-expanded="false">
+                                    Yearly Chart
+                                </a>
 
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </div>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="#">Action</a>
+                                    <a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>
+                                </div>
+                            </div>*@
                     </div>
                     <div class="card-body">
                         <table id="productsTable" class="table table-hover table-product" style="width:100%">
@@ -266,9 +318,7 @@
                                     <th></th>
                                     <th>Ürün Adı</th>
                                     <th>ID</th>
-
-
-                                    <th>Günlük Satış</th>
+                                    <th>Stok Kodu</th>
                                     <th>Satılan</th>
                                     <th>Stokta</th>
                                     <th></th>
@@ -278,19 +328,19 @@
                                 @{
                                     int i = 1;
                                 }
-                                @foreach (var item in Model.products)
+                                @foreach (var item in Model.products.Where(x => x.status == true))
                                 {
                                     <tr>
                                         <td class="py-0">
-                                            <img src="@item.cover" alt="Product Image">
+                                            <img src="@(item.cover)" alt="Product Image">
                                         </td>
                                         <td>@item.name</td>
                                         <td>@item.id</td>
 
                                         <td>
-                                            <div id="tbl-chart-0@(i)" style="width: fit-content;"></div>
+                                            @item.products_skus.FirstOrDefault().sku
                                         </td>
-                                        <td>4</td>
+                                        <td>@(Model.order_item.Where(x=>x.status=="success" && x.product_id==item.id).Sum(y=>y.quantity))</td>
                                         <td>@item.products_skus.FirstOrDefault().quantity</td>
                                         <td>
                                             <a href="/Home/Product/@item.id">
@@ -364,8 +414,7 @@
                     </div>
                 </div>
 
-                <!-- jQuery Kütüphanesi -->
-                <!-- jQuery Animasyon Kodu -->
+                
                 <script>
                     $(document).ready(function () {
                         $('#toggleRows').on('click', function (event) {
@@ -374,11 +423,11 @@
                             var isVisible = moreRows.is(':visible');
 
                             if (isVisible) {
-                                moreRows.fadeOut(500); // Slide up animation
-                                $(this).text('Hepsini Göster'); // Change link text
+                                moreRows.fadeOut(500); 
+                                $(this).text('Hepsini Göster'); 
                             } else {
-                                moreRows.fadeIn(500); // Slide down animation
-                                $(this).text('Daha Az Göster'); // Change link text
+                                moreRows.fadeIn(500);
+                                $(this).text('Daha Az Göster');
                             }
                         });
                     });
@@ -392,10 +441,10 @@
 
                 <!-- Sales by Product -->
                 <div class="card card-default">
-                    <div class="card-header align-items-center">
-                        <h2 class="">Ürün Satışları</h2>
-                        <a href="#" class="btn btn-primary btn-pill" data-toggle="modal" data-target="#modal-stock">Add Stock</a>
-                    </div>
+                    @*<div class="card-header align-items-center">
+                            <h2 class="">Ürün Satışları</h2>
+                            <a href="#" class="btn btn-primary btn-pill" data-toggle="modal" data-target="#modal-stock">Add Stock</a>
+                        </div>*@
                     <div class="card-body">
                         <div class="tab-content">
                             <table id="product-sale" class="table table-product " style="width:100%">
@@ -410,7 +459,7 @@
                                 </thead>
                                 <tbody>
 
-                                    @foreach (var item in Model.products)
+                                    @foreach (var item in Model.products.Where(x => x.status == true))
                                     {
                                         <tr>
                                             <td>@item.name</td>
@@ -437,254 +486,134 @@
             </div>
         </div>
 
-        <!--<div class="row">
-            <div class="col-xl-4">-->
-        <!-- Chat -->
-        <!--<div class="card card-default chat">
-            <div class="card-header">
-                <h2>Selena Wagner</h2>
-                <div class="dropdown dropdown-chat-state">
-                    <button class="dropdown-toggle btn btn-primary btn-rounded-circle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                        <i class="mdi mdi-account-alert"></i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <li>
-                            <a href="#" class="user-link">
-                                <img src="~/Content/theme/images/user/user-sm-01.jpg" alt="User Image">
-                                <span class="username">
-                                    anna patuary
-                                    <span class="badge badge-secondary">18</span>
-                                </span>
-                                <span class="state active">
-                                    <i class="mdi mdi-circle-medium"></i>
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="user-link">
-                                <img src="~/Content/theme/images/user/user-sm-02.jpg" alt="User Image">
-                                <span class="username">
-                                    riman Ghose
-                                    <span class="badge badge-secondary">18</span>
-                                </span>
-                                <span class="state">
-                                    1hrs
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="user-link">
-                                <img src="~/Content/theme/images/user/user-sm-03.jpg" alt="User Image">
-                                <span class="username">
-                                    riman Ghose
-                                    <span class="badge badge-secondary">18</span>
-                                </span>
-                                <span class="state">
-                                    1hrs
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="user-link">
-                                <img src="~/Content/theme/images/user/user-sm-04.jpg" alt="User Image">
-                                <span class="username">
-                                    riman Ghose
-                                    <span class="badge badge-secondary">18</span>
-                                </span>
-                                <span class="state">
-                                    1hrs
-                                </span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="user-link">
-                                <img src="~/Content/theme/images/user/user-sm-05.jpg" alt="User Image">
-                                <span class="username">riman Ghose</span>
-                                <span class="state">15min</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card-body pb-0" data-simplebar style="height: 363px;">-->
-        <!-- Media Chat Left -->
-        <!--<div class="media media-chat">
-            <img src="~/Content/theme/images/user/user-sm-01.jpg" class="rounded-circle" alt="Avata Image">
-            <div class="media-body">
-                <div class="text-content">
-                    <span class="message">Hello my name is anna.</span>
-                    <time class="time">5 mins ago</time>
-                </div>
-            </div>
-        </div>-->
-        <!-- Media Chat Right -->
-        <!--<div class="media media-chat media-chat-right">
-            <div class="media-body">
-                <div class="text-content">
-                    <span class="message">Hello i am Riman.</span>
-                    <time class="time">4 mins ago</time>
-                </div>
-                <div class="text-content">
-                    <span class="message">I want to know about yourself</span>
-                    <time class="time">3 mins ago</time>
-                </div>
-            </div>
-            <img src="~/Content/theme/images/user/user-sm-02.jpg" class="rounded-circle" alt="Avata Image">
-        </div>-->
-        <!-- Media Chat Left -->
-        <!--<div class="media media-chat">
-                            <img src="~/Content/theme/images/user/user-sm-01.jpg" class="rounded-circle" alt="Avata Image">
-                            <div class="media-body">
-                                <div class="text-content">
-                                    <span class="message">Its had resolving otherwise she contented therefore.</span>
-                                    <time class="time">1 mins ago</time>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat-footer">
-                        <form>
-                            <div class="input-group input-group-chat">
-                                <div class="input-group-prepend">
-                                    <span class="emoticon-icon mdi mdi-emoticon-happy-outline"></span>
-                                </div>
-                                <input type="text" class="form-control" aria-label="Text input with dropdown button">
-                            </div>
-                        </form>
-                    </div>
-                </div>
 
-            </div>
-        </div>-->
-        <!-- Stock Modal -->
-        <div class="modal fade modal-stock" id="modal-stock" aria-labelledby="modal-stock" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                <form action="#">
-                    <div class="modal-content">
-                        <div class="modal-header align-items-center p3 p-md-5">
-                            <h2 class="modal-title" id="exampleModalGridTitle">Add Stock</h2>
-                            <div>
-                                <button type="button" class="btn btn-light btn-pill mr-1 mr-md-2" data-dismiss="modal"> cancel </button>
-                                <button type="submit" class="btn btn-primary  btn-pill" data-dismiss="modal"> save </button>
-                            </div>
+        @*<!-- Stock Modal -->
+            <div class="modal fade modal-stock" id="modal-stock" aria-labelledby="modal-stock" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                    <form action="#">
+                        <div class="modal-content">
+                            <div class="modal-header align-items-center p3 p-md-5">
+                                <h2 class="modal-title" id="exampleModalGridTitle">Add Stock</h2>
+                                <div>
+                                    <button type="button" class="btn btn-light btn-pill mr-1 mr-md-2" data-dismiss="modal"> cancel </button>
+                                    <button type="submit" class="btn btn-primary  btn-pill" data-dismiss="modal"> save </button>
+                                </div>
 
-                        </div>
-                        <div class="modal-body p3 p-md-5">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <h3 class="h5 mb-5">Product Information</h3>
-                                    <div class="form-group mb-5">
-                                        <label for="new-product">Product Title</label>
-                                        <input type="text" class="form-control" id="new-product" placeholder="Add Product">
-                                    </div>
-                                    <div class="form-row mb-4">
-                                        <div class="col">
-                                            <label for="price">Price</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text" id="basic-addon1">$</span>
+                            </div>
+                            <div class="modal-body p3 p-md-5">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <h3 class="h5 mb-5">Product Information</h3>
+                                        <div class="form-group mb-5">
+                                            <label for="new-product">Product Title</label>
+                                            <input type="text" class="form-control" id="new-product" placeholder="Add Product">
+                                        </div>
+                                        <div class="form-row mb-4">
+                                            <div class="col">
+                                                <label for="price">Price</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon1">$</span>
+                                                    </div>
+                                                    <input type="text" class="form-control" id="price" placeholder="Price" aria-label="Price"
+                                                           aria-describedby="basic-addon1">
                                                 </div>
-                                                <input type="text" class="form-control" id="price" placeholder="Price" aria-label="Price"
-                                                       aria-describedby="basic-addon1">
                                             </div>
-                                        </div>
-                                        <div class="col">
-                                            <label for="sale-price">Sale Price</label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text" id="basic-addon1">$</span>
+                                            <div class="col">
+                                                <label for="sale-price">Sale Price</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" id="basic-addon1">$</span>
+                                                    </div>
+                                                    <input type="text" class="form-control" id="sale-price" placeholder="Sale Price" aria-label="SalePrice"
+                                                           aria-describedby="basic-addon1">
                                                 </div>
-                                                <input type="text" class="form-control" id="sale-price" placeholder="Sale Price" aria-label="SalePrice"
-                                                       aria-describedby="basic-addon1">
                                             </div>
                                         </div>
+
+                                        <div class="product-type mb-3 ">
+                                            <label class="d-block" for="sale-price">Product Type <i class="mdi mdi-help-circle-outline"></i> </label>
+                                            <div>
+
+                                                <div class="custom-control custom-radio d-inline-block mr-3 mb-3">
+                                                    <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="checked">
+                                                    <label class="custom-control-label" for="customRadio1">Physical Good</label>
+                                                </div>
+
+                                                <div class="custom-control custom-radio d-inline-block mr-3 mb-3">
+                                                    <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
+                                                    <label class="custom-control-label" for="customRadio2">Digital Good</label>
+                                                </div>
+
+                                                <div class="custom-control custom-radio d-inline-block mr-3 mb-3">
+                                                    <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input">
+                                                    <label class="custom-control-label" for="customRadio3">Service</label>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="editor">
+                                            <label class="d-block" for="sale-price">Description <i class="mdi mdi-help-circle-outline"></i></label>
+                                            <div id="standalone">
+                                                <div id="toolbar">
+                                                    <span class="ql-formats">
+                                                        <select class="ql-font"></select>
+                                                        <select class="ql-size"></select>
+                                                    </span>
+                                                    <span class="ql-formats">
+                                                        <button class="ql-bold"></button>
+                                                        <button class="ql-italic"></button>
+                                                        <button class="ql-underline"></button>
+                                                    </span>
+                                                    <span class="ql-formats">
+                                                        <select class="ql-color"></select>
+                                                    </span>
+                                                    <span class="ql-formats">
+                                                        <button class="ql-blockquote"></button>
+                                                    </span>
+                                                    <span class="ql-formats">
+                                                        <button class="ql-list" value="ordered"></button>
+                                                        <button class="ql-list" value="bullet"></button>
+                                                        <button class="ql-indent" value="-1"></button>
+                                                        <button class="ql-indent" value="+1"></button>
+                                                    </span>
+                                                    <span class="ql-formats">
+                                                        <button class="ql-direction" value="rtl"></button>
+                                                        <select class="ql-align"></select>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div id="editor"></div>
+
+                                            <div class="custom-control custom-checkbox d-inline-block mt-2">
+                                                <input type="checkbox" class="custom-control-input" id="customCheck2">
+                                                <label class="custom-control-label" for="customCheck2">Hide product from published site</label>
+                                            </div>
+
+                                        </div>
+
                                     </div>
-
-                                    <div class="product-type mb-3 ">
-                                        <label class="d-block" for="sale-price">Product Type <i class="mdi mdi-help-circle-outline"></i> </label>
-                                        <div>
-
-                                            <div class="custom-control custom-radio d-inline-block mr-3 mb-3">
-                                                <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="checked">
-                                                <label class="custom-control-label" for="customRadio1">Physical Good</label>
-                                            </div>
-
-                                            <div class="custom-control custom-radio d-inline-block mr-3 mb-3">
-                                                <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
-                                                <label class="custom-control-label" for="customRadio2">Digital Good</label>
-                                            </div>
-
-                                            <div class="custom-control custom-radio d-inline-block mr-3 mb-3">
-                                                <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input">
-                                                <label class="custom-control-label" for="customRadio3">Service</label>
-                                            </div>
-
+                                    <div class="col-lg-4">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" placeholder="please imgae here">
+                                            <span class="upload-image">Click here to <span class="text-primary">add product image.</span> </span>
                                         </div>
-                                    </div>
-
-                                    <div class="editor">
-                                        <label class="d-block" for="sale-price">Description <i class="mdi mdi-help-circle-outline"></i></label>
-                                        <div id="standalone">
-                                            <div id="toolbar">
-                                                <span class="ql-formats">
-                                                    <select class="ql-font"></select>
-                                                    <select class="ql-size"></select>
-                                                </span>
-                                                <span class="ql-formats">
-                                                    <button class="ql-bold"></button>
-                                                    <button class="ql-italic"></button>
-                                                    <button class="ql-underline"></button>
-                                                </span>
-                                                <span class="ql-formats">
-                                                    <select class="ql-color"></select>
-                                                </span>
-                                                <span class="ql-formats">
-                                                    <button class="ql-blockquote"></button>
-                                                </span>
-                                                <span class="ql-formats">
-                                                    <button class="ql-list" value="ordered"></button>
-                                                    <button class="ql-list" value="bullet"></button>
-                                                    <button class="ql-indent" value="-1"></button>
-                                                    <button class="ql-indent" value="+1"></button>
-                                                </span>
-                                                <span class="ql-formats">
-                                                    <button class="ql-direction" value="rtl"></button>
-                                                    <select class="ql-align"></select>
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div id="editor"></div>
-
-                                        <div class="custom-control custom-checkbox d-inline-block mt-2">
-                                            <input type="checkbox" class="custom-control-input" id="customCheck2">
-                                            <label class="custom-control-label" for="customCheck2">Hide product from published site</label>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                                <div class="col-lg-4">
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="customFile" placeholder="please imgae here">
-                                        <span class="upload-image">Click here to <span class="text-primary">add product image.</span> </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
-                </form>
-            </div>
-        </div>
+                        </div>
+                    </form>
+                </div>
+            </div>*@
     </div>
 
 </div>
 
 <script src="~/Content/theme/plugins/apexcharts/apexcharts.min.js"></script>
-
 <script>
 
-    /*======== 1. SPLINA AREA CHART 01 ========*/
    /*======== 1. SPLINA AREA CHART 01 ========*/
 var splinaArea1 = document.querySelector("#spline-area-1");
 if (splinaArea1 !== null) {
@@ -693,7 +622,6 @@ if (splinaArea1 !== null) {
     var splinaAreaOptions1 = {
         chart: {
             id: "spline-area-1",
-            group: "social",
             height: 135,
             width: "100%",
             background: "#fd5190",
@@ -728,7 +656,7 @@ if (splinaArea1 !== null) {
             x: {
                 show: true,
                 formatter: function (val, opts) {
-                   
+
                     return monthNames[opts.dataPointIndex];
                 },
             },
@@ -743,7 +671,7 @@ if (splinaArea1 !== null) {
 
         series: [
             {
-                data: @monthlySalesArray, 
+                data: @monthlySalesArray,
             },
         ],
     };
@@ -760,8 +688,7 @@ if (splinaArea2 !== null) {
 
     var splinaAreaOptions2 = {
         chart: {
-            id: "spline-area-1",
-            group: "social",
+            id: "spline-area-2",
             height: 135,
             width: "100%",
             background: "#46c79e",
@@ -812,7 +739,7 @@ if (splinaArea2 !== null) {
 
         series: [
             {
-                data: @monthlyUserArray, // JSON verisi
+                data: @monthlyUserArray,
             },
         ],
     };
@@ -829,7 +756,6 @@ if (splinaArea2 !== null) {
         var splinaAreaOptions3 = {
             chart: {
                 id: "spline-area-3",
-                group: "social",
                 height: 135,
                 width: "100%",
                 background: "#9e6de0",
@@ -894,8 +820,7 @@ if (splinaArea2 !== null) {
         var monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
         var splinaAreaOptions4 = {
             chart: {
-                id: "spline-area-3",
-                group: "social",
+                id: "spline-area-4",
                 height: 135,
                 width: "100%",
                 background: "#6696fe",
@@ -953,4 +878,8 @@ if (splinaArea2 !== null) {
         var randerSplinaArea4 = new ApexCharts(splinaArea4, splinaAreaOptions4);
         randerSplinaArea4.render();
     }
+
+
+
+    
 </script>

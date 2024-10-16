@@ -9,24 +9,13 @@
 <link href="~/Content/css/components/single-product/product-gallery.css" rel="stylesheet" />
 <link href="~/Content/css/components/single-product/product-info.css" rel="stylesheet" />
 <link href="~/Content/css/components/single-product/product-tabs.css" rel="stylesheet" />
-<!--! single product start  -->
+
+
+
 <section class="single-product">
     <div class="container">
         <div class="single-product-wrapper">
-            <!-- breadcrumb start -->
-            @*<div class="single-topbar">
-                <nav class="breadcrumb">
-                    <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Man</a></li>
-                        <li><a href="#">Pants</a></li>
-                        <li>Basic Colored Sweatpants With Elastic Hems</li>
-
-                    </ul>
-                </nav>
-            </div>*@
-            <!-- breadcrumb end -->
-            <!-- site main start -->
+         
             <div class="single-content">
                 <main class="site-main">
                     <div class="slick-slider slick-initialized" dir="ltr" style="max-block-size:500px;max-width:500px">
@@ -34,23 +23,7 @@
                             <i class="bi bi-chevron-left"></i>
                         </button>
                         <div class="product-gallery">
-                            @*<div class="single-image-wrapper">
-            <img src=" @Model.products.FirstOrDefault().cover" alt="">
-        </div>
-        <div class="product-thumb">
-            <ol class="gallery-thumbs">
-
-
-
-
-                @foreach (var item in Model.products.FirstOrDefault().product_images)
-                {
-                    <li>
-                        <img src="@item.image_path" alt="" class="img-fluid">
-                    </li>
-                }
-            </ol>
-        </div>*@
+           
 
                                
 
@@ -140,14 +113,7 @@
                                     <a class="btn btn-lg btn-primary" onclick="AddCart(@Model.products.FirstOrDefault().id)">Sepete Ekle</a>
                                 </div>
                                 <div class="product-extra-buttons">
-                                    @*<a href="#">
-            <i class="bi bi-globe"></i>
-            <span>Size Guide</span>
-        </a>
-        <a href="#">
-            <i class="bi bi-heart"></i>
-            <span>Add to Wislist</span>
-        </a>*@
+                   
                                     @{
                                         // Mevcut protokol ve domaini al
                                         string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
@@ -226,7 +192,6 @@
                     </div>
                 </main>
             </div>
-            <!-- site main end -->
             <style>
                 .tab-content {
                     display: none !important;
@@ -237,7 +202,7 @@
                     }
 
                 .tab-button.active {
-                    /* Aktif buton için stiller */
+              
                 }
             </style>
             <!-- tabs start -->

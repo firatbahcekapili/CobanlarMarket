@@ -18,12 +18,12 @@ namespace CobanlarMarket.Models
         public products()
         {
             this.campaign_products = new HashSet<campaign_products>();
-            this.cart_item = new HashSet<cart_item>();
             this.coupon_products = new HashSet<coupon_products>();
             this.order_item = new HashSet<order_item>();
             this.product_images = new HashSet<product_images>();
             this.products_skus = new HashSet<products_skus>();
             this.wishlist = new HashSet<wishlist>();
+            this.cart_item = new HashSet<cart_item>();
         }
     
         public int id { get; set; }
@@ -41,8 +41,6 @@ namespace CobanlarMarket.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<campaign_products> campaign_products { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<cart_item> cart_item { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<coupon_products> coupon_products { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order_item> order_item { get; set; }
@@ -54,5 +52,7 @@ namespace CobanlarMarket.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<wishlist> wishlist { get; set; }
         public virtual sub_subcategories sub_subcategories { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<cart_item> cart_item { get; set; }
     }
 }

@@ -5,7 +5,8 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 
     <link href="~/Content/css/All.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -73,8 +74,7 @@
     <header>
         <div class="global-notification">
             <p>
-                ÖZEL ÜRÜNLERDE YAZ İNDİRİMİ VE ÜCRETSİZ EKSPRES ULUSLARARASI
-                ŞARKÜTERİ 50% İNDİRİM!<a href="/Home/Shop">ALİSVERİS YAP</a>
+                @Model.company_details.FirstOrDefault().homepage_top_text<a href="/Home/Shop">ALİSVERİS YAP</a>
             </p>
         </div>
         <div class="header-row">
@@ -116,7 +116,7 @@
                                                 <h4 class="megamenu-products-title">
                                                     Kategoriler
                                                 </h4>
-                                                <ul id="categoryList" class="categorylist">
+                                                <ul id="categoryList" class="categorylist" style="max-height:700px;overflow-y:auto;">
                                                     <!-- Kategoriler buraya eklenecek -->
                                                 </ul>
                                             </div>
@@ -161,26 +161,13 @@
                         <i class="bi-x-circle" id="close-sidebar"></i>
                     </div>
                     @{
-                        var kisi = Session["user"];
+                        var kisi = Session["User"];
                         if (kisi != null)
                         {
                             CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
                             <div class="header-right">
                                 <div class="header-right-links">
-                                    @*<a class="header-account" href="~/Home/Auth">
-
-
-
-
-
-
-
-
-
-
-
-                                        </a>*@
-
+                                
 
 
 
@@ -546,7 +533,7 @@
 
         $(document).ready(function () {
             $("#btn-menu").click(function (event) {
-                event.stopPropagation(); // Olayın menü dışına taşmasını engeller
+                event.stopPropagation();
                 $("#sidebar").toggleClass("open");
             });
 

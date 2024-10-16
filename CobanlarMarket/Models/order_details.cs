@@ -28,6 +28,16 @@ namespace CobanlarMarket.Models
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> updated_at { get; set; }
         public Nullable<int> coupon_id { get; set; }
+        public Nullable<int> address_id { get; set; }
+        public string shipping_address { get; set; }
+        public string shipping_title { get; set; }
+        public string shipping_city { get; set; }
+        public string shipping_country { get; set; }
+        public string shipping_name { get; set; }
+        public string shipping_surname { get; set; }
+        public string shipping_phone_number { get; set; }
+        public string shipping_postal_code { get; set; }
+        public Nullable<bool> is_delivered { get; set; }
     
         public virtual coupons coupons { get; set; }
         public virtual users users { get; set; }

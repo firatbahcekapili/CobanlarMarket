@@ -5,6 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var deneme = Session["deneme"] as CobanlarMarket.Models.users;
+    var company = Model.company_details.FirstOrDefault();
 }
 
 
@@ -19,11 +20,11 @@
                     <div class="slider-elements">
                         <div class="slider-item fade">
                             <div class="slider-image">
-                                <img src="~/img/12.jpg" class="img-fluid" alt="" />
+                                <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" />
 
                                 <div class="container" style="margin-left:80px;">
-                                    <p class="slider-title">YAZ 2024</p>
-                                    <h2 class="slider-heading">TASARRUF EDİN 70%</h2>
+                                    <p class="slider-title">@company.homepage_slider_title</p>
+                                    <h2 class="slider-heading">@company.homepage_slider_text</h2>
                                     <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
                                 </div>
                             </div>
@@ -75,7 +76,7 @@
                                                      class="img1" />
                                             }
 
-                                            <span class="category-title">@category.name</span>
+                                        <br /><span class="category-title">@category.name</span>
                                         </a>
                                     </li>
                                 }
@@ -407,16 +408,16 @@
                     </ul>
                 </div>
             </section>*@
-                    <section class="campaing-single">
-                        <div class="container">
-                            <div class="campaing-wrapper">
-                                <h2>New Season Better</h2>
-                                <strong>40% INDIRIM</strong><span></span><a href="#" class="btn btn-lg btn-red">
-                                    ALIŞVERIS YAP<i class="bi bi-arrow-right"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </section>
+            <section class="campaing-single" style="background-image:url(@(company.homepage_bottom_img != null ? company.homepage_bottom_img : "/img/single-campaign.png"))">
+                <div class="container">
+                    <div class="campaing-wrapper">
+                        <h2>@company.homepage_bottom_header</h2>
+                        <strong>@company.homepage_bottom_text</strong><span></span><a href="#" class="btn btn-lg btn-red">
+                            ALIŞVERIS YAP<i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
                 </div>
         </div>
     </div>

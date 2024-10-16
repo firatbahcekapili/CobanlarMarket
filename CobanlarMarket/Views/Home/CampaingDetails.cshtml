@@ -44,7 +44,6 @@
 
 
 
-<!-- Product Section Begin -->
 <section class="product spad">
     <div class="container">
         <div class="row">
@@ -177,7 +176,6 @@
             </div>
     </div>
 </section>
-<!-- Product Section End -->
 <script src="~/Content/css/shoppage/js/bootstrap.min.js"></script>
 
 <script src="~/Content/css/shoppage/js/jquery.nice-select.min.js"></script>
@@ -248,7 +246,6 @@
                 });
             },
             error: function (xhr, status, error) {
-                // Hata durumunu ele alabilirsiniz
             }
         });
     });
@@ -266,7 +263,6 @@
                     $(this).empty();
                     $(this).html(response);
 
-                    // Background resimleri ayarla
                     $('.set-bg').each(function () {
                         var bg = $(this).data('setbg');
                         $(this).css('background-image', 'url(' + bg + ')');
@@ -374,7 +370,6 @@
 
 </script>
 <script>
-// Document seviyesinde delegasyon kullanarak onchange olayını bağlama
 $(document).on('change', '#sortSelect', function () {
     var selectedOption = $(this).find('option:selected');
     var orderType = selectedOption.attr('orderType');
@@ -393,7 +388,6 @@ $(document).on('change', '#sortSelect', function () {
                 $(this).empty();
                 $(this).html(response);
 
-                // Background resimleri ayarla
                 $('.set-bg').each(function () {
                     var bg = $(this).data('setbg');
                     $(this).css('background-image', 'url(' + bg + ')');

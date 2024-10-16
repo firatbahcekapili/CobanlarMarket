@@ -3,7 +3,52 @@
     ViewBag.Title = "EditCategory";
     Layout = "~/Views/Shared/_ManagementLayout.cshtml";
 }
+<style>
+    .img-pre {
+        position: relative;
+    }
 
+    .img-thumbnail {
+        position: relative;
+        width: 100px; 
+        height: 100px; 
+    }
+
+        .img-thumbnail .remove-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0.2rem;
+            font-size: 0.8rem;
+        }
+
+    .img-pre {
+        position: relative;
+        max-height: 240px;
+        overflow-y: auto;
+    }
+
+    .remove-img-btn {
+        position: absolute;
+        top: 4px;
+        right: 3px;
+        color: red;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 10;
+        font-size: 20px;
+    }
+
+        .remove-img-btn:hover {
+            color: darkred;
+        }
+</style>
 
 <div class=" mt-5 ml-5 mr-5 mb-5">
    
@@ -14,7 +59,7 @@
 
             <div class="col-12 bg-white p-5">
                 <div class="col-12 pt-4 pb-4 pl-0 ">
-                    <h3>Kategori Ekle</h3>
+                    <h3>Kategori Düzenle</h3>
 
                 </div>
                 <div class="form-group">
@@ -25,9 +70,12 @@
 
                             @if (Model.cover != null)
                             {
-                                <div class="p-2" imgid="@Model.id">
+                                <div class="p-2 position-relative col-auto" imgid="@Model.id">
                                     <img src="@Model.cover" alt="" class="img-thumbnail" style="width:200px" />
-                                    <a class="remove-img-btn btn" onclick="removeImgDatabase(@Model.id)">x</a>
+                                    @*<a class="remove-img-btn btn" onclick="removeImgDatabase(@Model.id)">x</a>*@
+                                    <button type="button" class="remove-img-btn" onclick="removeImgDatabase(@Model.id)">
+                                        <i class="mdi mdi-trash-can icon"></i>
+                                    </button>
                                 </div>
                             }
 
@@ -108,12 +156,12 @@
                         if (response.success) {
                             toastr.success(response.message);
                             $("#image-container").empty();
-                            $("#image-container").append("<div class='p-2' imgid='" + response.category[0].id + "'><img src='" + response.category[0].cover + "' alt='' class='img-thumbnail' style='width:200px' /><a class='remove-img-btn btn' onclick='removeImgDatabase(" + response.category[0].id + ")'>x</a></div>");
+                            $("#image-container").append("<div class='p-2 position-relative col-auto' imgid='" + response.category[0].id + "'><img src='" + response.category[0].cover + "' alt='' class='img-thumbnail' style='width:200px' /> <button type='button' class='remove-img-btn' onclick='removeImgDatabase("+response.category[0].id+")'> <i class='mdi mdi-trash-can icon'></i></button></div>");
                         } else {
                             toastr.error(response.message);
                         }
-                      
-                      
+
+
                     }, error: function (e) {
                         toastr.error('Kategori Düzenlenirken Bir Hata Oluştu', 'Hata');
                         console.log(e);
@@ -163,7 +211,6 @@
     });
     // Ekrandaki resmi kaldır ve selectedFiles dizisini güncelle
     function removeImage(fileToRemove) {
-        // Dosya verisini base64 formatına dönüştür
         var reader = new FileReader();
         reader.onload = function (e) {
             var fileDataURL = e.target.result;
@@ -178,7 +225,6 @@
                 }
             });
 
-            // Input dosya listesini güncelle
 
 
             $("#categoryImg").remove();
@@ -220,7 +266,6 @@
             var img = $('<img>').attr('src', filePath).addClass('img-thumbnail');
             var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
                 event.preventDefault();
-                // Dosyayı sunucudan kaldır ve UI'dan sil
                 removeImgDatabase(filePath);
             });
             var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
@@ -241,7 +286,7 @@
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail').css("width", "200px");
                 var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
-                    event.preventDefault(); // Varsayılan davranışı engelle
+                    event.preventDefault(); 
                     removeImage(file);
                 });
                 var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);

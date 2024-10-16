@@ -24,25 +24,36 @@ using System.Security.Cryptography;
 using System.Text;
 using Iyzipay.Model.V2.Transaction;
 using Iyzipay.Request.V2;
+using CobanlarMarket.Hubs;
+using Microsoft.AspNet.SignalR;
+using System.Net.Mail;
 
 namespace CobanlarMarket.Controllers
 {
     public class HomeController : Controller
     {
         private CobanlarMarketEntities db = new CobanlarMarketEntities();
+        private EmailService _emailService = new EmailService();
 
         public object Viewbag { get; private set; }
-
         public ActionResult Index()
         {
 
+            var expiredCampaigns = db.campaigns
+                .Where(c => c.campaign_end_date <= DateTime.Now && c.is_active == true)
+                .ToList();
+
+            expiredCampaigns.ForEach(c => c.is_active = false);
+
+            db.SaveChanges();
 
             AllViewModel model = new AllViewModel();
             model.products = db.products.Where(x => x.status == true).ToList();
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
-            model.campaigns = db.campaigns.Include(x => x.campaign_products).ToList();
+            model.campaigns = db.campaigns.Where(x => x.is_active == true).Include(x => x.campaign_products).ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
 
@@ -59,6 +70,7 @@ namespace CobanlarMarket.Controllers
             model.sub_subcategories = db.sub_subcategories.ToList();
 
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
         }
@@ -70,6 +82,7 @@ namespace CobanlarMarket.Controllers
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
 
@@ -77,13 +90,27 @@ namespace CobanlarMarket.Controllers
 
         public ActionResult Cart()
         {
+
+            var expiredCoupons = db.coupons
+            .Where(c => c.EndDate <= DateTime.Now && c.IsActive == true)
+            .ToList();
+
+            expiredCoupons.ForEach(c => c.IsActive = false);
+
+            db.SaveChanges();
+
+
             AllViewModel model = new AllViewModel();
             model.products = db.products.Include(p => p.products_skus).ToList();
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.Include(p => p.cart_item).ToList();
             model.addresses = db.addresses.ToList();
-            model.coupons = db.coupons.ToList();
+            model.coupons = db.coupons.Where(x => x.IsActive == true).ToList();
+            model.company_details = db.company_details.ToList();
+            ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
+
             if (Session["User"] != null)
             {
                 var user = Session["User"] as users;
@@ -113,12 +140,22 @@ namespace CobanlarMarket.Controllers
 
         public ActionResult Campaing()
         {
+
+            var expiredCampaigns = db.campaigns
+                .Where(c => c.campaign_end_date <= DateTime.Now && c.is_active == true)
+                .ToList();
+
+            expiredCampaigns.ForEach(c => c.is_active = false);
+
+            db.SaveChanges();
+
             AllViewModel model = new AllViewModel();
             model.products = db.products.ToList();
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
-            model.campaigns = db.campaigns.Include(p => p.campaign_products).ToList();
+            model.campaigns = db.campaigns.Where(x => x.is_active == true).Include(p => p.campaign_products).ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
 
@@ -126,6 +163,20 @@ namespace CobanlarMarket.Controllers
         }
         public ActionResult CampaingDetails(int id)
         {
+
+
+            var expiredCampaigns = db.campaigns
+             .Where(c => c.campaign_end_date <= DateTime.Now && c.is_active == true)
+             .ToList();
+
+            expiredCampaigns.ForEach(c => c.is_active = false);
+
+            db.SaveChanges();
+
+            if (!db.campaigns.Any(x => x.id == id && x.is_active == true))
+            {
+                return HttpNotFound();
+            }
             // İlgili kampanyadaki ürünlerin ID'leri
             var campaignProductIds = db.campaigns
                                        .Where(x => x.id == id)
@@ -163,11 +214,12 @@ namespace CobanlarMarket.Controllers
             model.categories = db.categories
                 .Where(c => parentCategoryIds.Contains(c.id))
                 .ToList();
-           
+
             model.products_skus = db.products_skus.ToList();
             model.campaigns = db.campaigns.Where(x => x.id == id).ToList();
             model.users = db.users.ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
         }
@@ -181,6 +233,7 @@ namespace CobanlarMarket.Controllers
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
 
@@ -193,6 +246,7 @@ namespace CobanlarMarket.Controllers
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             return View(model);
 
@@ -208,6 +262,7 @@ namespace CobanlarMarket.Controllers
             // Kampanya varsa, kampanya ürünlerini alın
             if (CampaignId.HasValue)
             {
+
                 var campaignProductIds = db.campaigns
                                            .Where(x => x.id == CampaignId)
                                            .SelectMany(x => x.campaign_products)
@@ -332,6 +387,7 @@ namespace CobanlarMarket.Controllers
 
             model.product_attributes = db.product_attributes.ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
 
             if (product == null)
             {
@@ -368,7 +424,7 @@ namespace CobanlarMarket.Controllers
 
                     Session["CartsForPartial"] = db.cart.ToList();
                     Session["CouponsForPartial"] = db.coupons.ToList();
-
+                    ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
                     var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cartId).ToList());
                     string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
 
@@ -402,8 +458,7 @@ namespace CobanlarMarket.Controllers
             }
         }
 
-
-
+        [HttpPost]
         public PartialViewResult removeItemInCart(int Id)
         {
             var user = Session["User"] as users;
@@ -447,7 +502,8 @@ namespace CobanlarMarket.Controllers
                 }
 
                 Session["CartsForPartial"] = db.cart.ToList();
-                Session["CouponsForPartial"] = db.coupons.ToList();
+                Session["CouponsForPartial"] = db.coupons.ToList(); 
+                ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
 
                 return PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cartId).ToList());
             }
@@ -513,6 +569,8 @@ namespace CobanlarMarket.Controllers
                 Session["CartsForPartial"] = db.cart.ToList();
                 Session["CouponsForPartial"] = db.coupons.ToList();
                 var cartId = db.cart.FirstOrDefault(x => x.user_id == user.id).id;
+                ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
 
                 return PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cartId).ToList());
             }
@@ -563,6 +621,8 @@ namespace CobanlarMarket.Controllers
                 var cartId = db.cart.FirstOrDefault(x => x.user_id == user.id).id;
                 Session["CartsForPartial"] = db.cart.ToList();
                 Session["CouponsForPartial"] = db.coupons.ToList();
+                ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
 
                 return PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cartId).ToList());
 
@@ -632,17 +692,17 @@ namespace CobanlarMarket.Controllers
                 if (db.users.Where(x => x.username == username && x.password == password).Count() != 0)
                 {
                     var user = db.users.FirstOrDefault(x => x.username == username && x.password == password);
-                    Session["user"] = db.users.FirstOrDefault(x => x.username == username && x.password == password);
+                    Session["User"] = db.users.FirstOrDefault(x => x.username == username && x.password == password);
 
                     if (user.role == true)
                     {
 
-                        FormsAuthentication.SetAuthCookie(user.role.ToString(), false);
+                        FormsAuthentication.SetAuthCookie("Yönetici", false);
                         return Json(new { redirectUrl = Url.Action("Dashboard", "Management") });
                     }
                     else
                     {
-                        FormsAuthentication.SetAuthCookie(user.role.ToString(), false);
+                        FormsAuthentication.SetAuthCookie("Müşteri", false);
                         return Json(new { redirectUrl = Url.Action("Index", "Home") });
 
                     }
@@ -658,11 +718,167 @@ namespace CobanlarMarket.Controllers
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
+
             return View(model);
 
 
         }
 
+
+
+
+
+        [HttpPost]
+        public ActionResult Register(String Name, String Lastname, String username, String password, String Email)
+        {
+
+
+            var inputs = new[]
+           {
+                    Name,
+                    Lastname,
+                    username,
+                    password,
+                    Email
+                };
+
+            foreach (var input in inputs)
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return Json(new { success = false, message = "Tüm alanlar zorunludur." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            if (db.users.Any(x => x.username == username))
+            {
+                return Json(new { success = false, message = "Bu kullanıcı adına sahip bir hesap zaten bulunmaktadır." }, JsonRequestBehavior.AllowGet);
+
+            }
+
+            if (db.users.Any(x => x.email == Email))
+            {
+                return Json(new { success = false, message = "Bu Email adresine sahip bir kullanıcı zaten bulunmaktadır." }, JsonRequestBehavior.AllowGet);
+
+            }
+
+            if (!username.Replace(" ", "").Equals("") && !password.Replace(" ", "").Equals("") && !Email.Replace(" ", "").Equals("") && !Name.Replace(" ", "").Equals("") && !Lastname.Replace(" ", "").Equals(""))
+            {
+
+                bool isvalidemail = true;
+                try
+                {
+                    MailAddress m = new MailAddress(Email);
+
+
+                }
+                catch (FormatException)
+                {
+                    isvalidemail = false;
+                }
+                if (!isvalidemail)
+                {
+                    return Json(new { success = false, message = "Geçersiz Email adresi" }, JsonRequestBehavior.AllowGet);
+
+                }
+
+                Random random = new Random();
+
+                var code = random.Next(1000, 10000);
+
+                string htmlBody = @"
+                    <html>
+                    <head>
+                        <title>Çobanlar Market Kayıt Onay Kodunuz</title>
+                    </head>
+                    <body>
+                        <h1>Merhaba " + Name + @"!</h1>
+                        <p>Kayıt olmak için onay kodunuz:<h3><strong>" + code + @"</strong></h3></p>
+                        
+                    </body>
+                    </html>";
+                _emailService.SendEmail(Email, "Çobanlar Market Kayıt Onay Kodunuz", htmlBody);
+                Session["ConfirmationCode"] = code.ToString();
+                Session["NewName"] = username.ToString();
+                Session["NewLastname"] = Name.ToString();
+                Session["NewUsername"] = Lastname.ToString();
+                Session["NewEmail"] = Email.ToString();
+                Session["NewPassword"] = password.ToString();
+
+                return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+
+            }
+            else
+            {
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+
+            }
+
+
+
+        }
+
+        public JsonResult ConfirmCode(String Code)
+        {
+            var code = Session["ConfirmationCode"] as string;
+
+            if (code == null)
+            {
+                return Json(new { success = false, message = "Onay kodunun süresi doldu. Tekrar kod alabilirsiniz." }, JsonRequestBehavior.AllowGet);
+
+            }
+
+            if (code == Code)
+            {
+
+
+                users user = new users();
+                user.first_name = Session["NewName"] as string;
+                user.last_name = Session["NewLastname"] as string;
+                user.username = Session["NewUsername"] as string;
+                user.email = Session["NewEmail"] as string;
+                user.password = Session["NewPassword"] as string;
+                user.role = false;
+                user.status = true;
+                user.created_at = DateTime.Now;
+
+
+                try
+                {
+                    db.users.Add(user);
+                    db.SaveChanges();
+
+                    cart cart = new cart();
+                    cart.user_id = user.id;
+                    cart.created_at = DateTime.Now;
+                    cart.isCargoFree = false;
+                    db.cart.Add(cart);
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    return Json(new { success = false, message = e.InnerException.InnerException.Message }, JsonRequestBehavior.AllowGet);
+
+                }
+
+
+
+                Auth(user.username, user.password);
+                return Json(new { success = true, message = "Başarıyla kaydoldunuz", redirectUrl = Url.Action("Index", "Home") }, JsonRequestBehavior.AllowGet);
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Hatalı kod girdiniz!" }, JsonRequestBehavior.AllowGet);
+
+            }
+        }
+
+
+        public void ResetConfirmCode()
+        {
+            Session["ConfirmationCode"] = null;
+        }
 
         public ActionResult LogOut()
         {
@@ -676,7 +892,7 @@ namespace CobanlarMarket.Controllers
 
         public PartialViewResult Search(string Word)
         {
-            var results = db.products.Where(x => x.name.Contains(Word) && x.status==true).Take(10).ToList();
+            var results = db.products.Where(x => x.name.Contains(Word) && x.status == true).Take(10).ToList();
 
 
             return PartialView("_SearchPartial", results);
@@ -724,6 +940,15 @@ namespace CobanlarMarket.Controllers
 
             string paidPrice = "";
 
+            if (cart.coupon_id != null)
+            {
+                if (cart.coupons == null || !cart.coupons.IsActive)
+                {
+                    cart.coupon_id = null;
+                    cart.discount_value = null;
+                    db.SaveChanges();
+                }
+            }
 
             if (total >= 300)
             {
@@ -735,6 +960,7 @@ namespace CobanlarMarket.Controllers
             }
 
             var discountValue = cart.discount_value;
+            var shippingPrice = db.company_details.FirstOrDefault().shipping_cost.GetValueOrDefault(30);//Default kargo ücreti 30₺
             if (discountValue == null)
             {
                 discountValue = "0";
@@ -750,7 +976,7 @@ namespace CobanlarMarket.Controllers
             }
             else
             {
-                paidPrice = (total + 30 - decimal.Parse(discountValue)).ToString();
+                paidPrice = (total + shippingPrice - decimal.Parse(discountValue)).ToString();
 
             }
 
@@ -960,7 +1186,7 @@ namespace CobanlarMarket.Controllers
                 var user = Session["User"] as users;
                 if (user != null)
                 {
-                    var coupon = db.coupons.FirstOrDefault(x => x.Code == CouponCode);
+                    var coupon = db.coupons.FirstOrDefault(x => x.Code == CouponCode && x.Status == true && x.IsActive == true);
                     if (coupon != null)
                     {
                         var userCart = db.cart.FirstOrDefault(x => x.user_id == user.id);
@@ -1080,6 +1306,8 @@ namespace CobanlarMarket.Controllers
 
                                         Session["CartsForPartial"] = db.cart.ToList();
                                         Session["CouponsForPartial"] = db.coupons.ToList();
+                                        ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
                                         var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == userCart.id).ToList());
                                         string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
 
@@ -1144,6 +1372,8 @@ namespace CobanlarMarket.Controllers
                                     db.SaveChanges();
                                     Session["CartsForPartial"] = db.cart.ToList();
                                     Session["CouponsForPartial"] = db.coupons.ToList();
+                                    ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
                                     var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == userCart.id).ToList());
                                     string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
                                     return Json(new { success = true, message = "Kupon geçerli! Tl:" + indirimTutarı.ToString(), discount = indirimTutarı, coupon = coupon.Code, cartItemsHtml = cartItemsHtml });
@@ -1224,8 +1454,11 @@ namespace CobanlarMarket.Controllers
                                         db.SaveChanges();
                                         Session["CartsForPartial"] = db.cart.ToList();
                                         Session["CouponsForPartial"] = db.coupons.ToList();
+                                        ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
                                         var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == userCart.id).ToList());
                                         string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
+
                                         return Json(new { success = true, message = "Kupon geçerli! Tl:" + indirimTutarı.ToString(), discount = Math.Round((decimal)indirimTutarı, 2).ToString("F2").Replace(".", ","), coupon = coupon.Code, cartItemsHtml = cartItemsHtml });
                                     }
                                     else
@@ -1288,8 +1521,11 @@ namespace CobanlarMarket.Controllers
                                     db.SaveChanges();
                                     Session["CartsForPartial"] = db.cart.ToList();
                                     Session["CouponsForPartial"] = db.coupons.ToList();
+                                    ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
                                     var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == userCart.id).ToList());
                                     string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
+
                                     return Json(new { success = true, message = "Kupon geçerli! Tl:" + indirimTutarı.ToString(), discount = Math.Round((decimal)indirimTutarı, 2).ToString("F2").Replace(".", ","), coupon = coupon.Code, cartItemsHtml = cartItemsHtml });
 
                                 }
@@ -1366,6 +1602,8 @@ namespace CobanlarMarket.Controllers
                                         db.SaveChanges();
                                         Session["CartsForPartial"] = db.cart.ToList();
                                         Session["CouponsForPartial"] = db.coupons.ToList();
+                                        ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
                                         var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == userCart.id).ToList());
                                         string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
                                         return Json(new { success = true, message = "Kupon geçerli! Tl:" + indirimTutarı.ToString(), discount = Math.Round((decimal)indirimTutarı, 2).ToString("F2").Replace(".", ","), coupon = coupon.Code, cartItemsHtml = cartItemsHtml });
@@ -1430,6 +1668,8 @@ namespace CobanlarMarket.Controllers
                                     db.SaveChanges();
                                     Session["CartsForPartial"] = db.cart.ToList();
                                     Session["CouponsForPartial"] = db.coupons.ToList();
+                                    ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
+
                                     var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == userCart.id).ToList());
                                     string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
                                     return Json(new { success = true, message = "Kupon geçerli! Tl:" + indirimTutarı.ToString(), discount = Math.Round((decimal)indirimTutarı, 2).ToString("F2").Replace(".", ","), coupon = coupon.Code, cartItemsHtml = cartItemsHtml });
@@ -1500,7 +1740,7 @@ namespace CobanlarMarket.Controllers
             request.PaymentGroup = PaymentGroup.PRODUCT.ToString();
             string baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Url.Content("~");
             //request.CallbackUrl = baseUrl + "/Home/Sonuc?UserId=" + User.id;
-            request.CallbackUrl = " https://f7f8-95-173-234-28.ngrok-free.app/Home/Sonuc?UserId=" + User.id;
+            request.CallbackUrl = "https://4ff7-109-228-210-89.ngrok-free.app/Home/Sonuc?UserId=" + User.id + "&AddressId=" + AddressId;
 
             List<int> enabledInstallments = new List<int>();
             enabledInstallments.Add(2);
@@ -1510,6 +1750,8 @@ namespace CobanlarMarket.Controllers
             request.EnabledInstallments = enabledInstallments;
 
             int id = int.Parse(AddressId);
+
+            Session["AdressId"] = id.ToString();
 
             var address = db.addresses.Find(id);
             string hostName = Dns.GetHostName();
@@ -1551,6 +1793,7 @@ namespace CobanlarMarket.Controllers
             billingAddress.Description = address.address;
             billingAddress.ZipCode = address.postal_code;
             request.BillingAddress = billingAddress;
+
 
             List<BasketItem> basketItems = new List<BasketItem>();
 
@@ -1595,8 +1838,9 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult> Sonuc(RetrieveCheckoutFormRequest model, string UserId)
+        public async Task<ActionResult> Sonuc(RetrieveCheckoutFormRequest model, string UserId, string AddressId)
         {
+
 
             // Gelen POST isteğinde Token'i al
             string token = model.Token;
@@ -1620,6 +1864,7 @@ namespace CobanlarMarket.Controllers
             // Ödeme sonucunu iyzico'dan alıyoruz
             CheckoutForm checkoutForm = CheckoutForm.Retrieve(request, options);
 
+            order_details order = new order_details();
             if (checkoutForm.PaymentStatus == "SUCCESS")
             {
                 // Ödeme başarılı ise kullanıcıya bilgi gösterin
@@ -1636,12 +1881,18 @@ namespace CobanlarMarket.Controllers
                 if (user != null)
                 {
                     var cart = await db.cart.FirstOrDefaultAsync(x => x.user_id == user.id);
+
+
+                    var address_id = int.Parse(AddressId);
                     var od = new order_details
                     {
                         user_id = user.id,
-                        created_at = DateTime.Now
+                        address_id = address_id,
+                        created_at = DateTime.Now,
+                        coupon_id = cart.coupon_id != null ? cart.coupon_id : null,
+                        is_delivered = false
                     };
-
+                    Session["AdressId"] = null;
                     db.order_details.Add(od);
                     await db.SaveChangesAsync();
 
@@ -1667,14 +1918,27 @@ namespace CobanlarMarket.Controllers
                             order_id = od.id,
                             product_id = item.product_id,
                             quantity = item.quantity,
+                            ordered_price = sku.price,
+                            payment_transaction_id = checkoutForm.PaymentItems.Where(x => x.ItemId == item.id.ToString()).FirstOrDefault().PaymentTransactionId,
+                            status = "success",
                             created_at = DateTime.Now
                         });
                         db.products_skus.FirstOrDefault(x => x.product_id == item.product_id).quantity -= item.quantity;
                         db.SaveChanges();
                     }
 
+
                     db.order_item.AddRange(orderItems);
                     od.total = total;
+                    var address = db.addresses.FirstOrDefault(x => x.id == address_id);
+                    od.shipping_title = address.title;
+                    od.shipping_address = address.address;
+                    od.shipping_city = address.city;
+                    od.shipping_country = address.country;
+                    od.shipping_name = address.name;
+                    od.shipping_surname = address.surname;
+                    od.shipping_phone_number = address.phone_number;
+                    od.shipping_postal_code = address.postal_code;
 
                     var pd = new payment_details
                     {
@@ -1688,13 +1952,19 @@ namespace CobanlarMarket.Controllers
                         cardType = checkoutForm.CardType,
                         paidPrice = decimal.Parse(checkoutForm.PaidPrice.Replace(".", ",")),
                         paymentId = checkoutForm.PaymentId,
-                        cargoPrice = cart.isCargoFree == true ? 0 : 30,
+                        cargoPrice = cart.isCargoFree == true ? 0 : db.company_details.FirstOrDefault().shipping_cost.GetValueOrDefault(30),//Default kargo ücreti 30₺
                         couponId = cart.coupon_id != null ? cart.coupon_id : null,
                         couponDiscountValue = cart.discount_value != null ? decimal.Parse(cart.discount_value.Replace(".", ",")) : 0
 
 
 
                     };
+
+
+                    cart.coupon_id = null;
+                    cart.discount_value = null;
+                    db.SaveChanges();
+
 
                     db.payment_details.Add(pd);
                     await db.SaveChangesAsync();
@@ -1704,28 +1974,171 @@ namespace CobanlarMarket.Controllers
 
                     db.cart_item.RemoveRange(cartItems);
                     await db.SaveChangesAsync();
+
+
+                    var orderItemsProjection = orderItems.Select(c => new
+                    {
+                        c.id,
+                        c.product_id,
+                        c.products_sku_id,
+                        c.order_id,
+                        c.payment_transaction_id,
+                        c.quantity,
+                        orderDetails = new
+                        {
+                            c.order_details.id,
+                            c.order_details.total,
+                            created_at = c.order_details.created_at.HasValue
+                     ? c.order_details.created_at.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                     : "N/A",
+                            User = new
+                            {
+                                c.order_details.users.first_name,
+                                c.order_details.users.email,
+                                c.order_details.users.username
+
+                            },
+                            payment_details = new
+                            {
+                                c.status
+                            }
+
+                        },
+                        products = new
+                        {
+                            c.products.cover,
+                            c.products.name,
+                            c.products.products_skus.FirstOrDefault().price
+                        }
+                    }).ToList();
+
+                    List<payment_details> paydet = new List<payment_details>();
+                    List<order_details> ordet = new List<order_details>();
+                    paydet.Add(pd);
+                    ordet.Add(od);
+
+                    var paydetProjection = paydet.Select(p => new
+                    {
+
+
+                        pd.id,
+                        pd.amount,
+                        pd.paidPrice,
+                        pd.order_id,
+                        pd.status,
+                        pd.created_at,
+                        User = new
+                        {
+                            pd.order_details.users.first_name,
+                            pd.order_details.users.email
+                        }
+                    }).ToList();
+
+
+
+                    var ordetProjection = ordet.Select(o => new
+                    {
+                        pd.id,
+                        pd.amount,
+                        pd.order_id,
+                        pd.status,
+                        pd.created_at,
+                        User = new
+                        {
+                            pd.order_details.users.first_name,
+                            pd.order_details.users.email
+                        }
+                    }).ToList();
+                    db.notification.Add(new notification
+                    {
+                        is_read = false,
+                        status = true,
+                        title = "Yeni Sipariş",
+                        text = user.first_name + " " + user.last_name + " tarafından " + Math.Round((decimal)pd.paidPrice, 2) + " &#8378;'lik sipariş geldi!",
+                        user_id = user.id,
+                        order_id = od.id
+                    });
+
+                    db.SaveChanges();
+                    var notificationProjection = db.notification.Where(x => x.status == true).OrderByDescending(o => o.id).Select(c => new
+                    {
+                        c.id,
+                        c.user_id,
+                        c.order_id,
+                        c.text,
+                        c.title,
+                        c.is_read,
+                        c.status,
+                        User = new
+                        {
+                            c.users.first_name,
+                            c.users.last_name,
+                            c.users.id,
+                            c.users.avatar
+                        }
+
+                    });
+
+                    var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+                    hubContext.Clients.All.receiveNotification("Yeni bir sipariş geldi!", orderItemsProjection, paydetProjection, ordetProjection, notificationProjection);
+
+
+
+                    order = od;
                 }
 
 
+                Session["User"] = db.users.FirstOrDefault(x => x.id == order.user_id);
 
-
-                AllViewModel modell = new AllViewModel();
-                modell.products = db.products.ToList();
-                modell.products_skus = db.products_skus.ToList();
-                modell.users = db.users.ToList();
-                modell.categories = db.categories.ToList();
-                modell.sub_categories = db.sub_categories.ToList();
-                modell.carts = db.cart.ToList();
-                return View(modell);
+                return RedirectToAction("SiparisDetay", new { orderId = order.id });
 
             }
 
             // Ödeme başarısızsa hata mesajı gösterin
             ViewBag.PaymentStatus = "FAILED";
+
+
             return View("Sonuc");
         }
 
+        public ActionResult SiparisDetay(int orderId)
+        {
 
+            var user = Session["User"] as users;
+            if (user == null)
+            {
+                return RedirectToAction("Auth");
+            }
+
+            var order = db.order_details.FirstOrDefault(x => x.id == orderId);
+
+            if (order == null)
+            {
+                return HttpNotFound();
+            }
+            if (order.user_id != user.id)
+            {
+                return HttpNotFound();
+            }
+
+
+            AllViewModel model = new AllViewModel();
+            model.order_details = db.order_details
+                .Where(x => x.id == orderId)
+                .Include(x => x.order_item)
+                .ToList();
+            model.order_item = db.order_item
+                .Where(x => x.order_id == orderId)
+                .Include(x => x.products)
+                .Include(x => x.products_skus)
+                .ToList();
+            model.payment_details = db.payment_details.Where(x => x.order_id == orderId).Include(x => x.coupons).ToList();
+            model.users = db.users.Where(x => x.id == order.user_id).ToList();
+            model.carts = db.cart.ToList();
+            model.company_details = db.company_details.ToList();
+
+            return View("Sonuc", model);
+        }
 
         [HttpPost]
         public async Task<ActionResult> Webhook()
@@ -1850,6 +2263,66 @@ namespace CobanlarMarket.Controllers
 
         }
 
+        public JsonResult EditAdress(int Id, string Name, string Surname, string Phone, string Title, string Address)
+        {
+
+            try
+            {
+                var user = Session["User"] as users;
+                if (user != null)
+                {
+
+                    if (!db.addresses.Any(x => x.id == Id))
+                    {
+                        return Json(new { success = false, message = "Adres Bulunamadı" }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    var address = db.addresses.Find(Id);
+                    address.name = Name;
+                    address.surname = Surname;
+                    address.title = Title;
+                    address.phone_number = Phone;
+                    address.address = Address;
+                    address.country = "Türkiye";
+                    address.city = "Trabzon";
+                    address.postal_code = "61750";
+
+
+                    db.SaveChanges();
+
+                    var list = db.addresses.Where(x => x.user_id == user.id).Select(x => new
+                    {
+                        x.id,
+                        x.title,
+                        x.name,
+                        x.surname,
+                        x.phone_number,
+                        x.country,
+                        x.city,
+                        x.address
+                    }).ToList();
+
+                    return Json(new { success = true, message = "Adres Başarıyla Düzenlendi", adressList = list }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Kullanıcı Bulunamadı" }, JsonRequestBehavior.AllowGet);
+                }
+
+
+
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Adres Eklenirken Bir Hata Oluştu" }, JsonRequestBehavior.AllowGet);
+
+                throw;
+            }
+
+
+
+        }
+
         [HttpPost]
         public JsonResult RemoveAddress(int Id)
         {
@@ -1923,5 +2396,13 @@ namespace CobanlarMarket.Controllers
 
 
         }
+
+        public ActionResult GetShippingCost()
+        {
+
+            var shippingCost = db.company_details.FirstOrDefault().shipping_cost.GetValueOrDefault(30);//Default kargo ücreti 30₺
+            return Content(shippingCost.ToString());
+        }
+
     }
 }
