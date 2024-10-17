@@ -78,7 +78,7 @@
                                         <span>
                                             Kullanıcı Adı veya Email Adresi <span class="required">*</span>
                                         </span><br />
-                                        @Html.EditorFor(model => u.username, new { htmlAttributes = new { @class = "form-control", placeholder = "Kullanıcı Adı veya Email Adresi", required = "required", id = "username" } })
+                                        @Html.EditorFor(model => u.username, new { htmlAttributes = new { @class = "form-control", placeholder = "Kullanıcı Adı veya Email Adresi", id = "username" } })
                                         @Html.ValidationMessageFor(model => u.username, "", new { @class = "text-danger" })
                                     </div>
 

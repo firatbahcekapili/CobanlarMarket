@@ -11,8 +11,8 @@
 
     .img-thumbnail {
         position: relative;
-        width: 100px; 
-        height: 100px; 
+        width: 100px;
+        height: 100px;
     }
 
         .img-thumbnail .remove-btn {
@@ -50,7 +50,6 @@
             color: darkred;
         }
 </style>
-
 <div class=" mt-5 ml-5 mr-5">
 
     <form id="ProductForm">
@@ -416,7 +415,7 @@
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail');
                 var removeBtn = $('<button>').addClass('remove-img-btn').html('<i class="mdi mdi-close icon"></i>').on('click', function (event) {
-                    event.preventDefault(); 
+                    event.preventDefault();
                     removeImage(file);
                 });
                 var wrapper = $('<div>').addClass('p-2 position-relative').append(img).append(removeBtn);

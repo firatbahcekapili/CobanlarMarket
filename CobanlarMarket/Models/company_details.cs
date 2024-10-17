@@ -11,12 +11,17 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class company_details
     {
         public int id { get; set; }
         public string name { get; set; }
+        [Required(ErrorMessage = "Bu alan gereklidir.")]
+
         public Nullable<decimal> shipping_cost { get; set; }
+        [Required(ErrorMessage = "Teslimat ücreti alaný gereklidir.")]
+
         public Nullable<decimal> min_amonunt_for_free_shipping { get; set; }
         public string homepage_top_text { get; set; }
         public string homepage_slider_title { get; set; }

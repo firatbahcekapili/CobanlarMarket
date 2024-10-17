@@ -11,7 +11,8 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class users
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -23,21 +24,39 @@ namespace CobanlarMarket.Models
             this.wishlist = new HashSet<wishlist>();
             this.notification = new HashSet<notification>();
         }
-    
+
         public int id { get; set; }
         public string avatar { get; set; }
+        [Required(ErrorMessage = "Ad alaný gereklidir.")]
+        [MinLength(2, ErrorMessage = "Ad en az 2 karakter içermelidir.")]
         public string first_name { get; set; }
+        [Required(ErrorMessage = "Soyad alaný gereklidir.")]
+        [MinLength(2, ErrorMessage = "Soyad en az 2 karakter içermelidir.")]
+
+
         public string last_name { get; set; }
+        [Required(ErrorMessage = "Kullanýcý adý alaný gereklidir.")]
+        [MinLength(5, ErrorMessage = "Kullanýcý adý en az 5 karakterden oluþmalýdýr.")]
+
+
         public string username { get; set; }
+        [Required(ErrorMessage = "E-posta alaný gereklidir.")]
+
         public string email { get; set; }
+        [Required(ErrorMessage = "Þifre alaný gereklidir.")]
+        [MinLength(8, ErrorMessage = "Þifreniz en az 8 karakter içermelidir.")]
+
+
         public string password { get; set; }
         public Nullable<System.DateTime> birth_of_date { get; set; }
+        [Required(ErrorMessage = "Telefon numarasý alaný gereklidir.")]
+
         public string phone_number { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> deleted_at { get; set; }
         public Nullable<bool> role { get; set; }
         public bool status { get; set; }
-    
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<addresses> addresses { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -11,7 +11,8 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class coupons
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -25,13 +26,28 @@ namespace CobanlarMarket.Models
         }
     
         public int Id { get; set; }
+        [Required(ErrorMessage = "Kupon kodu gereklidir")]
+        [StringLength(20, ErrorMessage = "Kupon kodu en fazla 20 karakter olmalýdýr")]
         public string Code { get; set; }
+
+        [Required(ErrorMessage = "Ýndirim türü gereklidir")]
         public string DiscountType { get; set; }
+
+        [Required(ErrorMessage = "Ýndirim miktarý gereklidir")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Ýndirim miktarý sýfýrdan büyük olmalýdýr")]
         public decimal DiscountValue { get; set; }
-        public Nullable<decimal> MinimumSpend { get; set; }
-        public Nullable<decimal> MaxDiscountAmount { get; set; }
-        public System.DateTime StartDate { get; set; }
-        public System.DateTime EndDate { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Minimum harcama sýfýrdan küçük olamaz")]
+        public decimal? MinimumSpend { get; set; }
+
+        [Range(0, double.MaxValue, ErrorMessage = "Maksimum indirim miktarý sýfýrdan küçük olamaz")]
+        public decimal? MaxDiscountAmount { get; set; }
+
+        [Required(ErrorMessage = "Baþlangýç tarihi gereklidir")]
+        public DateTime StartDate { get; set; }
+
+        [Required(ErrorMessage = "Bitiþ tarihi gereklidir")]
+        public DateTime EndDate { get; set; }
         public bool IsActive { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public Nullable<System.DateTime> UpdatedAt { get; set; }

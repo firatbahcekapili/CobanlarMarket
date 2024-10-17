@@ -408,7 +408,7 @@ namespace CobanlarMarket.Controllers
                     item.product_id = Id;
                     item.quantity = Adet;
                     item.created_at = DateTime.Now;
-                    var cartId = db.cart.FirstOrDefault(x => x.user_id == user.id).id;
+                    var cart = db.cart.FirstOrDefault(x => x.user_id == user.id);
                     var existingItem = db.cart.FirstOrDefault(x => x.user_id == user.id).cart_item
                                         .FirstOrDefault(x => x.product_id == Id);
 
@@ -418,14 +418,33 @@ namespace CobanlarMarket.Controllers
                     }
                     else
                     {
-                        db.cart.FirstOrDefault(x => x.user_id == user.id).cart_item.Add(item);
+                        cart.cart_item.Add(item);
                     }
                     db.SaveChanges();
+
+
+                    var cartitems = db.cart_item.Where(x => x.cart_id == cart.id).Include(x => x.products.products_skus).ToList();
+
+                    var carttotal = cartitems.Sum(y => y.products.products_skus.FirstOrDefault().price * y.quantity);
+                    db.cart.FirstOrDefault(z => z.user_id == user.id).total = carttotal;
+                    var minAmount = db.company_details.FirstOrDefault().min_amonunt_for_free_shipping.GetValueOrDefault(300); //Default 300
+
+                    if (carttotal >= minAmount)
+                    {
+                        db.cart.FirstOrDefault(z => z.user_id == user.id).isCargoFree = true;
+                    }
+                    else
+                    {
+                        db.cart.FirstOrDefault(z => z.user_id == user.id).isCargoFree = false;
+                    }
+                    db.SaveChanges();
+
+
 
                     Session["CartsForPartial"] = db.cart.ToList();
                     Session["CouponsForPartial"] = db.coupons.ToList();
                     ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
-                    var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cartId).ToList());
+                    var cartItemsPartial = PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cart.id).ToList());
                     string cartItemsHtml = RenderPartialViewToString(this.ControllerContext, "_CartPartial", cartItemsPartial.Model);
 
                     return Json(new { success = true, message = db.products.Find(Id).name.ToString() + " Ürünü Başarıyla Sepetinize Eklendi", cartItemsHtml = cartItemsHtml });
@@ -472,8 +491,9 @@ namespace CobanlarMarket.Controllers
 
                 var carttotal = cartitems.Sum(y => y.products.products_skus.FirstOrDefault().price * y.quantity);
                 db.cart.FirstOrDefault(z => z.user_id == user.id).total = carttotal;
+                var minAmount = db.company_details.FirstOrDefault().min_amonunt_for_free_shipping.GetValueOrDefault(300); //Default 300
 
-                if (carttotal >= 300)
+                if (carttotal >= minAmount)
                 {
                     db.cart.FirstOrDefault(z => z.user_id == user.id).isCargoFree = true;
                 }
@@ -502,7 +522,7 @@ namespace CobanlarMarket.Controllers
                 }
 
                 Session["CartsForPartial"] = db.cart.ToList();
-                Session["CouponsForPartial"] = db.coupons.ToList(); 
+                Session["CouponsForPartial"] = db.coupons.ToList();
                 ViewBag.CompanyDetails = db.company_details.FirstOrDefault();
 
                 return PartialView("_CartPartial", db.cart_item.Include(c => c.products).Where(x => x.cart_id == cartId).ToList());
@@ -527,7 +547,9 @@ namespace CobanlarMarket.Controllers
                     var carttotal = cartitems.Sum(y => y.products.products_skus.FirstOrDefault().price * y.quantity);
                     db.cart.FirstOrDefault(z => z.user_id == user.id).total = carttotal;
 
-                    if (carttotal >= 300)
+                    var minAmount = db.company_details.FirstOrDefault().min_amonunt_for_free_shipping.GetValueOrDefault(300); //Default 300
+
+                    if (carttotal >= minAmount)
                     {
                         db.cart.FirstOrDefault(z => z.user_id == user.id).isCargoFree = true;
                     }
@@ -594,7 +616,9 @@ namespace CobanlarMarket.Controllers
 
                 var carttotal = cartitems.Sum(y => y.products.products_skus.FirstOrDefault().price * y.quantity);
                 db.cart.FirstOrDefault(z => z.user_id == user.id).total = carttotal;
-                if (carttotal >= 300)
+                var minAmount = db.company_details.FirstOrDefault().min_amonunt_for_free_shipping.GetValueOrDefault(300); //Default 300
+
+                if (carttotal >= minAmount)
                 {
                     db.cart.FirstOrDefault(z => z.user_id == user.id).isCargoFree = true;
                 }
@@ -949,8 +973,8 @@ namespace CobanlarMarket.Controllers
                     db.SaveChanges();
                 }
             }
-
-            if (total >= 300)
+            var minAmount = db.company_details.FirstOrDefault().min_amonunt_for_free_shipping.GetValueOrDefault(300); //Default 300
+            if (total >= minAmount)
             {
                 cart.isCargoFree = true;
             }
@@ -1720,11 +1744,11 @@ namespace CobanlarMarket.Controllers
             model.categories = db.categories.ToList();
             model.sub_categories = db.sub_categories.ToList();
             model.carts = db.cart.ToList();
-
+            model.company_details = db.company_details.ToList();
             return View(model);
         }
         [HttpPost]
-        public ActionResult Payment(String Price, String PaidPrice, String BasketId, users User, List<cart_item> cart_items, String AddressId)
+        public async Task<ActionResult> Payment(String Price, String PaidPrice, String BasketId, users User, List<cart_item> cart_items, String AddressId)
         {
             Options options = new Options();
             options.ApiKey = "sandbox-lfDKd5dEcP9SvjEbRdOaMGX5LOYVcYgO"; //Iyzico Tarafından Sağlanan Api Key
@@ -1740,7 +1764,7 @@ namespace CobanlarMarket.Controllers
             request.PaymentGroup = PaymentGroup.PRODUCT.ToString();
             string baseUrl = Request.Url.Scheme + "://" + Request.Url.Authority + Url.Content("~");
             //request.CallbackUrl = baseUrl + "/Home/Sonuc?UserId=" + User.id;
-            request.CallbackUrl = "https://4ff7-109-228-210-89.ngrok-free.app/Home/Sonuc?UserId=" + User.id + "&AddressId=" + AddressId;
+            request.CallbackUrl = "https://4421-46-1-5-250.ngrok-free.app/Home/Sonuc?UserId=" + User.id + "&AddressId=" + AddressId;
 
             List<int> enabledInstallments = new List<int>();
             enabledInstallments.Add(2);
@@ -1830,8 +1854,10 @@ namespace CobanlarMarket.Controllers
             request.Price = Price.ToString().Replace(",", ".");
             request.PaidPrice = PaidPrice.ToString().Replace(",", ".");
             request.BasketItems = basketItems;
-            CheckoutFormInitialize checkoutFormInitialize = CheckoutFormInitialize.Create(request, options);
+            CheckoutFormInitialize checkoutFormInitialize = await CheckoutFormInitialize.Create(request, options);
             TempData["Iyzico"] = checkoutFormInitialize.CheckoutFormContent;
+
+
             return View();
         }
 
@@ -1862,7 +1888,7 @@ namespace CobanlarMarket.Controllers
             request.Token = token;
 
             // Ödeme sonucunu iyzico'dan alıyoruz
-            CheckoutForm checkoutForm = CheckoutForm.Retrieve(request, options);
+            CheckoutForm checkoutForm = await CheckoutForm.Retrieve(request, options);
 
             order_details order = new order_details();
             if (checkoutForm.PaymentStatus == "SUCCESS")
@@ -1961,9 +1987,7 @@ namespace CobanlarMarket.Controllers
                     };
 
 
-                    cart.coupon_id = null;
-                    cart.discount_value = null;
-                    db.SaveChanges();
+                   
 
 
                     db.payment_details.Add(pd);
@@ -1974,7 +1998,12 @@ namespace CobanlarMarket.Controllers
 
                     db.cart_item.RemoveRange(cartItems);
                     await db.SaveChangesAsync();
-
+                   
+                    cart.coupon_id = null;
+                    cart.discount_value = null;
+                    cart.isCargoFree = false;
+                    cart.total = 0;
+                    db.SaveChanges();
 
                     var orderItemsProjection = orderItems.Select(c => new
                     {

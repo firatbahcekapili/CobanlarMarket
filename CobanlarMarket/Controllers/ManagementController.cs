@@ -24,6 +24,7 @@ using static Azure.Core.HttpHeader;
 using Iyzipay.Model.V2.Subscription;
 using System.Web.WebPages;
 using System.Web.UI.WebControls;
+using System.Threading.Tasks;
 
 namespace CobanlarMarket.Controllers
 {
@@ -2640,7 +2641,7 @@ namespace CobanlarMarket.Controllers
         }
 
 
-        public JsonResult Refund(String PaymentId)
+        public async Task<JsonResult> Refund(String PaymentId)
         {
 
             Options options = new Options();
@@ -2654,7 +2655,7 @@ namespace CobanlarMarket.Controllers
                 PaymentId = PaymentId
             };
 
-            var payment = Payment.Retrieve(paymentrequest, options);
+            var payment = await Payment.Retrieve(paymentrequest, options);
 
 
             if (payment != null)
@@ -2670,7 +2671,7 @@ namespace CobanlarMarket.Controllers
                 string myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
                 request.Ip = myIP;
 
-                Iyzipay.Model.Refund refund = Iyzipay.Model.Refund.CreateAmountBasedRefundRequest(request, options);
+                Iyzipay.Model.Refund refund = await Iyzipay.Model.Refund.CreateAmountBasedRefundRequest(request, options);
 
 
                 if (refund.Status == "success")
@@ -3051,7 +3052,7 @@ namespace CobanlarMarket.Controllers
         {
             var cd = db.company_details.FirstOrDefault();
 
-            if (cd==null)
+            if (cd == null)
             {
                 return Json(new { success = false, message = "Bulunamadı" });
 
@@ -3158,8 +3159,8 @@ namespace CobanlarMarket.Controllers
                         Directory.CreateDirectory(path);
                         Img.SaveAs(Path.Combine(path, fileName));
                     }
-                      db.company_details.FirstOrDefault().homepage_slider_img = imgpath;
-                      db.SaveChanges();
+                    db.company_details.FirstOrDefault().homepage_slider_img = imgpath;
+                    db.SaveChanges();
 
                 }
 

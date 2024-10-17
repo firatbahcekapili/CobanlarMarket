@@ -11,19 +11,45 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
     public partial class addresses
     {
         public int id { get; set; }
         public Nullable<int> user_id { get; set; }
+      
+        [Required(ErrorMessage = "Ad alaný gereklidir")]
+        [StringLength(20, ErrorMessage = "Ad en fazla 20 karakter olmalýdýr")]
         public string name { get; set; }
+
+        [Required(ErrorMessage = "Soyad alaný gereklidir")]
+        [StringLength(30, ErrorMessage = "Soyad en fazla 30 karakter olmalýdýr")]
         public string surname { get; set; }
+
+        [StringLength(100, ErrorMessage = "Baþlýk en fazla 100 karakter olabilir")]
         public string title { get; set; }
+
+        [Required(ErrorMessage = "Adres alaný gereklidir")]
+        [StringLength(200, ErrorMessage = "Adres en fazla 200 karakter olabilir")]
         public string address { get; set; }
+
+        [Required(ErrorMessage = "Ülke alaný gereklidir")]
+        [StringLength(50, ErrorMessage = "Ülke adý en fazla 50 karakter olmalýdýr")]
         public string country { get; set; }
+
+        [Required(ErrorMessage = "Þehir alaný gereklidir")]
+        [StringLength(50, ErrorMessage = "Þehir adý en fazla 50 karakter olmalýdýr")]
         public string city { get; set; }
+
+        [Required(ErrorMessage = "Posta kodu alaný gereklidir")]
+        [RegularExpression(@"\d{5}", ErrorMessage = "Posta kodu 5 rakamdan oluþmalýdýr")]
         public string postal_code { get; set; }
+
+        [StringLength(100, ErrorMessage = "Yer iþareti (landmark) en fazla 100 karakter olabilir")]
         public string landmark { get; set; }
+
+        [Required(ErrorMessage = "Telefon numarasý alaný gereklidir")]
+        [Phone(ErrorMessage = "Geçerli bir telefon numarasý giriniz")]
         public string phone_number { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> deleted_at { get; set; }
