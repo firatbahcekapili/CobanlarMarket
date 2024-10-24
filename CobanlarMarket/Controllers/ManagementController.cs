@@ -579,8 +579,8 @@ namespace CobanlarMarket.Controllers
             {
                 if (Img != null)
                 {
-                    var fileName = Path.GetFileName(Img.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + Name + "/"));
+                    var fileName = Path.GetFileName(Img.FileName.Replace(" ","-"));
+                    var path = Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + Name.Replace(" ", "") + "/"));
 
                     if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
                     {
@@ -596,8 +596,8 @@ namespace CobanlarMarket.Controllers
 
 
 
-                    Img.SaveAs(Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + Name + "/"), fileName));
-                    imgpath = "/Content/CategoriesImg/" + Name + "/" + fileName;
+                    Img.SaveAs(Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + Name.Replace(" ", "") + "/"), fileName));
+                    imgpath = "/Content/CategoriesImg/" + Name.Replace(" ", "") + "/" + fileName;
 
 
 
@@ -774,7 +774,7 @@ namespace CobanlarMarket.Controllers
 
                     tempcategory.name = Name;
                     tempcategory.description = Description;
-
+                    tempcategory.cover = "null";
                     if (!TryValidateModel(tempcategory))
                     {
                         var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -783,6 +783,7 @@ namespace CobanlarMarket.Controllers
 
                         return Json(new { success = false, message = errors });
                     }
+
 
                     var path = Server.MapPath("~/Content/CategoriesImg/" + Name.Replace(" ", "") + "/");
 
@@ -799,7 +800,7 @@ namespace CobanlarMarket.Controllers
 
                         if (Img != null && Img.ContentLength > 0)
                         {
-                            var fileName = Path.GetFileName(Img.FileName);
+                            var fileName = Path.GetFileName(Img.FileName.Replace(" ","-"));
                             var filePath = Path.Combine(path, fileName);
 
                             if (!System.IO.File.Exists(filePath))
@@ -2242,8 +2243,8 @@ namespace CobanlarMarket.Controllers
                     return Json(new { success = false, message = "Kampanya resmi eklenmesi zorunludur." }, JsonRequestBehavior.AllowGet);
 
                 }
-
-                var path = Server.MapPath("~/Content/CampaignCover/" + Title.Replace(" ", "-") + "/");
+                string encodedTitle = System.Web.HttpUtility.UrlEncode(Title);
+                var path = Server.MapPath("~/Content/CampaignCover/" + encodedTitle + "/");
                 String imgPath = null;
                 if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
                 {
@@ -2260,7 +2261,7 @@ namespace CobanlarMarket.Controllers
                         Img.SaveAs(filePath);
                     }
 
-                    imgPath = "/Content/CampaignCover/" + Title.Replace(" ", "-") + "/" + Path.GetFileName(Img.FileName);
+                    imgPath = "/Content/CampaignCover/" + encodedTitle + "/" + Path.GetFileName(Img.FileName);
 
                 }
 

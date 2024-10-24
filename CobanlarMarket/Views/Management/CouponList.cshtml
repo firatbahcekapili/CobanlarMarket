@@ -16,7 +16,7 @@
   
 </style>
 <div class=" mt-5 ml-5 mr-5">
-   
+
     <div class="row">
         <div class="col-12">
             <div class="card card-default">
@@ -72,7 +72,7 @@
                                             <span class="mdi mdi-pen text-success"></span>
 
                                         </a>
-                                        <a onclick="Remove(@item.Id)">
+                                        <a onclick="ShowModal(@item.Id)">
                                             <span class="mdi mdi-trash-can-outline text-danger"></span>
 
                                         </a>
@@ -91,7 +91,28 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="RemoveModal" tabindex="-1" role="dialog" aria-labelledby="RemoveModal"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLongTitle2">Kuponu silmek istediğinize emin misiniz</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Onaylamanız halinde kupon silinecektir. Bir daha bu kupona erişiminiz olmayacaktır. Onaylıyor musunuz?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -133,11 +154,14 @@
                         tbody.append(row);
                     });
 
+                    $('#RemoveModal').modal('hide');
 
 
 
                 } else {
                     toastr.error(response.message);
+                    $('#RemoveModal').modal('hide');
+
                 }
                
             
@@ -156,5 +180,12 @@
 
 
 
+    function ShowModal(id) {
+        $('#RemoveModal').modal('show');
 
+        var btn = '<button type= "button" class="btn btn-primary btn-pill" data-dismiss="modal" > İptal Et</button > ' +
+            " <a class='btn btn-danger btn-pill' onclick='Remove(" + id + ")'>Sil!</a>";
+        $('#RemoveModal .modal-footer').empty();
+        $('#RemoveModal .modal-footer').append(btn);
+    }
 </script>

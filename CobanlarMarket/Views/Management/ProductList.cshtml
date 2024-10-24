@@ -8,94 +8,120 @@
         margin: 0 5px 0 5px;
     }
 </style>
-<div class=" mt-5 ml-5 mr-5">
+ <div class=" mt-5 ml-5 mr-5">
 
-    <!-- Table Product -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card card-default">
-                <div class="card-header">
-                    <h2>Ürün Listesi</h2>
+     <!-- Table Product -->
+     <div class="row">
+         <div class="col-12">
+             <div class="card card-default">
+                 <div class="card-header">
+                     <h2>Ürün Listesi</h2>
 
-                    <div class="dropdown">
-                        <a href="/Management/AddProduct" class="btn btn-outline-primary">Ürün Ekle</a>
-                    </div>
-                    <div class="card-body">
-                        <table id="productsTable" class="table table-hover table-product" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Ürün Adı</th>
-                                    <th>ID</th>
-                                    <th>Adet</th>
-                                    <th>Tür</th>
-                                    <th>Günlük Satış</th>
-                                    <th>Satılmış</th>
-                                    <th>Stokta</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    int i = 1;
-                                }
-                                @foreach (var item in Model.products)
-                                {
-                                    <tr>
-                                        <td class="py-0">
-                                            @if (item.cover != null)
-                                            {
-                                                <img src="@item.cover"
-                                                     alt=""
-                                                     class="img1" />
-                                            }
-                                            else
-                                            {
-                                                <img src="~/Content/theme/images/empty.jpg"
-                                                     alt=""
-                                                     class="img1" />
-                                            }
-                                        </td>
-                                        <td>@item.name</td>
-                                        <td>@item.id</td>
-                                        <td>1</td>
-                                        <td>@item.products_skus.Where(x => x.product_id == item.id).Count()</td>
-                                        <td>
-                                            <div id="tbl-chart-0@(i)"></div>
-                                        </td>
-                                        <td>@Model.order_item.Where(o => o.product_id == item.id).Sum(x=>x.quantity)</td>
-                                        <td>@item.products_skus.FirstOrDefault().quantity</td>
-                                        <td>
-                                            <a href="/Home/Product/@item.id">
-                                                <span class="mdi mdi-eye text-bg-warning "></span>
+                     <div class="dropdown">
+                         <a href="/Management/AddProduct" class="btn btn-outline-primary">Ürün Ekle</a>
+                     </div>
+                     <div class="card-body">
+                         <table id="productsTable" class="table table-hover table-product" style="width:100%">
+                             <thead>
+                                 <tr>
+                                     <th></th>
+                                     <th>Ürün Adı</th>
+                                     <th>ID</th>
+                                     <th>Adet</th>
+                                     <th>Tür</th>
+                                     <th>Günlük Satış</th>
+                                     <th>Satılmış</th>
+                                     <th>Stokta</th>
+                                     <th>Action</th>
+                                 </tr>
+                             </thead>
+                             <tbody>
+                                 @{
+                                     int i = 1;
+                                 }
+                                 @foreach (var item in Model.products)
+                                 {
+                                     <tr>
+                                         <td class="py-0">
+                                             @if (item.cover != null)
+                                             {
+                                                 <img src="@item.cover"
+                                                      alt=""
+                                                      class="img1" />
+                                             }
+                                             else
+                                             {
+                                                 <img src="~/Content/theme/images/empty.jpg"
+                                                      alt=""
+                                                      class="img1" />
+                                             }
+                                         </td>
+                                         <td>@item.name</td>
+                                         <td>@item.id</td>
+                                         <td>1</td>
+                                         <td>@item.products_skus.Where(x => x.product_id == item.id).Count()</td>
+                                         <td>
+                                             <div id="tbl-chart-0@(i)"></div>
+                                         </td>
+                                         <td>@Model.order_item.Where(o => o.product_id == item.id).Sum(x => x.quantity)</td>
+                                         <td>@item.products_skus.FirstOrDefault().quantity</td>
+                                         <td>
+                                             <a href="/Home/Product/@item.id">
+                                                 <span class="mdi mdi-eye text-bg-warning "></span>
 
-                                            </a>
-                                            <a href="/Management/EditProduct/@item.id">
-                                                <span class="mdi mdi-pen text-success"></span>
+                                             </a>
+                                             <a href="/Management/EditProduct/@item.id">
+                                                 <span class="mdi mdi-pen text-success"></span>
 
-                                            </a>
-                                            <a onclick="Remove(@item.id)">
-                                                <span class="mdi mdi-trash-can-outline text-danger"></span>
+                                             </a>
+                                             <a onclick="ShowModal(@item.id)">
+                                                 <span class="mdi mdi-trash-can-outline text-danger"></span>
 
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    i++;
-                                }
-
-
+                                             </a>
+                                         </td>
+                                     </tr>
+                                     i++;
+                                 }
 
 
-                            </tbody>
-                        </table>
 
-                    </div>
-                </div>
-            </div>
-        </div>
 
-    </div>
-</div>
+                             </tbody>
+                         </table>
+
+                     </div>
+                 </div>
+             </div>
+         </div>
+
+     </div>
+
+
+     <div class="modal fade" id="RemoveModal" tabindex="-1" role="dialog" aria-labelledby="RemoveModal"
+          aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered" role="document">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title" id="removeModalLongTitle2">Ürünü silmek istediğinize emin misiniz</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                         <span aria-hidden="true">×</span>
+                     </button>
+                 </div>
+                 <div class="modal-body">
+                     <p>
+                         Onaylamanız halinde ürün silinecektir. Bir daha bu ürüne erişiminiz olmayacaktır. Onaylıyor musunuz?
+                     </p>
+                 </div>
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                     <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+
+ </div>
 <script>
     function Remove(id) {
 
@@ -121,25 +147,32 @@
                         "<td> <div id='tbl-chart-0"+i+"'></div></td> " +
                         "<td>" + product.product_sku_quantity + "</td>" +
                         "<td>" +
-                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
-                        "<a href='/Management/EditAttribute/" + product.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a href='/Home/Product/"+product.id+"'><span class='mdi mdi-eye text-primary'></span></a>" +
+                        "<a href='/Management/EditProduct/" + product.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
                         "<a onclick='Remove(" + product.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
                         "</td>" +
                         "</tr>";
                     tbody.append(row);
                     i++;
                 });
+                $('#RemoveModal').modal('hide');
 
 
 
 
             }
 
-
         });
 
 
     }
+    function ShowModal(id) {
+        $('#RemoveModal').modal('show');
 
+        var btn = '<button type= "button" class="btn btn-primary btn-pill" data-dismiss="modal" > İptal Et</button > ' +
+            " <a class='btn btn-danger btn-pill' onclick='Remove(" + id + ")'>Sil!</a>";
+        $('#RemoveModal .modal-footer').empty();
+        $('#RemoveModal .modal-footer').append(btn);
+    }
 
 </script>

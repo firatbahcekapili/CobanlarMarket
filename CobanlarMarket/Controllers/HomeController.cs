@@ -54,6 +54,7 @@ namespace CobanlarMarket.Controllers
             model.campaigns = db.campaigns.Where(x => x.is_active == true).Include(x => x.campaign_products).ToList();
             model.carts = db.cart.ToList();
             model.company_details = db.company_details.ToList();
+            model.order_item = db.order_item.ToList();
 
             return View(model);
 
@@ -188,7 +189,7 @@ namespace CobanlarMarket.Controllers
 
             // Sadece campaignProductIds'e ait ürünler
             var products = db.products
-                             .Where(p => campaignProductIds.Contains(p.id))
+                             .Where(p => campaignProductIds.Contains(p.id) && p.status==true)
                              .ToList();
 
             model.products = products;
@@ -713,10 +714,10 @@ namespace CobanlarMarket.Controllers
             if (!username.Equals("") && !password.Equals(""))
             {
 
-                if (db.users.Where(x => x.username == username && x.password == password).Count() != 0)
+                if (db.users.Where(x => x.username == username || x.email==username && x.password == password).Count() != 0)
                 {
-                    var user = db.users.FirstOrDefault(x => x.username == username && x.password == password);
-                    Session["User"] = db.users.FirstOrDefault(x => x.username == username && x.password == password);
+                    var user = db.users.FirstOrDefault(x => x.username == username  || x.email==username && x.password == password);
+                    Session["User"] = db.users.FirstOrDefault(x => x.username == username || x.email == username && x.password == password);
 
                     if (user.role == true)
                     {
@@ -823,9 +824,9 @@ namespace CobanlarMarket.Controllers
                     </html>";
                 _emailService.SendEmail(Email, "Çobanlar Market Kayıt Onay Kodunuz", htmlBody);
                 Session["ConfirmationCode"] = code.ToString();
-                Session["NewName"] = username.ToString();
-                Session["NewLastname"] = Name.ToString();
-                Session["NewUsername"] = Lastname.ToString();
+                Session["NewName"] = Name.ToString();
+                Session["NewLastname"] = Lastname.ToString();
+                Session["NewUsername"] = username.ToString();
                 Session["NewEmail"] = Email.ToString();
                 Session["NewPassword"] = password.ToString();
 
@@ -1855,8 +1856,8 @@ namespace CobanlarMarket.Controllers
             request.PaidPrice = PaidPrice.ToString().Replace(",", ".");
             request.BasketItems = basketItems;
             CheckoutFormInitialize checkoutFormInitialize = await CheckoutFormInitialize.Create(request, options);
-            TempData["Iyzico"] = checkoutFormInitialize.CheckoutFormContent;
 
+            TempData["Iyzico"] = checkoutFormInitialize.CheckoutFormContent;
 
             return View();
         }

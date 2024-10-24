@@ -28,7 +28,6 @@
                                 <thead>
                                     <tr>
                                         <th class="product-thumbnail">&nbsp;</th>
-                                        <th class="product-thumbnail">&nbsp;</th>
                                         <th class="product-name">Ürün</th>
                                         <th class="product-price">Fiyat</th>
                                         <th class="product-quantity">Adet</th>
@@ -44,22 +43,25 @@
                                     @foreach (var cartItem in Model)
                                     {
                                         <tr class="cart-item" id="@cartItem.id">
-                                            <td></td>
-                                            <td class="cart-image">
-                                                <img src="@cartItem.products.cover" alt=""><i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
-                                            </td>
-                                            <td>@cartItem.products.name</td>
-                                            <td>&#8378;@cartItem.products.products_skus.FirstOrDefault().price</td>
-                                            <td class="product-quantity d-flex justify-content-center align-items-center">
 
+                                            <td class="cart-image d-flex align-items-center">
+                                                <i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
+                                                <img src="@cartItem.products.cover" alt="">
+                                            </td>
+                                            <td class="" data-label="Ürün">
+                                                <div class="product-info">
+                                                    <span class="product-name">@cartItem.products.name</span>
+                                                    <span class="product-price">&#8378;@cartItem.products.products_skus.FirstOrDefault().price</span>
+                                                </div>
+                                            </td>
+                                            <td class="product-quantity d-flex  align-items-center" data-label="Adet">
                                                 <div class="qty-input">
                                                     <button class="qty-count qty-count--minus" data-action="minus" type="button">-</button>
-                                                    <input class="product-qty" type="number" name="product-qty" min="-1" max="15" step="1" value="@cartItem.quantity">
+                                                    <input class="product-qty" type="number" name="product-qty" min="-1" step="1" value="@cartItem.quantity" disabled>
                                                     <button class="qty-count qty-count--add" data-action="add" type="button">+</button>
                                                 </div>
-
                                             </td>
-                                            <td class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
+                                            <td data-label="Toplam Tutar" class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
                                         </tr>
 
 
@@ -70,25 +72,27 @@
                                 </tbody>
                             </table>
                             <div class="free-progress-bar">
-                                <p class="progress-bar-title">
-                                    @{
-                                        if (toplam < minAmount)
-                                        {
-                                            decimal bar = (toplam.HasValue) ? (toplam.Value / minAmount * 100) : 0;
-                                            string formattedBar = bar.ToString("F2").Replace(',', '.');
-                                            <strong>@(minAmount - toplam)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
-                                            <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
-                                        }
-                                        else
-                                        {
-                                            <span>Kargo Ücretsiz!</span>
-                                            <div class="progress-bar"><span class="progress" style="width:100%;"></span></div>
 
-                                        }
+                                @{
+                                    if (toplam < minAmount)
+                                    {
+                                        decimal bar = (toplam.HasValue) ? (toplam.Value / minAmount * 100) : 0;
+                                        string formattedBar = bar.ToString("F2").Replace(',', '.');
+                                        <p class="progress-bar-title">
+                                            <strong>@(minAmount - toplam)₺</strong> <span>’lik daha ürün eklersen kargon ücretsiz!</span>
+                                        </p>
+                                        <div class="progress-bar"><span class="progress" style="width:@(formattedBar)%"></span></div>
+                                    }
+                                    else
+                                    {
+                                        <span>Kargo Ücretsiz!</span>
+                                        <div class="progress-bar"><span class="progress" style="width:100%;"></span></div>
 
                                     }
-                                </p>
-                               
+
+                                }
+
+
                             </div>
                             <div class="actions-wrapper">
                                 <div class="coupon">

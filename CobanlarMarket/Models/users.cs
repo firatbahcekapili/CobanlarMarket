@@ -49,7 +49,7 @@ namespace CobanlarMarket.Models
 
         public string password { get; set; }
         public Nullable<System.DateTime> birth_of_date { get; set; }
-        [Required(ErrorMessage = "Telefon numarasý alaný gereklidir.")]
+        //[Required(ErrorMessage = "Telefon numarasý alaný gereklidir.")]
 
         public string phone_number { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }

@@ -1250,6 +1250,107 @@ ol {
             visibility: hidden;
         }
 
+.filter {
+    padding:20px;
+    border:solid 1px #efefef;
+
+}
+
+.latest-product__text {
+    padding: 20px;
+    border: solid 1px #efefef;
+}
+
+
+
+@media (max-width: 768px) {
+    .filter {
+            position: fixed;
+            top: 0;
+            left: -400px; /* Baþlangýçta görünmez */
+            width: 350px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+            transition: left 0.3s ease;
+            z-index: 1050; /* Diðer içeriklerin üzerinde görünmesi için */
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .overlay {
+            display: none; /* Baþlangýçta görünmez */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Koyu bir arka plan */
+            z-index: 1040; /* Offcanvas'ýn altýnda */
+        }
+
+            .overlay.show {
+                display: block; /* Görünür hale gelince göster */
+            }
+
+        .filter.show {
+            left: 0; /* Görünür hale gelince kaydýr */
+        }
+
+        #filterbtn {
+            display: flex !important;
+        }
+
+        #close-sidebar {
+            display: block !important;
+            position: absolute;
+            right: 30px;
+            font-size: 30px;
+        }
+
+            #close-sidebar + div {
+                padding-top: 30px;
+            }
+    }
+
+    #close-sidebar {
+    display: none;
+}
+
+
+#filterbtn {
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s;
+    padding: 5px 20px;
+    border-radius: 100px;
+    background: red;
+    border: 1px solid transparent;
+    display: none;
+    align-items: center;
+    font-size: 15px;
+    color:white;
+    margin-right:20px;
+    margin-left:20px;
+}
+
+    #filterbtn:hover {
+        background: #D62D2D;
+    }
+
+    #filterbtn > svg {
+        width: 34px;
+        margin-left: 10px;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    #filterbtn:hover svg {
+        transform: translateX(5px);
+    }
+
+    #filterbtn:active {
+        transform: scale(0.95);
+    }
 /*---------------------
   Shop Grid
 -----------------------*/

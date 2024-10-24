@@ -8,104 +8,13 @@
 
 @Html.Raw(TempData["Iyzico"])
 
-<style>
-   
-    #phone {
-        border-color:goldenrod;
-    }
-    #phone.error {
-        border-color: red;
-    }
-    #phone.valid {
-        border-color: green;
-    }
-  
 
-    #error-msg {
-        color: red;
-        margin-top: 5px;
-        font-size: 14px;
-    }
-
-  
-    #valid-msg {
-        color: green;
-        margin-top: 5px;
-        font-size: 14px;
-        display: none;
-    }
-
-    #editphone {
-        border-color: goldenrod;
-    }
-
-        #editphone.error {
-            border-color: red;
-        }
-
-        #editphone.valid {
-            border-color: green;
-        }
-
-
-    #edit-error-msg {
-        color: red;
-        margin-top: 5px;
-        font-size: 14px;
-    }
-
-
-    #edit-valid-msg {
-        color: green;
-        margin-top: 5px;
-        font-size: 14px;
-        display: none;
-    }
-
-   
-    .hide {
-        display: none;
-    }
-
-  
-    .show {
-        display: block;
-    }
-
-    
-    #btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        margin-top: 10px;
-    }
-
-        #btn:hover {
-            background-color: #0056b3;
-        }
-    .offcanvas-backdrop {
-        opacity: 0.6 !important; 
-    }
-
-        .offcanvas-backdrop.show {
-            opacity: 0.6 !important; 
-        }
-
-    .address-card{
-        max-width:200px;
-        max-height:200px;
-        overflow:auto;
-    }
-
-</style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <link href="~/Content/css/main.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/css/intlTelInput.css" integrity="sha512-tagom4p++vFNtgZ4S8pIVdKkPIH9jKvBT9velKm57KkVicjjNzVtSdTI0Yu1QrWZoP7tnIkB1y9Rmwkz2oWfMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/js/intlTelInput.js" integrity="sha512-vny9j2GDMbTV//GY4S0kQogKJ7fK5fhSje76Z/eEodHaWIBisFm2RlsJGQVi3fxHr+wb2uJ80TJj4na722XnUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link href="~/Content/css/cart.css" rel="stylesheet" />
+
 <body cz-shortcut-listen="true">
     <div id="root">
         <div>
@@ -205,51 +114,42 @@
                                             <div class="shop-table-wrapper">
 
 
-                                                <table class="shop-table">
+                                                <table class="shop-table responsive-table">
                                                     <thead>
                                                         <tr>
-                                                            <th class="product-thumbnail">&nbsp;</th>
-                                                            <th class="product-thumbnail">&nbsp;</th>
-                                                            <th class="product-name">Ürün</th>
-                                                            <th class="product-price">Fiyat</th>
+                                                            <th class="product-name" colspan="2">Ürün</th>
                                                             <th class="product-quantity">Adet</th>
                                                             <th class="product-subtotal">Toplam Tutar</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="cart-wrapper">
-
-
-
-
-
                                                         @foreach (var cartItem in Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item)
                                                         {
                                                             <tr class="cart-item" id="@cartItem.id">
-                                                                <td></td>
-                                                                <td class="cart-image">
-                                                                    <img src="@cartItem.products.cover" alt=""><i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
+                                                              
+                                                                <td class="cart-image d-flex align-items-center" >
+                                                                    <i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
+                                                                    <img src="@cartItem.products.cover" alt="">
                                                                 </td>
-                                                                <td>@cartItem.products.name</td>
-                                                                <td>&#8378;@cartItem.products.products_skus.FirstOrDefault().price</td>
-                                                                <td class="product-quantity d-flex justify-content-center align-items-center">
-
+                                                                <td class="" data-label="Ürün">
+                                                                    <div class="product-info">
+                                                                        <span class="product-name">@cartItem.products.name</span>
+                                                                        <span class="product-price">&#8378;@cartItem.products.products_skus.FirstOrDefault().price</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="product-quantity d-flex  align-items-center" data-label="Adet">
                                                                     <div class="qty-input">
                                                                         <button class="qty-count qty-count--minus" data-action="minus" type="button">-</button>
-                                                                        <input class="product-qty" type="number" name="product-qty" min="-1" max="15" step="1" value="@cartItem.quantity">
+                                                                        <input class="product-qty" type="number" name="product-qty" min="-1" step="1" value="@cartItem.quantity" disabled>
                                                                         <button class="qty-count qty-count--add" data-action="add" type="button">+</button>
                                                                     </div>
-
                                                                 </td>
-                                                                <td class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
+                                                                <td data-label="Toplam Tutar" class="product-subtotal">&#8378;@(cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price)</td>
                                                             </tr>
-
 
                                                             toplam += (cartItem.quantity * cartItem.products.products_skus.FirstOrDefault().price);
 
-
                                                         }
-
-
                                                     </tbody>
                                                 </table>
                                                 <div class="actions-wrapper">
@@ -459,7 +359,7 @@
                                     <h5 class="card-title">@item.title</h5>
                                     <h6 class="card-subtitle mb-2 text-body-secondary">@item.name @item.surname</h6>
                                     <p class="card-text">@item.address.</p>
-                                    <a href="#Adres" class="card-link editbtn" data-bs-toggle="offcanvas" data-bs-target="#editAddress" aria-controls="editAddress" aId="@item.id" >Düzenle</a>
+                                    <a href="#Adres" class="card-link editbtn" data-bs-toggle="offcanvas" data-bs-target="#editAddress" aria-controls="editAddress" aId="@item.id">Düzenle</a>
                                     <a onclick="RemoveAddress(@item.id)" class="card-link">Sil</a>
                                     <a onclick="SelectAddress(@item.id)" class="card-link">Seç</a>
 
@@ -515,7 +415,8 @@
 
                         <div class="form-group col-12">
                             <label for="tel">Telefon Numarası *</label>
-                            <input class="form-control shadow-none" id="phone" type="tel"><br />
+                            @Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { name = "tel", @class = "form-control", id = "phone" } })
+                            @Html.ValidationMessageFor(model => u.phone_number, "") <br />
                             <span id="valid-msg" class="hide">✓</span>
                             <span id="error-msg" class="hide"></span>
                             @*<input type="tel" class="form-control" id="tel" />*@
@@ -557,7 +458,7 @@
 
 
 
-    <div class="offcanvas offcanvas-end"data-bs-scroll="false   " tabindex="-1" id="editAddress" aria-labelledby="editAddressLabel">
+    <div class="offcanvas offcanvas-end" data-bs-scroll="false   " tabindex="-1" id="editAddress" aria-labelledby="editAddressLabel">
         <div class="offcanvas-header">
             <a href="#editAdres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
 
@@ -566,69 +467,69 @@
         <div class="offcanvas-body">
             <div class="row">
                 @{
-                   
+
                 }
 
                 <form id="editAddressForm">
-                   
+
+                    <div class="form-row row">
+                        <div class="form-label text-primary">
+                            Teslim alacak kişinin bilgileri
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="name">Ad *</label>
+                            @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
+                            @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "editname" } })
+                            @Html.ValidationMessageFor(model => u.first_name, "")
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="surname">Soyad*</label>
+                            @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
+                            @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "editsurname" } })
+                            @Html.ValidationMessageFor(model => u.last_name, "")
+
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label for="tel">Telefon Numarası *</label>
+                            <input class="form-control shadow-none" id="editphone" type="tel"><br />
+                            <span id="edit-valid-msg" class="hide">✓</span>
+                            <span id="edit-error-msg" class="hide"></span>
+                            @*<input type="tel" class="form-control" id="tel" />*@
+                            @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
+                            @Html.ValidationMessageFor(model => u.phone_number, "")
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Adres Başlığı</label>
+                            @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "edittitle" } })
+                            @Html.ValidationMessageFor(model => a.title, "")
+                        </div>
                         <div class="form-row row">
-                            <div class="form-label text-primary">
-                                Teslim alacak kişinin bilgileri
+                            <div class="form-group col-md-6">
+                                <label>İl</label>
+                                <select class="form-control" disabled>
+                                    <option value="Trabzon">Trabzon</option>
+                                </select>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="name">Ad *</label>
-                                @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
-                                @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "editname" } })
-                                @Html.ValidationMessageFor(model => u.first_name, "")
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="surname">Soyad*</label>
-                                @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
-                                @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "editsurname" } })
-                                @Html.ValidationMessageFor(model => u.last_name, "")
-
-                            </div>
-
-                            <div class="form-group col-12">
-                                <label for="tel">Telefon Numarası *</label>
-                                <input class="form-control shadow-none" id="editphone" type="tel"><br />
-                                <span id="edit-valid-msg" class="hide">✓</span>
-                                <span id="edit-error-msg" class="hide"></span>
-                                @*<input type="tel" class="form-control" id="tel" />*@
-                                @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
-                                @Html.ValidationMessageFor(model => u.phone_number, "")
-                            </div>
-                            <div class="form-group">
-                                <label for="title">Adres Başlığı</label>
-                                @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "edittitle" } })
-                                @Html.ValidationMessageFor(model => a.title, "")
-                            </div>
-                            <div class="form-row row">
-                                <div class="form-group col-md-6">
-                                    <label>İl</label>
-                                    <select class="form-control" disabled>
-                                        <option value="Trabzon">Trabzon</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label>İlçe</label>
-                                    <select class="form-control" disabled>
-                                        <option value="Maçka">Maçka</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group col-12 ">
-                                <label for="address"></label>
-                                @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "editaddres", rows = "4" })
-                                @Html.ValidationMessageFor(model => a.address, "")
-                            </div>
-                            <div class="form-group">
-                                <a href="#" id="editsubmitbtn" class="btn btn-primary" >Adresi Kaydet</a>
+                                <label>İlçe</label>
+                                <select class="form-control" disabled>
+                                    <option value="Maçka">Maçka</option>
+                                </select>
                             </div>
                         </div>
-                    
+                        <div class="form-group col-12 ">
+                            <label for="address"></label>
+                            @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "editaddres", rows = "4" })
+                            @Html.ValidationMessageFor(model => a.address, "")
+                        </div>
+                        <div class="form-group">
+                            <a href="#" id="editsubmitbtn" class="btn btn-primary">Adresi Kaydet</a>
+                        </div>
+                    </div>
+
                 </form>
-                 
+
             </div>
         </div>
     </div>
@@ -639,11 +540,15 @@
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 
-
 <script>
 
 
     $(document).ready(function () {
+
+
+        //$(function () {
+        //    $('#tt').bootstrapTable()
+        //})
 
         $('#submitbtn').on("click", function (e) {
             e.preventDefault();
@@ -753,6 +658,8 @@
                     const msg = errorMap[errorCode] || "Geçersiz Numara";
                     showError(msg);
                 }
+            }else {
+                showError("Telefon numarası gereklidir");
             }
         };
 
@@ -867,7 +774,7 @@
                     <a href="/Home/Shop" class="btn btn-primary">Hemen Alışverişe Başla</a>
                 </div>
             </div>
-        `).fadeIn(300); 
+        `).fadeIn(300);
 
                     });
                 }
@@ -914,9 +821,9 @@
                 data: { Id: id },
                 success: function (result) {
                     console.log(result);
-                   
+
                     var total = $(result).find("#subtotal").text();
-                   
+
                     if (total == "₺0") {
                         $(".main-layout").fadeOut(300, function () {
                             $(this).empty();
@@ -961,13 +868,13 @@
 
 
 
-                       
+
 
                     }
                     var cartCount = $(result).find(".cart-item").length;
 
                     $(".header-cart-count").text(cartCount);
-                  
+
                 }
             });
         });
@@ -994,7 +901,7 @@
                     $(".cargo").append(cargo);
 
                     $(".lasttotal").empty();
-                    $(".lasttotal").append(lasttotal);  
+                    $(".lasttotal").append(lasttotal);
 
 
                     $('.couponadded').remove();
@@ -1009,7 +916,7 @@
         $('.checkout').on('click', '.btn-order', function () {
             var addressid = $('#cartAddress .card').attr("addressId");
             console.log(addressid);
-           
+
 
             if (addressid != null) {
                 $.ajax({
@@ -1025,7 +932,7 @@
             } else {
                 toastr.error("Ürünlerimizi size ulaştırabilmek için adres seçilmesi zorunludur.Lütfen adres seçiniz.");
             }
-          
+
         });
 
 
@@ -1058,7 +965,7 @@
                         var lasttotal = $(result.cartItemsHtml).find(".lasttotal").html();
                         console.log("last " + lasttotal);
                         $(".lasttotal").empty();
-                        $(".lasttotal").append(lasttotal);  
+                        $(".lasttotal").append(lasttotal);
 
                         //$('#cart-total').text("₺"+(parseFloat(total) - parseFloat(result.discount.replace(',','.'))));
                     } else {
@@ -1144,10 +1051,10 @@
     })();
 
     $(document).on("click", ".editbtn", function (event) {
-  
+
         var clickedElement = $(event.target);
         var Id = clickedElement.attr('aId');
-        
+
         $.ajax({
             url: '/Home/GetAddress/',
             type: 'POST',
@@ -1164,7 +1071,7 @@
                         $('#editphone').val(address.phone_number);
                         $('#edittitle').val(address.title);
                         $('#editaddres').val(address.address);
-                        $('#editsubmitbtn').attr("aId",address.id);
+                        $('#editsubmitbtn').attr("aId", address.id);
 
                     });
 
@@ -1213,17 +1120,17 @@
                         toastr.success(result.message);
 
 
-                        
+
 
                         var addresscards = $("#address-cards");
                         addresscards.empty();
                         var i = 1;
                         result.adressList.forEach(function (address) {
-                            var card = " <div class='col-12'><div class='card mb-2'><div class='card-body'><h5 class='card-title'>" + address.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + address.name + " " + address.surname + "</h6><p class='card-text'>" + address.address + "</p>   <a href='#Adres' class='card-link editbtn' data-bs-toggle='offcanvas' data-bs-target='#editAddress' aria-controls='editAddress' aId='"+address.id+"' >Düzenle</a> <a onclick='RemoveAddress(" + address.id + ")' class='card-link'>Sil</a>   <a onclick='SelectAddress(" + address.id + ")' class='card-link'>Seç</a> </div></div></div>";
+                            var card = " <div class='col-12'><div class='card mb-2'><div class='card-body'><h5 class='card-title'>" + address.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + address.name + " " + address.surname + "</h6><p class='card-text'>" + address.address + "</p>   <a href='#Adres' class='card-link editbtn' data-bs-toggle='offcanvas' data-bs-target='#editAddress' aria-controls='editAddress' aId='" + address.id + "' >Düzenle</a> <a onclick='RemoveAddress(" + address.id + ")' class='card-link'>Sil</a>   <a onclick='SelectAddress(" + address.id + ")' class='card-link'>Seç</a> </div></div></div>";
 
                             addresscards.append(card);
 
-                          
+
                             i++;
                         });
 
@@ -1236,7 +1143,7 @@
 
 
                         var a = result.adressList.find(function (address) {
-                            if (address.id==cardadresid) {
+                            if (address.id == cardadresid) {
                                 return address;
                             } else {
                                 return null;
@@ -1244,20 +1151,20 @@
                             }
                         });
 
-                        if (a!=null) {
+                        if (a != null) {
 
                             var addresscards = $("#cartAddress");
                             addresscards.empty();
                             var i = 1;
 
-                          
-                           
-                                var card = " <div class='col-12'><div class='card mb-2 text-start  address-card' addressId='" + a.id + "'><div class='card-body'><h5 class='card-title'>" + a.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + a.name + " " + a.surname + "</h6><p class='card-text'>" + a.address + "</p> </div></div></div>   <a href='#Adres' data-bs-toggle='offcanvas' data-bs-target='#staticBackdrop' aria-controls='staticBackdrop'> Adres Değiştir / Ekle</a >";
 
-                                addresscards.append(card);
-                               
-                          
-                         
+
+                            var card = " <div class='col-12'><div class='card mb-2 text-start  address-card' addressId='" + a.id + "'><div class='card-body'><h5 class='card-title'>" + a.title + "</h5> <h6 class='card-subtitle mb-2 text-body-secondary'>" + a.name + " " + a.surname + "</h6><p class='card-text'>" + a.address + "</p> </div></div></div>   <a href='#Adres' data-bs-toggle='offcanvas' data-bs-target='#staticBackdrop' aria-controls='staticBackdrop'> Adres Değiştir / Ekle</a >";
+
+                            addresscards.append(card);
+
+
+
 
                         }
 
@@ -1273,5 +1180,5 @@
 
     });
 
-  
+
 </script>

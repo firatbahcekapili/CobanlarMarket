@@ -9,6 +9,8 @@
     .categorylist li.active > a {
         color: red !important;
     }
+
+
 </style>
 
 
@@ -27,39 +29,93 @@
         <div class="row">
             <div class="col-lg-3 col-md-5">
                 <div class="sidebar">
-                    <div class="sidebar__item" style="max-height:600px;overflow:auto;">
-                        <h4>Kategoriler</h4>
-                        <ul class="categorylist">
-                            <li class="active" categoryid="-1">  <a href="#category--1" onclick="filterCategory(-1,0,this)">Tüm Kategoriler</a> </li>
-                            @foreach (var item in Model.categories)
-                            {
-
-                                <li categoryid="@item.id" categorytype="0">
-                                    <a href="#category-@item.id" onclick="filterCategory(@item.id,0,this)">@item.name</a> @*kategori 0, subcategory 1*@
-                                    @if (Model.sub_categories.Any(x => x.parent_id == item.id))
-                                    {<ul>
+                    <div class="sidebar__item">
+                        <div class="latest-product__text">
+                            <h4>Son Eklenen Ürünler</h4>
+                            <div class="latest-product__slider owl-carousel">
 
 
-                                            @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == item.id))
+
+                                @{
+                                    var list = Model.products.OrderBy(x => x.id).Take(6).ToArray();
+
+                                }
+
+
+
+                                @{
+                                    int a = 0;
+                                    int count = list.Count();
+                                    double result = Math.Ceiling((double)count / 3);
+                                }
+                                @for (int d = 0; d < result; d++)
+                                {
+                                    <div class="latest-product__slider__item">
+                                        @for (int j = 0; j < 3; j++)
+                                        {
+                                            if (a >= list.Count())
                                             {
-                                                <li style="padding-left:8px;" categoryid="@subcategory.id" categorytype="1">
-                                                    <a href="#subcategory-@subcategory.id" onclick="filterCategory(@subcategory.id,1,this)">@subcategory.name</a>
+                                                break;
+                                            }
+
+                                            <a href="/Home/Product/@list[a].id" class="latest-product__item">
+                                                <div class="latest-product__item__pic">
+                                                    <img src="@(list[a].cover != null ? list[a].cover : Url.Content("~/Content/theme/images/empty.png"))" alt="" style="object-fit:cover;">
+                                                </div>
+                                                <div class="latest-product__item__text">
+                                                    <h6>@list[a].name</h6>
+                                                    <span>&#8378;@list[a].products_skus.FirstOrDefault().price</span>
+                                                </div>
+                                            </a>
+
+                                            a++;
+                                        }
+                                    </div>
+                                }
 
 
 
-                                                    @if (Model.sub_subcategories.Any(x => x.parent_sub_category_id == subcategory.id))
-                                                    {
-                                                        <ul>
+                            </div>
+                        </div>
+                    </div>
 
-                                                            @foreach (var subsubcategory in Model.sub_subcategories.Where(x => x.parent_sub_category_id == subcategory.id))
-                                                            {
-                                                                <li style="padding-left:8px;" categoryid="@subsubcategory.id" categorytype="2">
-                                                                    <a href="#subsubcategory-@subsubcategory.id" onclick="filterCategory(@subsubcategory.id,2,this)">@subsubcategory.name</a>
-                                                                </li>
-                                                            }
-                                                        </ul>
+                    <div class="filter">
+                        <a class="close" id="close-sidebar"> <i class="bi bi-x"></i></a>
+                       
+                        
+                        <div class="sidebar__item" style="max-height:600px;overflow:auto;">
+                            <h4>Kategoriler</h4>
+                            <ul class="categorylist">
+                                <li class="active" categoryid="-1">  <a href="#category--1" onclick="filterCategory(-1,0,this)">Tüm Kategoriler</a> </li>
+                                @foreach (var item in Model.categories)
+                                {
 
-                                                    }
+                                    <li categoryid="@item.id" categorytype="0">
+                                        <a href="#category-@item.id" onclick="filterCategory(@item.id,0,this)">@item.name</a> @*kategori 0, subcategory 1*@
+                                        @if (Model.sub_categories.Any(x => x.parent_id == item.id))
+                                        {<ul>
+
+
+                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == item.id))
+                                                {
+                                                    <li style="padding-left:8px;" categoryid="@subcategory.id" categorytype="1">
+                                                        <a href="#subcategory-@subcategory.id" onclick="filterCategory(@subcategory.id,1,this)">@subcategory.name</a>
+
+
+
+                                                        @if (Model.sub_subcategories.Any(x => x.parent_sub_category_id == subcategory.id))
+                                                        {
+                                                            <ul>
+
+                                                                @foreach (var subsubcategory in Model.sub_subcategories.Where(x => x.parent_sub_category_id == subcategory.id))
+                                                                {
+                                                                    <li style="padding-left:8px;" categoryid="@subsubcategory.id" categorytype="2">
+                                                                        <a href="#subsubcategory-@subsubcategory.id" onclick="filterCategory(@subsubcategory.id,2,this)">@subsubcategory.name</a>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+
+                                                        }
 
 
 
@@ -67,39 +123,37 @@
 
                                                     </li>
 
-                                                
 
 
-                                            }
-                                        </ul>
+
+                                                }
+                                            </ul>
 
 
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                    <div class="sidebar__item">
-                        <h4>Fiyat</h4>
-                        <div class="price-range-wrap">
-                            <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
-                                 data-min="@Math.Round((decimal)(Model.products_skus?.Min(x => (decimal?)x.price) ?? 0))"
-                                 data-max="@Math.Round((decimal)(Model.products_skus?.Max(x => (decimal?)x.price) ?? 0))">
-                                <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
-                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                            </div>
-                            <div class="range-slider">
-                                <div class="price-input">
-                                    &#8378;<input type="text" id="minamount">
-                                    &#8378;<input type="text" id="maxamount">
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="sidebar__item">
+                            <h4>Fiyat</h4>
+                            <div class="price-range-wrap">
+                                <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                     data-min="@Math.Round((decimal)(Model.products_skus?.Min(x => (decimal?)x.price) ?? 0))"
+                                     data-max="@Math.Round((decimal)(Model.products_skus?.Max(x => (decimal?)x.price) ?? 0))">
+                                    <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                </div>
+                                <div class="range-slider">
+                                    <div class="price-input">
+                                        &#8378;<input type="text" id="minamount">
+                                        &#8378;<input type="text" id="maxamount">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                   
-                    @*<div class="sidebar__item sidebar__item__color--option">
+                        @*<div class="sidebar__item sidebar__item__color--option">
             <h4>Colors</h4>
             <div class="sidebar__item__color sidebar__item__color--white">
                 <label for="white">
@@ -165,53 +219,12 @@
                 </label>
             </div>
         </div>*@
-                    <div class="sidebar__item">
-                        <div class="latest-product__text">
-                            <h4>Son Eklenen Ürünler</h4>
-                            <div class="latest-product__slider owl-carousel">
-
-
-
-                                @{
-                                    var list = Model.products.OrderBy(x => x.id).Take(6).ToArray();
-
-                                }
-
-
-
-                                @{
-                                    int a = 0;
-                                }
-                                @for (int d = 0; d < 2; d++)
-                                {
-                                    <div class="latest-product__slider__item">
-                                        @for (int j = 0; j < 3; j++)
-                                        {
-                                            if (a >= list.Count())
-                                            {
-                                                break;
-                                            }
-
-                                            <a href="/Home/Product/@list[a].id" class="latest-product__item">
-                                                <div class="latest-product__item__pic">
-                                                    <img src="@(list[a].cover != null ? list[a].cover : Url.Content("~/Content/theme/images/empty.png"))" alt="" style="object-fit:cover;">
-                                                </div>
-                                                <div class="latest-product__item__text">
-                                                    <h6>@list[a].name</h6>
-                                                    <span>&#8378;@list[a].products_skus.FirstOrDefault().price</span>
-                                                </div>
-                                            </a>
-
-                                            a++;
-                                        }
-                                    </div>
-                                }
-
-
-
-                            </div>
-                        </div>
                     </div>
+
+
+                    <div class="overlay" id="overlay"></div>
+
+
                 </div>
             </div>
             <div class="col-lg-9 col-md-7">
@@ -265,11 +278,10 @@
                         </div>
                     </div>
                 </div>
-             
+
                 <div class="productsContainer">
                     @Html.Action("GetProductsPartial", "Home", new { CategoryId = -1, PriceRange = "All", PageNumber = 1, })
                 </div>
-
 
 
             </div>
@@ -287,6 +299,7 @@
 
 
 <script src="~/Scripts/jquery-3.7.1.js"></script>
+<!-- HTML !-->
 
 
 <script>
@@ -301,7 +314,14 @@
             data: { Id: id, Adet: 1 },
             success: function (response) {
                 if (response.success) {
-                    toastr.success(response.message);
+                    toastr.success(
+                        `
+                        <div class="inline-elements" style="display:flex;align-items:center;">
+                            <span>`+response.message+`</span>
+                            <a href="/Home/Cart" class="success-btn">Sepete Git</a>
+                        </div>
+                        `
+                    );
                     $('#cartItemsList').html(response.cartItemsHtml);
                     var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
                     $(".header-cart-count").text(cartCount);
@@ -332,7 +352,7 @@
             success: function (response) {
                 $('.productsContainer').fadeOut(300, function () {
                     $(this).empty();
-                   
+
                     $(this).fadeIn(300, function () {
                         $('html, body').animate({
                             scrollTop: $(".productsContainer").offset().top
@@ -343,7 +363,7 @@
                         var bg = $(this).data('setbg');
                         $(this).css('background-image', 'url(' + bg + ')');
                     });
-                   
+
                 });
             },
             error: function (xhr, status, error) {
@@ -376,7 +396,7 @@
                     });
 
 
-                    
+
                 });
 
                 // Aktif sınıfını güncelle
@@ -409,21 +429,21 @@
                 if (!isNaN(id)) {
                     if (type === 'category') {
                         categoryType = 0;
-                    }else if (type === 'subcategory') {
+                    } else if (type === 'subcategory') {
                         categoryType = 1;
                     } else if (type === 'subsubcategory') {
                         categoryType = 2;
                     }
-                    console.log(id+" "+categoryType);
+                    console.log(id + " " + categoryType);
 
                     filterCategory(id, categoryType);
-               
+
                 }
             }
         }
     }
 
-   
+
 
 
     $(document).ready(function () {
@@ -436,7 +456,7 @@
         });
     });
 
-   
+
     $(document).on('change', '#sortSelect', function () {
         var selectedOption = $(this).find('option:selected');
         var orderType = selectedOption.attr('orderType');
@@ -486,5 +506,30 @@
 
 
     });
+   
+     
 
+        $(document).on('click', '#filterbtn', function () {
+            console.log("sdsad");
+            $('.filter').toggleClass('show');// İçeriği aç/kapat
+            $('#overlay').toggleClass('show');
+
+            if ($('.filter').hasClass('show')) {
+                $('body').css('overflow', 'hidden'); // Sayfanın kaymasını engelle
+            } else {
+                $('body').css('overflow', ''); // Varsayılan durum
+            }
+        });
+
+    $(document).on('click', '#close-sidebar', function () {
+        $('.filter').removeClass('show'); // Sidebar'ı kapat
+        $('#overlay').removeClass('show'); // Overlay'i kapat
+        $('body').css('overflow', '');
+    });
+
+    $(document).on('click', '#overlay', function () {
+        $('.filter').removeClass('show'); // Sidebar'ı kapat
+        $('#overlay').removeClass('show'); // Overlay'i kapat
+        $('body').css('overflow', '');
+    });
 </script>

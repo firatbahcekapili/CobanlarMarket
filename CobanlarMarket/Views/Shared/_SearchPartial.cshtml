@@ -1,13 +1,23 @@
 ﻿@model List<CobanlarMarket.Models.products>
-@foreach (var item in Model)
-{
-    <a href="/Home/Product/@item.id" class="result-item">
-        <img src="@item.cover"
-             class="search-thumb"
-             alt="" />
-        <div class="search-info">
-            <h4>@item.name</h4>
-            <span class="search-sky"></span><span class="search-price">&#8378;@item.products_skus.FirstOrDefault().price</span>
-        </div>
-    </a>
-}
+
+
+<div class="search-result">
+    <div class="search-heading"><h3>İlgili Ürünler</h3></div>
+    <div class="result">
+        @foreach (var item in Model)
+        {
+            <a href="/Home/Product/@item.id" class="result-item">
+                <img src="@item.cover"
+                     class="search-thumb"
+                     alt="" />
+                <div class="search-info">
+                    <h4>@item.name</h4>
+                    <span class="search-sky"></span><span class="search-price">&#8378;@item.products_skus.FirstOrDefault().price</span>
+                </div>
+            </a>
+        }
+
+
+
+    </div>
+</div>

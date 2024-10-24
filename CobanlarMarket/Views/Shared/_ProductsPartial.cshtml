@@ -13,7 +13,7 @@
       
 
 
-        <div class="col-lg-4 col-md-5 d-flex justify-content-lg-start justify-content-center mb-2 mb-md-0">
+        <div class="col-lg-4 col-md-5 col-6 d-flex justify-content-lg-start justify-content-center mb-2 mb-md-0">
    
 
 
@@ -33,17 +33,27 @@
             </div>
 
         </div>
-        <div class="col-lg-4 col-md-4 d-flex align-items-center justify-content-center mb-2 mb-md-0">
+        <div class="col-lg-4 col-md-4 col-6 d-flex align-items-center justify-content-center mb-2 mb-md-0">
             <div class="filter__found  m-0">
-                <h6><span>@totalProduct</span> Ürün Bulundu</h6>
+                <h6>@totalProduct Ürün Bulundu</h6>
             </div>
         </div>
-        <div class="col-lg-4 col-md-3 d-flex align-items-center  justify-content-lg-end justify-content-center mb-2 mb-md-0">
+        <div class="col-lg-4 col-md-3 col-6 d-flex align-items-center  justify-content-lg-end justify-content-center mb-2 mb-md-0">
             <div class="filter__option m-0">
                 <span class="icon_grid-2x2"><i class="bi bi-grid-fill"></i></span>
                 @*<span class="icon_ul"><i class="bi bi-list-ul"></i></span>*@
             </div>
+          
         </div>
+
+        <div class="col-lg-4 col-md-3 col-6  d-flex align-items-center  justify-content-lg-end justify-content-center mb-2 mb-md-0">
+            <button type="button" class="btn btn-outline-danger" id="filterbtn">
+                <span>Filtrele</span>
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+
+            </button>
+        </div>
+
     </div>
 </div>
 <div class="row">
@@ -137,4 +147,6 @@
             }
         });
     });
+
+  
 </script>

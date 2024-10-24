@@ -7,6 +7,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
 
     <link href="~/Content/css/All.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -17,7 +31,8 @@
 
     <link href="~/Content/css/slick-theme.css" rel="stylesheet" />
     <script src="~/Content/scripts/slick.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css" integrity="sha512-csw0Ma4oXCAgd/d4nTcpoEoz4nYvvnk21a8VA2h2dzhPAvjbUIK6V3si7/g/HehwdunqqW18RwCJKpD7rL67Xg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" integrity="sha512-/k658G6UsCvbkGRB3vPXpsPHgWeduJwiWGPCGS14IQw3xpr63AEMdA8nMYG2gmYkXitQxDTn6iiK/2fD4T87qA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
     <style>
@@ -64,195 +79,256 @@
             background-color: red;
             color: white;
         }
+
+
+
+        .category-button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .category-list {
+            display: none; /* Başlangıçta gizli */
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+            z-index: 1000; /* Üstte görünmesi için */
+            width: 150px;
+        }
+
+        .category-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+            .category-item:hover {
+                background-color: #f7f7f7;
+            }
+
+        .sub-category {
+            display: none; /* Başlangıçta gizli */
+            position: absolute;
+            left: 160px; /* Sağda açılması için */
+            top: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            z-index: 1000;
+            width: 200px; /* Alt kategorilerin genişliği */
+        }
+
+        .category-item:hover .sub-category {
+            display: block; /* Hover olduğunda göster */
+        }
+        .category-item {
+            position: relative; /* Alt kategorilerin düzgün görünmesi için */
+        }
+
+        .sub-category-panel {
+            display: none; /* Başlangıçta gizli */
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            margin-top: 5px;
+            z-index: 1000; /* Üstte görünmesi için */
+            width: 200px; /* Alt kategori paneli genişliği */
+        }
+
+            .sub-category-panel.visible {
+                display: block; /* Hover olduğunda göster */
+            }
+
+        .sub-sub-category {
+            display: none; /* Başlangıçta gizli */
+        }
+
+        .sub-category-item:hover .sub-sub-category {
+            display: block; /* Alt kategorinin üzerine gelindiğinde alt-alt kategoriyi göster */
+        }
     </style>
 
 </head>
 
 <body>
+    <link href="~/Content/css/navbar/css/styles.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
+
     <div id="toaster"></div>
 
-    <header>
+    <header class="header">
         <div class="global-notification">
             <p>
                 @Model.company_details.FirstOrDefault().homepage_top_text<a href="/Home/Shop">ALİSVERİS YAP</a>
             </p>
         </div>
-        <div class="header-row">
-            <div class="container" style="width:90%;">
-                <div class="header-wrapper">
-                    <div class="header-mobile">
-                        <i class="bi bi-list" id="btn-menu"></i>
-                    </div>
-                    <div class="header-left">
-                        <a class="logo" href="/">LOGO</a>
-                    </div>
-                    <div class="header-center" id="sidebar">
-                        <nav class="navigation">
-                            <ul class="menu-list">
-                                <li class="menu-list-item">
-                                    <a class="menu-link active" href="~/Home/Index">Ana Sayfa</a>
-                                </li>
-                                <li class="menu-list-item megamenu-wrapper">
-                                    <a class="menu-link false" href="~/Home/Shop">
-                                        Alişveriş<i class="bi bi-chevron-down"></i>
-                                    </a>
-                                    <div class="menu-dropdown-wrapper">
-                                        <div class="menu-dropdown-megamenu">
-                                            <div class="megamenu-links"></div>
-                                            <div class="megamenu-single">
-                                                <a href="#">
-                                                    <img src="~/img/mega-menu.jpg" alt="" />
-                                                </a>
-                                                <h3 class="megamenu-single-title">
-                                                    JOİN THE LAYERİNG GANG
-                                                </h3>
-                                                <h4 class="megamenu-single-subtitle">
-                                                    böyle bi paragfar bar baba boyle olamasi
-                                                </h4>
-                                                <a href="/Home/Shop"
-                                                   class="megamenu-single-button btn btn-sm">Shop Now</a>
-                                            </div>
-                                            <div class="megamenu-products">
-                                                <h4 class="megamenu-products-title">
-                                                    Kategoriler
-                                                </h4>
-                                                <ul id="categoryList" class="categorylist" style="max-height:700px;overflow-y:auto;">
-                                                    <!-- Kategoriler buraya eklenecek -->
-                                                </ul>
-                                            </div>
-                                            <div class="megamenu-products">
-                                                <h4 class="megamenu-products-title">
-                                                    Filter Layout
-                                                </h4>
-                                                <ul class="megamenu-menu-list">
-                                                    <li><a href="#">Side Bar</a></li>
-                                                    <li><a href="#">Filter Side Out</a></li>
-                                                    <li><a href="#">Filter Dropdown</a></li>
-                                                    <li><a href="#">Filter Drawes</a></li>
-                                                </ul>
-                                            </div>
-                                            <div class="megamenu-products">
-                                                <h4 class="megamenu-products-title">
-                                                    Shop Loader
-                                                </h4>
-                                                <ul class="megamenu-menu-list">
-                                                    <li><a href="#">Shop Panigation</a></li>
-                                                    <li><a href="#">Shop İnfinity</a></li>
-                                                    <li><a href="#">Shop Load More</a></li>
-                                                    <li><a href="#">Cart Modal</a></li>
-                                                    <li><a href="#">Cart Drawer</a></li>
-                                                    <li><a href="#">Cart Page</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="menu-list-item">
-                                    <a class="menu-link false" href="~/Home/Campaing">Kampanyalar</a>
-                                </li>
-                                @*<li class="menu-list-item">
-                                        <a class="menu-link false" href="~/Home/Blog">Blog</a>
-                                    </li>*@
-                                <li class="menu-list-item">
-                                    <a class="menu-link false" href="~/Home/Contact">İletişim</a>
-                                </li>
-                            </ul>
-                        </nav>
-                        <i class="bi-x-circle" id="close-sidebar"></i>
-                    </div>
+
+
+
+
+
+
+        <nav class="nav container">
+            <div class="nav__data">
+                <a href="~/Home/Index" class="nav__logo">
+                    <i class="ri-store-2-line"></i> Çobanlar Market
+                </a>
+
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class="ri-menu-line nav__burger"></i>
+                    <i class="ri-close-line nav__close"></i>
+                </div>
+            </div>
+
+            <!--=============== NAV MENU ===============-->
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li>
+                        <a class="nav__link active" href="~/Home/Index">Ana Sayfa</a>
+
+                    </li>
+
+
+
+                    <!--=============== DROPDOWN 1 ===============-->
+                    <li class="dropdown__item">
+                        <div class="nav__link" id="shoppingDropdown">
+                            <a class="dropdown__a" href="~/Home/Shop">Alışveriş</a>  <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+
+                        <ul class="dropdown__menu" id="categoryList">
+                            <!-- Kategoriler ve alt kategoriler buraya eklenecek -->
+                        </ul>
+                    </li>
+                    <li>
+
+                        <a class="nav__link" href="~/Home/Campaing">Kampanyalar</a>
+
+                    </li>
+
+
+
+                    <li>
+                        <a class="nav__link" href="~/Home/Contact">İletişim</a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="nav__link search-button" style="justify-content:left;">
+                            <i class="ri-search-line"></i> <span>Ara</span>
+                        </a>
+                    </li>
+
+                    <!--=============== DROPDOWN 2 ===============-->
+
+
+
+
                     @{
                         var kisi = Session["User"];
                         if (kisi != null)
                         {
                             CobanlarMarket.Models.users user = kisi as CobanlarMarket.Models.users;
-                            <div class="header-right">
-                                <div class="header-right-links">
-                                
 
 
-
-                                    <div class="dropdown">
-                                        <button class="dropbtn" style="display:flex ">
-                                            <i class="bi bi-person"></i><span>@user.first_name</span>
-
-                                        </button>
-                                        <div class="dropdown-content">
-                                            <a href="#">Hesabım</a>
-                                            @Html.ActionLink("Çıkış Yap", "LogOut", "Home")
-                                        </div>
-                                    </div>
-
-
-
-                                    <button class="search-button">
-
-
-
-                                        <i class="bi bi-search"></i>
-                                    </button>
-
-                                    @*<a href="/Home/Whishlist">
-                                            <i class="bi bi-heart"></i>
-                                        </a>*@
-
-                                    <div class="header-cart">
-                                        <a class="header-cart-link" href="~/Home/Cart">
-                                            <i class="bi bi-bag"></i><span class="header-cart-count">@Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item.Count()</span>
-                                        </a>
-                                    </div>
-
+                            <li class="dropdown__item">
+                                <div class="nav__link user-btn" style="justify-content:left;">
+                                                        <span>@user.first_name</span>  <i class="ri-arrow-down-s-line dropdown__arrow"></i>
 
 
                                 </div>
-                            </div>
+
+                                <ul class="dropdown__menu">
+                                    <li>
+                                        <a href="#" class="dropdown__link">
+                                            <i class="ri-user-line"></i> Hesabım
+                                        </a>
+                                    </li>
+
+                                   
+
+                                    <li>
+
+                                        <a href="/Home/LogOut" class="dropdown__link">
+                                            <i class="ri-logout-box-line"></i> Çıkış Yap
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+
+
+                            <li>
+
+                                <a class="header-cart-link nav__link" href="~/Home/Cart" style="">
+                                    <i class="ri-shopping-cart-line">
+                                        <span class="header-cart-count">@Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item.Count()</span>
+
+                                    </i>
+                                </a>
+                            </li>
+
+
+
+
+
+
+
+
+
+
                         }
                         else
                         {
-                            <div class="header-right">
-                                <div class="header-right-links">
-                                    <a class="header-account" href="~/Home/Auth">
+
+
+                            <li>
+                                <a class="nav__link user-btn" href="~/Home/Auth" style="justify-content:left;"> <i class="ri-user-line"></i> <span>Giriş Yap</span></a>
+                            </li>
+
+                            <li>
+                                <a class="nav__link cart-btn" href="~/Home/Cart"> <i class="ri-shopping-cart-line"><span class="header-cart-count">0</span></i></a>
+                            </li>
 
 
 
-                                        <i class="bi bi-person"></i>
-                                    </a>
-                                    <button class="search-button">
-                                        <i class="bi bi-search"></i>
-                                    </button>
-                                    @*<a onclick="toastr.error('Önce Giriş Yapmalısınız.');">
-                                            <i class="bi bi-heart"></i>
-                                        </a>*@
-                                    <div class="header-cart">
-                                        <a class="header-cart-link" href="~/Home/Cart">
-                                            <i class="bi bi-bag"></i><span class="header-cart-count">0</span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+
                         }
 
                     }
-                </div>
+
+
+                </ul>
             </div>
-        </div>
+        </nav>
+
+
+
+
+
+
+
+
+
+
     </header>
     <div class="modal-search">
         <div class="modal-wrapper">
-            <h3 class="modal-title">Search for products</h3>
+            <h3 class="modal-title">Ürün Ara</h3>
             <p class="modal-text">
-                Start typing to see products are looking for.
+                Aradığınız ürünleri görmek için yazmaya başlayın.
             </p>
             <form class="search-form">
-                <input type="text" id="search-product" placeholder="Search a products" /><button>
+                <input type="text" id="search-product" placeholder="Size ne lazım?" /><button>
                     <i class="bi bi-search"></i>
                 </button>
             </form>
-            <div class="search-result">
-                <div class="search-heading"><h3>RESULT FROM PRODUCT</h3></div>
-                <div class="result">
+            <div class="search-result-parent">
 
-                </div>
             </div>
+
             <button class="close-search"><i class="bi bi-x-circle" id="close-search"></i></button>
         </div>
         <div class="modal-overlay"></div>
@@ -366,12 +442,9 @@
             <div class="container">
                 <div class="footer-copyright">
                     <div class="site-copyright">
-                        <p>
-                            © 2020 CARDİN - Tüm haklari saklidir. Hazirlayan Gökhan
-                            Kadi
-                        </p>
+                      
                     </div>
-                    <a href="#"><img src="img/footer/cards.png" alt="" /></a>
+                    <a href="#"><img src="/img/footer/cards.png" alt="" /></a>
                     <div class="footer-menu">
                         <ul class="footer-menu-list">
                             <li class="list-item"><a href="#">Privacy Policy</a></li>
@@ -400,6 +473,11 @@
 
     <link href="~/Content/theme/plugins/toaster/toastr.min.css" rel="stylesheet" />
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/mobile/bootstrap-table-mobile.min.js"></script>
+    <script src="~/Content/css/navbar/js/main.js"></script>
 
     <script>
 
@@ -434,8 +512,8 @@
                 success: function (result) {
 
                     console.log(result);
-                    $('.result').empty();
-                    $('.result').html(result);
+                    $('.search-result-parent').empty();
+                    $('.search-result-parent').html(result);
 
 
                 }
@@ -445,90 +523,197 @@
 
 
         });
+
+
+        //$(document).ready(function () {
+        //    // Kategorileri getir ve listele
+        //    $.ajax({
+        //        url: '/Home/GetCategories',
+        //        type: 'GET',
+        //        success: function (categories) {
+        //            var categoryList = $('#categoryList');
+        //            categoryList.empty(); // Önce mevcut listeyi temizle
+        //            categoryList.append('<li categoryid="-1" categorytype="0" class="category-item"><a href="/Home/Shop#category--1" onclick="filterCategory(-1, 0, this)">Tüm Kategoriler</a></li>');
+
+        //            categories.forEach(function (category) {
+        //                var listItem = $('<li class="category-item"></li>').attr('categoryid', category.id).attr('categorytype', 0);
+        //                var link = $('<a></a>')
+        //                    .attr('href', '/Home/Shop#category-' + category.id)
+        //                    .text(category.name)
+        //                    .attr('onclick', 'filterCategory(' + category.id + ', 0, this)');
+
+        //                listItem.append(link);
+
+        //                // Alt kategorileri getir ve ekle
+        //                $.ajax({
+        //                    url: '/Home/GetSubCategories',
+        //                    type: 'GET',
+        //                    data: { categoryId: category.id },
+        //                    success: function (subCategories) {
+        //                        if (subCategories.length > 0) {
+        //                            var subCategoryPanel = $('<div class="sub-category-panel"></div>');
+        //                            subCategories.forEach(function (subCategory) {
+        //                                var subListItem = $('<div class="sub-category-item"></div>').attr('categoryid', subCategory.id).attr('categorytype', 1);
+        //                                var subLink = $('<a></a>')
+        //                                    .attr('href', '/Home/Shop#subcategory-' + subCategory.id)
+        //                                    .text(subCategory.name)
+        //                                    .attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)');
+
+        //                                subListItem.append(subLink);
+        //                                subCategoryPanel.append(subListItem);
+
+        //                                // Alt-alt kategorileri getir ve ekle
+        //                                $.ajax({
+        //                                    url: '/Home/GetSubSubCategories',
+        //                                    type: 'GET',
+        //                                    data: { subcategoryId: subCategory.id },
+        //                                    success: function (subsubCategories) {
+        //                                        if (subsubCategories.length > 0) {
+        //                                            var subsubCategoryList = $('<div class="sub-sub-category"></div>');
+        //                                            subsubCategories.forEach(function (subsCategory) {
+        //                                                var subsubListItem = $('<div></div>').attr('categoryid', subsCategory.id).attr('categorytype', 2);
+        //                                                var subsubLink = $('<a></a>')
+        //                                                    .attr('href', '/Home/Shop#subsubcategory-' + subsCategory.id)
+        //                                                    .text(subsCategory.name)
+        //                                                    .attr('onclick', 'filterCategory(' + subsCategory.id + ', 2, this)');
+
+        //                                                subsubListItem.append(subsubLink);
+        //                                                subsubCategoryList.append(subsubListItem);
+        //                                            });
+        //                                            subListItem.append(subsubCategoryList); // Alt-alt kategoriyi doğru yere ekle
+        //                                        }
+        //                                    }
+        //                                });
+        //                            });
+        //                            listItem.append(subCategoryPanel); // Alt kategorileri panele ekle
+        //                        }
+        //                    },
+        //                    error: function (xhr, status, error) {
+        //                        console.error(error);
+        //                    }
+        //                });
+
+        //                categoryList.append(listItem);
+        //            });
+
+        //            // Hover olaylarını ayarla
+        //            $('.category-item').hover(function () {
+        //                $(this).find('.sub-category-panel').addClass('visible'); // Alt kategoriyi göster
+        //            }, function () {
+        //                $(this).find('.sub-category-panel').removeClass('visible'); // Alt kategoriyi gizle
+        //            });
+        //        },
+        //        error: function (xhr, status, error) {
+        //            console.error(error);
+        //        }
+        //    });
+        //});
+
+
+
 
 
 
         $(document).ready(function () {
-            // Kategorileri getir ve listele
-            $.ajax({
-                url: '/Home/GetCategories',
-                type: 'GET',
-                success: function (categories) {
-                    var categoryList = $('#categoryList');
-                    categoryList.empty(); // Önce mevcut listeyi temizle
-                    categoryList.append('<li categoryid="-1" categorytype="0"><a href="/Home/Shop#category--1" onclick="filterCategory(-1, 0, this)">Tüm Kategoriler</a></li>');
+            // Dropdown'a tıklandığında kategorileri getir ve listele
+           
+                var categoryList = $('#categoryList');
+                if (categoryList.children().length === 0) {  // Eğer kategoriler daha önce yüklenmemişse
+                    $.ajax({
+                        url: '/Home/GetCategories',  // Kategorileri getiren API endpoint
+                        type: 'GET',
+                        success: function (categories) {
+                            categoryList.empty(); // Mevcut listeyi temizle
+                            categories.forEach(function (category) {
+                                var listItem = $('<li></li>').addClass('dropdown__subitem').attr('categoryid', category.id).attr('categorytype', 0);
+                                var link = $('<div></div>')
+                                   
+                                    .addClass('dropdown__link')
+                                  /*  .attr('onclick', 'filterCategory(' + category.id + ', 0, this)')*/;
 
-                    categories.forEach(function (category) {
 
-                        var listItem = $('<li></li>').attr('categoryid', category.id).attr('categorytype', 0);
-                        var link = $('<a></a>')
-                            .attr('href', '/Home/Shop#category-' + category.id)
-                            .text(category.name)
-                            .attr('onclick', 'filterCategory(' + category.id + ', 0, this)');
-                        listItem.append(link);
+                                var a = $('<a></a>').attr('href', '/Home/Shop#category-' + category.id)
+                                    .text(category.name);
+                                link.append(a);
 
-                        // Alt kategorileri getir ve ekle
-                        $.ajax({
-                            url: '/Home/GetSubCategories',
-                            type: 'GET',
-                            data: { categoryId: category.id },
-                            success: function (subCategories) {
-                                if (subCategories.length > 0) {
-                                    var subCategoryList = $('<ul></ul>');
-                                    subCategories.forEach(function (subCategory) {
-                                        var subListItem = $('<li></li>')
-                                            .css('padding-left', '8px')
-                                            .attr('categoryid', subCategory.id)
-                                            .attr('categorytype', 1);
-                                        var subLink = $('<a></a>')
-                                            .attr('href', '/Home/Shop#subcategory-' + subCategory.id)
-                                            .text(subCategory.name)
-                                            .attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)');
-                                        subListItem.append(subLink);
-                                        subCategoryList.append(subListItem);
+                                listItem.append(link);
 
-                                        // Alt-alt kategorileri getir ve ekle
-                                        $.ajax({
-                                            url: '/Home/GetSubSubCategories',
-                                            type: 'GET',
-                                            data: { subcategoryId: subCategory.id },
-                                            success: function (subsubCategories) {
-                                                if (subsubCategories.length > 0) {
-                                                    var subsubCategoryList = $('<ul></ul>');
-                                                    subsubCategories.forEach(function (subsCategory) {
-                                                        var subsubListItem = $('<li></li>')
-                                                            .css('padding-left', '16px')
-                                                            .attr('categoryid', subsCategory.id)
-                                                            .attr('categorytype', 2);
-                                                        var subsubLink = $('<a></a>')
-                                                            .attr('href', '/Home/Shop#subsubcategory-' + subsCategory.id)
-                                                            .text(subsCategory.name)
-                                                            .attr('onclick', 'filterCategory(' + subsCategory.id + ', 2, this)');
-                                                        subsubListItem.append(subsubLink);
-                                                        subsubCategoryList.append(subsubListItem);
-                                                    });
-                                                    subListItem.append(subsubCategoryList); // Alt-alt kategoriyi doğru yere ekle
-                                                }
-                                            }
-                                        });
+                                // Alt kategorileri getir ve ekle
+                                $.ajax({
+                                    url: '/Home/GetSubCategories',  // Alt kategorileri getiren API endpoint
+                                    type: 'GET',
+                                    data: { categoryId: category.id },
+                                    success: function (subCategories) {
+                                        if (subCategories.length > 0) {
+                                            var subCategoryList = $('<ul></ul>').addClass('dropdown__submenu');
+                                            subCategories.forEach(function (subCategory) {
+                                                var subListItem = $('<li></li>')
+                                                    .addClass('dropdown__subitem')
+                                                    .attr('categoryid', subCategory.id)
+                                                    .attr('categorytype', 1);
+                                                var subLink = $('<div></div>')
+                                                    
+                                                    .addClass('dropdown__sublink')
+                                                    /*.attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)')*/;
+                                                var a = $('<a></a>').attr('href', '/Home/Shop#subcategory-' + subCategory.id)
+                                                    .text(subCategory.name);
+                                                subLink.append(a);
+                                                subListItem.append(subLink);
+                                                subCategoryList.append(subListItem);
 
-                                    });
-                                    listItem.append(subCategoryList);
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                console.error(error);
-                            }
-                        });
+                                                // Alt-alt kategorileri getir ve ekle
+                                                $.ajax({
+                                                    url: '/Home/GetSubSubCategories',  // Alt-alt kategorileri getiren API endpoint
+                                                    type: 'GET',
+                                                    data: { subcategoryId: subCategory.id },
+                                                    success: function (subsubCategories) {
+                                                        if (subsubCategories.length > 0) {
+                                                            var subsubCategoryList = $('<ul></ul>').addClass('dropdown__submenu');
+                                                            subsubCategories.forEach(function (subsCategory) {
+                                                                var subsubListItem = $('<li></li>')
+                                                                    .addClass('dropdown__subitem')
+                                                                    .attr('categoryid', subsCategory.id)
+                                                                    .attr('categorytype', 2);
+                                                                var subsubLink = $('<a></a>')
+                                                                    .attr('href', '/Home/Shop#subsubcategory-' + subsCategory.id)
+                                                                    .text(subsCategory.name)
+                                                                    .addClass('dropdown__sublink dropdown__subsublink')
+                                                                    .attr('onclick', 'filterCategory(' + subsCategory.id + ', 2, this)');
+                                                                subsubListItem.append(subsubLink);
+                                                                subsubCategoryList.append(subsubListItem);
+                                                            });
+                                                            var icon = $('<i class="ri-add-line dropdown__add"></i>');
 
-                        categoryList.append(listItem);
+                                                            subLink.append(icon);
+                                                            subListItem.append(subsubCategoryList); // Alt-alt kategoriyi doğru yere ekle
+                                                        } else {
+                                                           
+                                                        }
+                                                    }
+                                                });
+                                            });
+                                            var icon = $('<i class="ri-add-line dropdown__add"></i>');
+                                            link.append(icon);
+                                            listItem.append(subCategoryList);
+                                        } else {
+                                          
+                                        } 
+                                    }
+                                });
+
+                                categoryList.append(listItem);
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Kategori getirilemedi: ', error);
+                        }
                     });
-                },
-                error: function (xhr, status, error) {
-                    console.error(error);
                 }
             });
-        });
+
+
+
+
 
 
         $(document).ready(function () {

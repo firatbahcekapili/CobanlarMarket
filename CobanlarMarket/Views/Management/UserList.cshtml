@@ -11,7 +11,7 @@
     }
 </style>
 <div class=" mt-5 ml-5 mr-5">
-   
+
 
     <div class="row">
         <div class="col-12">
@@ -45,7 +45,7 @@
                             {
                                 <tr>
                                     <td class="py-0">
-                                        <img src="@(item.avatar !=null ?item.avatar : "/Content/theme/images/User_Icon.png")" alt="">
+                                        <img src="@(item.avatar !=null ?item.avatar : "/Content/theme/images/User_Icon.png")" alt="user image">
                                     </td>
                                     <td>@item.first_name @item.last_name</td>
                                     <td>@item.phone_number</td>
@@ -62,7 +62,7 @@
                                             <span class="mdi mdi-pen text-success"></span>
 
                                         </a>
-                                        <a onclick="Remove(@item.id)">
+                                        <a onclick="ShowModal(@item.id)">
                                             <span class="mdi mdi-trash-can-outline text-danger"></span>
 
                                         </a>
@@ -81,7 +81,28 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="RemoveModal" tabindex="-1" role="dialog" aria-labelledby="RemoveModal"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLongTitle2">Ürünü silmek istediğinize emin misiniz</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Onaylamanız halinde kullanıcı silinecektir. Bir daha bu kullanıcıya erişiminiz olmayacaktır. Onaylıyor musunuz?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -105,7 +126,7 @@
 
                 response.forEach(function (user) {
                     var row = "<tr>" +
-                        "<td class='py-0'><img src='" + user.avatar + "' alt='Product Image'></td>" +
+                        "<td class='py-0'><img src='" + (user.avatar != null ? user.avatar : '/Content/theme/images/User_Icon.png') + "' alt='User Image'></td>" +
                         "<td>" + user.first_name + " " + user.last_name + "</td>" +
                         "<td>" + user.phone_number + "</td>" +
                         "<td>" + user.email + "</td>" +
@@ -113,15 +134,21 @@
                         "<td>" + user.created_at + "</td>" +
                         "<td>" +
                         "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
-                        "<a  href='/Management/EditUser/"+user.id+"><span class='mdi mdi-pen text-success'></span></a>" +
+                        "<a  href='/Management/EditUser/"+user.id+"'> <span class='mdi mdi-pen text-success'></span></a>" +
                         "<a onclick='Remove(" + user.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
                         "</td>" +
                         "</tr>";
                     tbody.append(row);
+
+
                 });
+                $('#RemoveModal').modal('hide');
+
             }, error: function (e) {
                 console.log(e)
                 toastr.error('Kullanıcı Silinirken Bir Hata Oluştu', 'Hata');
+                $('#RemoveModal').modal('hide');
+
 
             }
 
@@ -132,6 +159,13 @@
     }
 
 
+    function ShowModal(id) {
+        $('#RemoveModal').modal('show');
 
+        var btn = '<button type= "button" class="btn btn-primary btn-pill" data-dismiss="modal" > İptal Et</button > ' +
+            " <a class='btn btn-danger btn-pill' onclick='Remove(" + id + ")'>Sil!</a>";
+        $('#RemoveModal .modal-footer').empty();
+        $('#RemoveModal .modal-footer').append(btn);
+    }
 
 </script>

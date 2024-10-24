@@ -50,51 +50,6 @@
             <div class="col-lg-3 col-md-5">
                 <div class="sidebar">
                     <div class="sidebar__item">
-                        <h4>Kategoriler</h4>
-                        <ul class="categorylist">
-                            <li class="active" categoryid="-1">  <a href="#category--1" onclick="filterCategory(-1,0,this)">Tüm Kategoriler</a> </li>
-                            @foreach (var item in Model.categories)
-                            {
-
-                                <li categoryid="@item.id" categorytype="0">
-                                    <a href="#category-@item.id" onclick="filterCategory(@item.id,0,this)">@item.name</a> @*kategori 0, subcategory 1*@
-                                    @if (Model.sub_categories.Any(x => x.parent_id == item.id))
-                                    {<ul>
-
-
-                                            @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == item.id))
-                                            {
-                                                <li style="padding-left:8px;" categoryid="@subcategory.id" categorytype="1">
-                                                    <a href="#subcategory-@subcategory.id" onclick="filterCategory(@subcategory.id,1,this)">@subcategory.name</a>
-                                                </li>
-                                            }
-                                        </ul>
-
-
-                                    }
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                    <div class="sidebar__item">
-                        <h4>Fiyat</h4>
-                        <div class="price-range-wrap">
-                            <div id="price-range-campaign" class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
-                                 data-min="@Math.Round((decimal)Model.products_skus.Min(x => x.price))" data-max="@Math.Round((decimal)Model.products_skus.Max(x => x.price))">
-                                <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
-                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                                <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
-                            </div>
-                            <div class="range-slider">
-                                <div class="price-input">
-                                    &#8378;<input type="text" id="minamount">
-                                    &#8378;<input type="text" id="maxamount">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sidebar__item">
                         <div class="latest-product__text">
                             <h4>Son Eklenen Ürünler</h4>
                             <div class="latest-product__slider owl-carousel">
@@ -110,8 +65,10 @@
 
                                 @{
                                     int a = 0;
+                                    int count = list.Count();
+                                    double result = Math.Ceiling((double)count / 3);
                                 }
-                                @for (int d = 0; d < 2; d++)
+                                @for (int d = 0; d < result; d++)
                                 {
                                     <div class="latest-product__slider__item">
                                         @for (int j = 0; j < 3; j++)
@@ -121,9 +78,9 @@
                                                 break;
                                             }
 
-                                            <a href="#" class="latest-product__item">
+                                            <a href="/Home/Product/@list[a].id" class="latest-product__item">
                                                 <div class="latest-product__item__pic">
-                                                    <img src="@(list[a].cover != null ? list[a].cover : Url.Content("~/Content/theme/images/empty.png"))" alt="">
+                                                    <img src="@(list[a].cover != null ? list[a].cover : Url.Content("~/Content/theme/images/empty.png"))" alt="" style="object-fit:cover;">
                                                 </div>
                                                 <div class="latest-product__item__text">
                                                     <h6>@list[a].name</h6>
@@ -141,8 +98,60 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="filter">
+                        <a class="close" id="close-sidebar"> <i class="bi bi-x"></i></a>
+                        <div class="sidebar__item">
+                            <h4>Kategoriler</h4>
+                            <ul class="categorylist">
+                                <li class="active" categoryid="-1">  <a href="#category--1" onclick="filterCategory(-1,0,this)">Tüm Kategoriler</a> </li>
+                                @foreach (var item in Model.categories)
+                                {
+
+                                    <li categoryid="@item.id" categorytype="0">
+                                        <a href="#category-@item.id" onclick="filterCategory(@item.id,0,this)">@item.name</a> @*kategori 0, subcategory 1*@
+                                        @if (Model.sub_categories.Any(x => x.parent_id == item.id))
+                                        {<ul>
+
+
+                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == item.id))
+                                                {
+                                                    <li style="padding-left:8px;" categoryid="@subcategory.id" categorytype="1">
+                                                        <a href="#subcategory-@subcategory.id" onclick="filterCategory(@subcategory.id,1,this)">@subcategory.name</a>
+                                                    </li>
+                                                }
+                                            </ul>
+
+
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="sidebar__item">
+                            <h4>Fiyat</h4>
+                            <div class="price-range-wrap">
+                                <div id="price-range-campaign" class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                     data-min="@Math.Round((decimal)Model.products_skus.Min(x => x.price))" data-max="@Math.Round((decimal)Model.products_skus.Max(x => x.price))">
+                                    <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                    <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                </div>
+                                <div class="range-slider">
+                                    <div class="price-input">
+                                        &#8378;<input type="text" id="minamount">
+                                        &#8378;<input type="text" id="maxamount">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="overlay" id="overlay"></div>
+
                 </div>
-            </div>
+                </div>
             <div class="col-lg-9 col-md-7">
 
                 <section class="campaigns">
@@ -200,7 +209,14 @@
             data: { Id: id, Adet: 1 },
             success: function (response) {
                 if (response.success) {
-                    toastr.success(response.message);
+                    toastr.success(
+                        `
+                         <div class="inline-elements" style="display:flex;align-items:center;">
+                             <span>`+ response.message + `</span>
+                             <a href="/Home/Cart" class="success-btn">Sepete Git</a>
+                         </div>
+                         `
+                    );
                     $('#cartItemsList').html(response.cartItemsHtml);
                     var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
                     $(".header-cart-count").text(cartCount);
@@ -406,4 +422,27 @@ $(document).on('change', '#sortSelect', function () {
     });
 });
 
+    $(document).on('click', '#filterbtn', function () {
+        console.log("sdsad");
+        $('.filter').toggleClass('show');// İçeriği aç/kapat
+        $('#overlay').toggleClass('show');
+
+        if ($('.filter').hasClass('show')) {
+            $('body').css('overflow', 'hidden'); // Sayfanın kaymasını engelle
+        } else {
+            $('body').css('overflow', ''); // Varsayılan durum
+        }
+    });
+
+    $(document).on('click', '#close-sidebar', function () {
+        $('.filter').removeClass('show'); // Sidebar'ı kapat
+        $('#overlay').removeClass('show'); // Overlay'i kapat
+        $('body').css('overflow', '');
+    });
+
+    $(document).on('click', '#overlay', function () {
+        $('.filter').removeClass('show'); // Sidebar'ı kapat
+        $('#overlay').removeClass('show'); // Overlay'i kapat
+        $('body').css('overflow', '');
+    });
 </script>

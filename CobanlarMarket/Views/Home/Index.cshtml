@@ -1,413 +1,390 @@
 ﻿@model CobanlarMarket.Models.AllViewModel
 @{
 
-    ViewBag.Title = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var deneme = Session["deneme"] as CobanlarMarket.Models.users;
     var company = Model.company_details.FirstOrDefault();
 }
-
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css" integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="~/Content/css/home-cart.css" rel="stylesheet" />
 <body cz-shortcut-listen="true">
-    
+
+
+
+
+
 
     <div id="root">
-        <div>
-            <div class="main-layout">
 
-                <section class="slider">
-                    <div class="slider-elements">
-                        <div class="slider-item fade">
-                            <div class="slider-image">
-                                <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" />
+        <div class="main-layout">
 
-                                <div class="container" style="margin-left:80px;">
-                                    <p class="slider-title">@company.homepage_slider_title</p>
-                                    <h2 class="slider-heading">@company.homepage_slider_text</h2>
-                                    <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
-                                </div>
-                            </div>
+            @*<section class="slider">
+            <div class="slider-elements">
+                <div class="slider-item fade">
+                    <div class="slider-image">
+                        <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" />
 
-
-                        </div>
-
-                    </div>
-                </section>
-                @*<ul>
-            @foreach (var item in Model.carts.Where(x => x.user_id == 10))
-            {
-                var a = item.cart_item.ToList();
-                foreach (var x in a)
-                {
-                    <li> @Model.products.FirstOrDefault(s => s.id == x.product_id).name</li>
-                }
-
-            }
-        </ul>*@
-
-
-
-
-                <section class="categories">
-                    <div class="container">
-                        <div class="section-title">
-
-                            <h2>TÜM KATEGORİLER</h2>
-                        </div>
-                        <div>
-                            <ul class="category-list">
-
-                                @foreach (var category in Model.categories)
-                                {
-                                    <li class="category-item">
-                                        <a href="/Home/Shop#category-@category.id">
-
-                                            @if (category.cover != null)
-                                            {
-                                                <img src="@category.cover"
-                                                     alt=""
-                                                     class="img1" />
-                                            }
-                                            else
-                                            {
-                                                <img src="~/Content/theme/images/empty.png"
-                                                     alt=""
-                                                     class="img1" />
-                                            }
-
-                                        <br /><span class="category-title">@category.name</span>
-                                        </a>
-                                    </li>
-                                }
-                            </ul>
+                        <div class="" style="margin-left:80px;">
+                            <p class="slider-title">@company.homepage_slider_title</p>
+                            <h2 class="slider-heading">@company.homepage_slider_text</h2>
+                            <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
                         </div>
                     </div>
-                </section>
-                <section class="products">
-                    <div class="container">
-                        <div class="section-title">
-                            <h2>TÜM ÜRÜNLER</h2>
+
+
+                </div>
+
+            </div>
+        </section>*@
+
+
+
+            <section class="slider">
+                <div class="slider-elements">
+                    <div class="slider-item">
+                        <div class="slider-image">
+                            <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" />
                         </div>
-                        <div class="product-wrapper glide">
-                            <div class="slick-slider" dir="ltr">
-                                <button class="glide__arrow glide__arrow--left">
-                                    <i class="bi bi-chevron-left"></i>
-                                </button>
-                                <div class="slick-list">
-                                    @{
-                                        int i = -1;
-                                    }
-                                    @foreach (var product in Model.products)
-                                    {
-                                        <div style="width: 450px">
-                                            <div>
-                                                <div class="product-item ">
-                                                    <div class="product-image">
-                                                        <a href="/Home/Product/@product.id">
-                                                            @if (product.cover != null)
-                                                            {
-                                                                <img src="@product.cover" alt="" class="img1" />
-                                                            }
-                                                            else
-                                                            {
-                                                                <img src="~/Content/theme/images/empty.png" alt="" class="img1" />
-                                                            }
-                                                        </a>
-                                                    </div>
-                                                    <div class="product-info">
-                                                        <a href="#" class="product-title">@product.name</a>
-                                                        <ul class="product-star">
-                                                            <li><i class="bi bi-star-fill"></i></li>
-                                                            <li><i class="bi bi-star-fill"></i></li>
-                                                            <li><i class="bi bi-star-fill"></i></li>
-                                                            <li><i class="bi bi-star-fill"></i></li>
-                                                            <li><i class="bi bi-star-half"></i></li>
-                                                        </ul>
-                                                        <div class="product-prices">
-                                                            <strong class="new-price">&#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).price</strong>
-                                                            @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
-                                                            {
-                                                                <span class="old-price">
-                                                                    &#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price
-                                                                </span>
-                                                            }
-                                                        </div>
-                                                        @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
-                                                        {
-                                                            var discount = (product.products_skus.FirstOrDefault(x => x.product_id == product.id).price / product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price * 100);
-                                                            <span class="product-discount">
-                                                                <span>-%@(100-Math.Round((decimal)discount))</span>
-                                                            </span>
-                                                        }
-                                                        <div class="product-links">
-                                                            <a onclick="AddCart(@product.id)">
-                                                                <i class="bi bi-basket-fill"></i>
-                                                            </a>
-                                                            @*<a onclick="AddWishlist(@product.id)">
-                                                        <i class="bi bi-heart-fill"></i>
-                                                    </a>*@
-                                                            <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a>
-                                                            @{
-                                                                // Mevcut protokol ve domaini al
-                                                                string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
-                                                                // Ürün yolunu dinamik olarak oluştur
-                                                                string productPath = Url.Action("Product", "Home", new { id = product.id });
-                                                                // Domain ile yolu birleştir
-                                                                string fullUrl = $"{domain}{productPath}";
-                                                            }
-                                                            <a class="shareBtn" link="@fullUrl">
-                                                                <i class="bi bi-share-fill"></i>
-                                                            </a>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        i++;
-                                    }
-                                </div>
-                                <button class="glide__arrow glide__arrow--right">
-                                    <i class="bi bi-chevron-right"></i>
-                                </button>
-                            </div>
+                        <div class="slider-text">
+                            <p class="slider-title">@company.homepage_slider_title</p>
+                            <h2 class="slider-heading">@company.homepage_slider_text</h2>
+                            <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
                         </div>
-
-                        @*<style>
-                    body {
-                        background-color: #F5F5FF;
-                    }
-
-                    .wrapper {
-                        padding: 70px 0;
-                        overflow-x: hidden;
-                    }
-
-
-                    .my-slider {
-                        padding: 0 70px;
-                    }
-
-                    .slick-initialized .slick-slide {
-                        background-color: #b32532;
-                        color: #FFF;
-                        height: 200px;
-                        margin: 0 15px 0 0;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                    }
-
-
-
-                    .slick-next, .slick-prev {
-                        z-index: 5;
-                    }
-
-                    .slick-next {
-                        right: 15px;
-                    }
-
-                    .slick-prev {
-                        left: 15px;
-                    }
-
-                        .slick-next:before, .slick-prev:before {
-                            color: #000;
-                            font-size: 26px;
-                        }
-                </style>
-
-                <div class="wrapper">
-                    <div class="my-slider">
-                        @{
-                            int i = -1;
-                        }
-                        @foreach (var product in Model.products)
-                        {
-                            <div style="width: 450px">
-
-                                <div class="product-item glide__slide glide__slide--active">
-                                    <div class="product-image">
-                                        <a href="/Home/Product/@product.id">
-                                            @if (product.cover != null)
-                                            {
-                                                <img src="@product.cover" alt="" class="img1" />
-                                            }
-                                            else
-                                            {
-                                                <img src="~/Content/theme/images/empty.png" alt="" class="img1" />
-                                            }
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a href="#" class="product-title">@product.name</a>
-                                        <ul class="product-star">
-                                            <li><i class="bi bi-star-fill"></i></li>
-                                            <li><i class="bi bi-star-fill"></i></li>
-                                            <li><i class="bi bi-star-fill"></i></li>
-                                            <li><i class="bi bi-star-fill"></i></li>
-                                            <li><i class="bi bi-star-half"></i></li>
-                                        </ul>
-                                        <div class="product-prices">
-                                            <strong class="new-price">&#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).price</strong>
-                                            @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
-                                            {
-                                                <span class="old-price">
-                                                    &#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price
-                                                </span>
-                                            }
-                                        </div>
-                                        @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
-                                        {
-                                            var discount = (product.products_skus.FirstOrDefault(x => x.product_id == product.id).price / product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price * 100);
-                                            <span class="product-discount">
-                                                <span>-%@(100-Math.Round((decimal)discount))</span>
-                                            </span>
-                                        }
-                                        <div class="product-links">
-                                            <a onclick="AddCart(@product.id)">
-                                                <i class="bi bi-basket-fill"></i>
-                                            </a>
-                                            <a onclick="AddWishlist(@product.id)">
-                                                <i class="bi bi-heart-fill"></i>
-                                            </a>
-                                            <a class="product-link" href="/Home/Product/@product.id"><i class="bi bi-eye-fill"></i></a><a href="#">
-                                                <i class="bi bi-share-fill"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            i++;
-                        }
-
-
                     </div>
-                </div>*@
 
-                    </div>
-                </section>
-
+                </div>
+            </section>
 
 
 
 
-
-
-
-
-
-                @{
-                    var list = Model.campaigns.ToArray();
-                    int sira = 0;
-                }
-                @if (list.Length != 0)
-                {
+            <section class="category">
+                <div class="container">
                     <div class="section-title">
-                        <h2>Kampanyalar</h2>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
+
+                        <h2>Tüm Kategoriler</h2>
                     </div>
-                    <section class="campaigns">
-                        <div class="container">
+
+                    <div class="categories">
 
 
-                            @for (int d = 0; d <= decimal.Ceiling(Model.campaigns.Count() / 2); d++)
+                        <div class="icon-container ">
+
+                            @foreach (var category in Model.categories)
+                            {
+
+                                <div class="icon-item">
+                                    <a href="/Home/Shop#category-@category.id">
+                                        <img class="hvr-grow" src="@(category.cover != null ? category.cover:"~/Content/theme/images/empty.png")" alt="@category.name">
+                                        <p>@category.name</p>
+
+                                    </a>
+                                </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </section>
+
+            <section class="products">
+                <div class="container ">
+                    <div class="section-title">
+                        <h2>Çok Satanlar</h2>
+                    </div>
+
+
+                    <div class="product-slide">
+
+                        @foreach (var product in Model.order_item
+.GroupBy(x => x.product_id)
+.Select(g => new { Product = g.First().products, TotalSold = g.Sum(x => x.quantity) })
+.Where(x => x.Product.status == true).OrderByDescending(x => x.TotalSold)
+.Take(10))
+                        {
+                            <div class="card-parent">
+
+                                <article class="card">
+                                    <div class="card__img" onclick="window.location.href = '/Home/Product/@product.Product.id';">
+                                        @if (product.Product.cover != null)
+                                        {
+                                            <img src="@product.Product.cover" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/Content/theme/images/empty.png" alt="" />
+                                        }
+                                    </div>
+                                    <div class="card__name">
+                                        <p>@product.Product.name</p>
+                                    </div>
+                                    <div class="card__precis">
+                                        <a class="card__icon" onclick="AddCart(@product.Product.id)">
+                                            <i class="bi bi-basket-fill"></i>
+                                        </a>
+
+                                        <div>
+
+
+
+
+                                            <span class="card__preci card__preci--before">
+                                                <del>
+
+
+                                                    @if (product.Product.products_skus.FirstOrDefault(x => x.product_id == product.Product.id).old_price != null)
+                                                    {
+                                                        <span>₺</span>
+                                                        @product.Product.products_skus.FirstOrDefault(x => x.product_id == product.Product.id).old_price
+
+                                                    }
+                                                </del>
+                                            </span>
+                                            <span class="card__preci card__preci--now">&#8378;@product.Product.products_skus.FirstOrDefault(x => x.product_id == product.Product.id).price</span>
+                                        </div>
+
+                                        @{
+                                            // Mevcut protokol ve domaini al
+                                            string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                                            // Ürün yolunu dinamik olarak oluştur
+                                            string productPath = Url.Action("Product", "Home", new { id = product.Product.id });
+                                            // Domain ile yolu birleştir
+                                            string fullUrl = $"{domain}{productPath}";
+                                        }
+                                        <a class="shareBtn card__icon" link="@fullUrl">
+                                            <i class="bi bi-share-fill"></i>
+                                        </a>
+                                    </div>
+                                </article>
+
+
+                            </div>
+
+                        }
+
+                    </div>
+
+
+                </div>
+            </section>
+
+
+            <section class="middle-campaigns campaigns">
+                <div class="container " >
+
+                    <div class="row w-100">
+                        @foreach (var campaign in Model.campaigns.Where(x => x.is_active == true).OrderByDescending(x => x.id).Take(2))
+                        {
+
+
+                            <div class="campaigns-wrapper col-12 col-md-6">
+
+
+
+                                <div class="campaign-item " style="background-image:url(@campaign.campaign_cover)">
+                                    <h3 class="campaign-title">
+                                        @campaign.campaign_title
+                                    </h3>
+                                    <p class="campaign-desc">
+                                        @campaign.campaign_start_date.ToString("M") - @campaign.campaign_end_date.ToString("M")
+                                    </p>
+                                    <a href="/Home/CampaingDetails/@campaign.id" class="btn btn-red">
+                                        İNCELE<i class="bi bi-arrow-right"></i>
+                                    </a>
+                                </div>
+
+
+
+                            </div>
+
+                        }
+                    </div>
+                </div>
+            </section>
+
+
+
+
+            <section class="products">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>İndirimdekiler</h2>
+                    </div>
+
+
+                    <div class="product-slide">
+
+                        @foreach (var product in Model.products.Where(x => x.products_skus.FirstOrDefault().old_price != null && x.status == true).Take(10))
+                        {
+
+                            <div class="card-parent">
+
+                                <article class="card">
+                                    <div class="card__img" onclick="window.location.href = '/Home/Product/@product.id';">
+                                        @if (product.cover != null)
+                                        {
+                                            <img src="@product.cover" alt="" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/Content/theme/images/empty.png" alt="" />
+                                        }
+                                    </div>
+                                    <div class="card__name">
+                                        <p>@product.name</p>
+                                    </div>
+                                    <div class="card__precis">
+                                        <a class="card__icon" onclick="AddCart(@product.id)">
+                                            <i class="bi bi-basket-fill"></i>
+                                        </a>
+
+                                        <div>
+
+
+
+
+                                            <span class="card__preci card__preci--before">
+                                                <del>
+
+
+                                                    @if (product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price != null)
+                                                    {
+                                                        <span>₺</span>
+                                                        @product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price
+
+                                                    }
+                                                </del>
+                                            </span>
+                                            <span class="card__preci card__preci--now">&#8378;@product.products_skus.FirstOrDefault(x => x.product_id == product.id).price</span>
+                                        </div>
+
+                                        @{
+                                            // Mevcut protokol ve domaini al
+                                            string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                                            // Ürün yolunu dinamik olarak oluştur
+                                            string productPath = Url.Action("Product", "Home", new { id = product.id });
+                                            // Domain ile yolu birleştir
+                                            string fullUrl = $"{domain}{productPath}";
+                                        }
+                                        <a class="shareBtn card__icon" link="@fullUrl">
+                                            <i class="bi bi-share-fill"></i>
+                                        </a>
+                                    </div>
+                                </article>
+
+
+                            </div>
+                        }
+
+                    </div>
+
+
+                </div>
+            </section>
+
+
+
+
+          
+          
+                <div class="section-title">
+                    <h2>Kampanyalar</h2>
+                </div>
+                <section class="campaigns">
+                    <div class="container">
+
+                        <div class="row w-100 ">
+                            @foreach (var campaign in Model.campaigns.Where(x => x.is_active == true).OrderByDescending(x => x.id).Skip(2).Take(5))
                             {
 
 
-                                <div class="campaigns-wrapper ">
+                                <div class="campaigns-wrapper col-12 col-md-6 flex-grow-1">
 
 
-                                    @for (int c = 0; c < 2; c++)
-                                    {
-
-                                        if (sira >= Model.campaigns.Count())
-                                        {
-                                            break;
-                                        }
-                                        <div class="campaign-item " style="background-image:url(@list[sira].campaign_cover)">
-                                            <h3 class="campaign-title">
-                                                @list[sira].campaign_title
-                                            </h3>
-                                            <p class="campaign-desc">
-                                                @list[sira].campaign_start_date.ToString("M") - @list[sira].campaign_end_date.ToString("M")
-                                            </p>
-                                            <a href="/Home/CampaingDetails/@list[sira].id" class="btn btn-red">
-                                                İNCELE<i class="bi bi-arrow-right"></i>
-                                            </a>
-                                        </div>
-                                        sira++;
-                                    }
+                                    <div class="campaign-item " style="background-image:url(@campaign.campaign_cover)">
+                                        <h3 class="campaign-title">
+                                            @campaign.campaign_title
+                                        </h3>
+                                        <p class="campaign-desc">
+                                            @campaign.campaign_start_date.ToString("M") - @campaign.campaign_end_date.ToString("M")
+                                        </p>
+                                        <a href="/Home/CampaingDetails/@campaign.id" class="btn btn-red">
+                                            İNCELE<i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
 
 
                                 </div>
 
                             }
                         </div>
-                    </section>
-                }
 
-                    @*<section class="blogs blog-page">
-                <div class="container">
-                    <div class="section-title">
-                        <h2>Blog</h2>
-                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
                     </div>
-                    <ul class="blog-list">
-                        <li class="blog-item">
-                            <a href="#" class="blog-image">
-                                <img src="~/img/blogs/blog1.jpg" alt="" />
-                            </a>
-                            <div class="blog-info">
-                                <div class="blog-info-top">
-                                    <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                </div>
-                                <div class="blog-info-center">
-                                    <a href="#">Lorem ipsum dolor sit.</a>
-                                </div>
-                                <div class="blog-info-bottom">
-                                    <a href="#">Read More</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="blog-item">
-                            <a href="#" class="blog-image">
-                                <img src="~/img/blogs/blog1.jpg" alt="" />
-                            </a>
-                            <div class="blog-info">
-                                <div class="blog-info-top">
-                                    <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                </div>
-                                <div class="blog-info-center">
-                                    <a href="#">Lorem ipsum dolor sit.</a>
-                                </div>
-                                <div class="blog-info-bottom">
-                                    <a href="#">Read More</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="blog-item">
-                            <a href="#" class="blog-image">
-                                <img src="~/img/blogs/blog1.jpg" alt="" />
-                            </a>
-                            <div class="blog-info">
-                                <div class="blog-info-top">
-                                    <span>25 Feb,2024</span>-<span>0 Comment</span>
-                                </div>
-                                <div class="blog-info-center">
-                                    <a href="#">Lorem ipsum dolor sit.</a>
-                                </div>
-                                <div class="blog-info-bottom">
-                                    <a href="#">Read More</a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+</section>
+           
+            @*<section class="blogs blog-page">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Blog</h2>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
                 </div>
-            </section>*@
+                <ul class="blog-list">
+                    <li class="blog-item">
+                        <a href="#" class="blog-image">
+                            <img src="~/img/blogs/blog1.jpg" alt="" />
+                        </a>
+                        <div class="blog-info">
+                            <div class="blog-info-top">
+                                <span>25 Feb,2024</span>-<span>0 Comment</span>
+                            </div>
+                            <div class="blog-info-center">
+                                <a href="#">Lorem ipsum dolor sit.</a>
+                            </div>
+                            <div class="blog-info-bottom">
+                                <a href="#">Read More</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="blog-item">
+                        <a href="#" class="blog-image">
+                            <img src="~/img/blogs/blog1.jpg" alt="" />
+                        </a>
+                        <div class="blog-info">
+                            <div class="blog-info-top">
+                                <span>25 Feb,2024</span>-<span>0 Comment</span>
+                            </div>
+                            <div class="blog-info-center">
+                                <a href="#">Lorem ipsum dolor sit.</a>
+                            </div>
+                            <div class="blog-info-bottom">
+                                <a href="#">Read More</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="blog-item">
+                        <a href="#" class="blog-image">
+                            <img src="~/img/blogs/blog1.jpg" alt="" />
+                        </a>
+                        <div class="blog-info">
+                            <div class="blog-info-top">
+                                <span>25 Feb,2024</span>-<span>0 Comment</span>
+                            </div>
+                            <div class="blog-info-center">
+                                <a href="#">Lorem ipsum dolor sit.</a>
+                            </div>
+                            <div class="blog-info-bottom">
+                                <a href="#">Read More</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>*@
             <section class="campaing-single" style="background-image:url(@(company.homepage_bottom_img != null ? company.homepage_bottom_img : "/img/single-campaign.png"))">
                 <div class="container">
                     <div class="campaing-wrapper">
@@ -418,8 +395,8 @@
                     </div>
                 </div>
             </section>
-                </div>
         </div>
+
     </div>
 
 
@@ -463,20 +440,30 @@
         </script>*@
     <script src="~/Scripts/jquery-3.7.1.js"></script>
 
-    <link href="~/Content/css/slick.css" rel="stylesheet" />
+    @*<link href="~/Content/css/slick.css" rel="stylesheet" />
 
     <link href="~/Content/css/slick-theme.css" rel="stylesheet" />
-    <script src="~/Content/scripts/slick.js"></script>
+    <script src="~/Content/scripts/slick.js"></script>*@
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.css" integrity="sha512-wR4oNhLBHf7smjy0K4oqzdWumd+r5/+6QO/vDda76MW5iug4PT7v86FoEkySIJft3XA0Ae6axhIvHrqwm793Nw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick-theme.min.css" integrity="sha512-17EgCFERpgZKcm0j0fEq1YCJuyAWdz9KUtv1EjVuaOz8pDnh/0nZxmU6BBXwaaxqoi9PQXnRWqlcDB027hgv9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.js" integrity="sha512-HGOnQO9+SP1V92SrtZfjqxxtLmVzqZpjFFekvzZVWoiASSQgSr4cw9Kqd2+l8Llp4Gm0G8GIFJ4ddwZilcdb8A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
 
-        $('.slick-list').slick({
-            slidesToShow: 3,
+        $('.product-slide').slick({
+            slidesToShow: 4,
             slidesToScroll: 1,
-            autoplay: true,
+            autoplay: false,
             autoplaySpeed: 2000,
+            dots: true,
+            arrows: true,
+            prevArrow: `<span class="slick-prev"></span>`,
+            nextArrow: `<span class="slick-next"></span>`,
             responsive: [
                 {
-                    breakpoint: 1024,
+                    breakpoint: 1124,
                     settings: {
                         slidesToShow: 3,
                         slidesToScroll: 1,
@@ -485,24 +472,71 @@
                     }
                 },
                 {
-                    breakpoint: 600,
+                    breakpoint: 850,
                     settings: {
                         slidesToShow: 2,
                         slidesToScroll: 1
                     }
                 },
                 {
-                    breakpoint: 480,
+                    breakpoint: 560,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 370,
                     settings: {
                         slidesToShow: 1,
                         slidesToScroll: 1
                     }
                 }
-            ],
-            nextArrow: '.glide__arrow--right',
-            prevArrow: '.glide__arrow--left'
+            ]
         });
 
+
+
+        $('.icon-container').slick({
+            dots: true,
+            infinite: false,
+            arrows: true,
+            slidesToShow: 9,
+            slidesToScroll: 2,
+            responsive: [
+                {
+                    breakpoint: 1024,
+                    settings: {
+                        slidesToShow: 7,
+                        slidesToScroll: 3,
+                        infinite: true,
+                        dots: true
+                    }
+                },
+                {
+                    breakpoint: 845,
+                    settings: {
+                        slidesToShow: 5,
+                        slidesToScroll: 2
+                    }
+                },
+                {
+                    breakpoint: 600,
+                    settings: {
+                        slidesToShow: 3,
+                        slidesToScroll: 2
+                    }
+                },
+                {
+                    breakpoint: 380,
+                    settings: {
+                        slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                }
+
+            ]
+        });
 
 
         function AddCart(id) {
@@ -515,7 +549,14 @@
                 success: function (response) {
 
                     if (response.success) {
-                        toastr.success(response.message);
+                        toastr.success(
+                            `
+                                         <div class="inline-elements" style="display:flex;align-items:center;">
+                                             <span>`+ response.message + `</span>
+                                             <a href="/Home/Cart" class="success-btn">Sepete Git</a>
+                                         </div>
+                                         `
+                        );
                         $('#cartItemsList').html(response.cartItemsHtml);
                         var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
                         $(".header-cart-count").text(cartCount);

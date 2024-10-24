@@ -9,143 +9,164 @@
 <link href="~/Content/css/components/single-product/product-gallery.css" rel="stylesheet" />
 <link href="~/Content/css/components/single-product/product-info.css" rel="stylesheet" />
 <link href="~/Content/css/components/single-product/product-tabs.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css" integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
+<style>
+    .product-gallery{
+        width:500px;
+        height:400px;
+    }
+
+    .product-gallery img {
+        width: 500px;
+        height: 400px;
+        object-fit:contain;
+    }
+</style>
 
 <section class="single-product">
     <div class="container">
         <div class="single-product-wrapper">
          
-            <div class="single-content">
-                <main class="site-main">
-                    <div class="slick-slider slick-initialized" dir="ltr" style="max-block-size:500px;max-width:500px">
-                        <button class="glide__arrow glide__arrow--left">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <div class="product-gallery">
-           
+            <div class="single-content ">
+                <main class="site-main ">
 
-                               
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-7 col-12 ">
+                                <div class="slick-slider slick-initialized" dir="ltr" style="max-block-size:500px;max-width:500px">
+                                    <button class="glide__arrow glide__arrow--left">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </button>
+                                    <div class="product-gallery">
 
-                            @foreach (var item in Model.products.FirstOrDefault().product_images)
-                            {
-                                <div>
-                                    <img src="@item.image_path" alt="" class="img-fluid">
+
+
+
+                                        @foreach (var item in Model.products.FirstOrDefault().product_images)
+                                        {
+                                            <div style="width:inherit;height:inherit;">
+                                                <img src="@item.image_path" alt="" class="img-fluid">
+                                            </div>
+                                        }
+
+
+                                    </div>
+                                    <button class="glide__arrow glide__arrow--right">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </button>
                                 </div>
+
+
+                            </div>
+                            <div class="col-md-5 col-12 align-content-center">
+                                <div class="product-info">
+                                    <h1 class="product-title">
+                                        @Model.products.FirstOrDefault().name
+                                    </h1>
+                                    @*<div class="product-review">
+                                        <ul class="product-star">
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-fill"></i></li>
+                                            <li><i class="bi bi-star-half"></i></li>
+                                        </ul>
+                                        <span>2 reviews</span>
+                                    </div>*@
+                                    <div class="product-price">
+                                        <strong>&#8378;@Model.products.FirstOrDefault().products_skus.FirstOrDefault().price</strong>
+
+                                    </div>
+                                    <p class="product-description">
+                                        @Model.products.FirstOrDefault().description
+                                    </p>
+                                    <form class="variations-form">
+                                        <div class="variations">
+                                            @*<div class="colors">
+                        <div class="colors-label">
+                            <span>Color</span>
+                        </div>
+                        <div class="colors-wrapper">
+                            <div class="color-wrapper">
+                                <label class="blue-color">
+                                    <input type="radio" name="product-color">
+                                </label>
+                            </div>
+                            <div class="color-wrapper">
+                                <label class="red-color">
+                                    <input type="radio" name="product-color">
+                                </label>
+                            </div>
+                            <div class="color-wrapper active">
+                                <label class="green-color">
+                                    <input type="radio" name="product-color">
+                                </label>
+                            </div>
+                            <div class="color-wrapper">
+                                <label class="purple-color">
+                                    <input type="radio" name="product-color">
+                                </label>
+                            </div>
+
+                            @foreach (var item in Model.product_attributes.Where(x=>x.type=="color"))
+                            {
+                                <label>@item.value</label>
                             }
 
-
                         </div>
-                        <button class="glide__arrow glide__arrow--right">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
                     </div>
-                    <div class="product-info">
-                        <h1 class="product-title">
-                            @Model.products.FirstOrDefault().name
-                        </h1>
-                        <div class="product-review">
-                            <ul class="product-star">
-                                <li><i class="bi bi-star-fill"></i></li>
-                                <li><i class="bi bi-star-fill"></i></li>
-                                <li><i class="bi bi-star-fill"></i></li>
-                                <li><i class="bi bi-star-fill"></i></li>
-                                <li><i class="bi bi-star-half"></i></li>
-                            </ul>
-                            <span>2 reviews</span>
+                    <div class="values">
+                        <div class="values-label">
+                            <span>Size</span>
                         </div>
-                        <div class="product-price">
-                            <strong>&#8378;@Model.products.FirstOrDefault().products_skus.FirstOrDefault().price</strong>
-
+                        <div class="values-list">
+                            <span class="active">XS</span>
+                            <span>S</span>
+                            <span>M</span>
+                            <span>L</span>
+                            <span>XL</span>
                         </div>
-                        <p class="product-description">
-                            @Model.products.FirstOrDefault().description
-                        </p>
-                        <form class="variations-form">
-                            <div class="variations">
-                                @*<div class="colors">
-                                <div class="colors-label">
-                                    <span>Color</span>
-                                </div>
-                                <div class="colors-wrapper">
-                                    <div class="color-wrapper">
-                                        <label class="blue-color">
-                                            <input type="radio" name="product-color">
-                                        </label>
-                                    </div>
-                                    <div class="color-wrapper">
-                                        <label class="red-color">
-                                            <input type="radio" name="product-color">
-                                        </label>
-                                    </div>
-                                    <div class="color-wrapper active">
-                                        <label class="green-color">
-                                            <input type="radio" name="product-color">
-                                        </label>
-                                    </div>
-                                    <div class="color-wrapper">
-                                        <label class="purple-color">
-                                            <input type="radio" name="product-color">
-                                        </label>
-                                    </div>
+                    </div>*@
+                                            <div class="cart-button">
+                                                <input type="number" value="1" min="1">
+                                                <a class="btn btn-lg btn-primary" onclick="AddCart(@Model.products.FirstOrDefault().id)">Sepete Ekle</a>
+                                            </div>
+                                            <div class="product-extra-buttons">
 
-                                    @foreach (var item in Model.product_attributes.Where(x=>x.type=="color"))
-                                    {
-                                        <label>@item.value</label>
-                                    }
-
-                                </div>
-                            </div>
-                            <div class="values">
-                                <div class="values-label">
-                                    <span>Size</span>
-                                </div>
-                                <div class="values-list">
-                                    <span class="active">XS</span>
-                                    <span>S</span>
-                                    <span>M</span>
-                                    <span>L</span>
-                                    <span>XL</span>
-                                </div>
-                            </div>*@
-                                <div class="cart-button">
-                                    <input type="number" value="1" min="1">
-                                    <a class="btn btn-lg btn-primary" onclick="AddCart(@Model.products.FirstOrDefault().id)">Sepete Ekle</a>
-                                </div>
-                                <div class="product-extra-buttons">
-                   
-                                    @{
-                                        // Mevcut protokol ve domaini al
-                                        string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
-                                        // Ürün yolunu dinamik olarak oluştur
-                                        string productPath = Url.Action("Product", "Home", new { id = Model.products.FirstOrDefault().id });
-                                        // Domain ile yolu birleştir
-                                        string fullUrl = $"{domain}{productPath}";
-                                    }
-                                    <a class="shareBtn" link="@fullUrl">
-                                        <i class="bi bi-share"></i>
-                                        <span>Bu ürünü paylaş</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
-                        <div class="divider"></div>
-                        <div class="product-meta">
-                            <div class="product-sku">
-                                <span>SKU:</span>
-                                <strong>@Model.products.FirstOrDefault().products_skus.FirstOrDefault().sku</strong>
+                                                @{
+                                                    // Mevcut protokol ve domaini al
+                                                    string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+                                                    // Ürün yolunu dinamik olarak oluştur
+                                                    string productPath = Url.Action("Product", "Home", new { id = Model.products.FirstOrDefault().id });
+                                                    // Domain ile yolu birleştir
+                                                    string fullUrl = $"{domain}{productPath}";
+                                                }
+                                                <a class="shareBtn" link="@fullUrl">
+                                                    <i class="bi bi-share"></i>
+                                                    <span>Bu ürünü paylaş</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="divider"></div>
+                                    <div class="product-meta">
+                                        <div class="product-sku">
+                                            <span>SKU:</span>
+                                            <strong>@Model.products.FirstOrDefault().products_skus.FirstOrDefault().sku</strong>
 
 
-                            </div>
-                            <div class="product-categories">
-                                <span>Categories:</span>
+                                        </div>
+                                        <div class="product-categories">
+                                            <span>Kategori:</span>
 
-                                @if (Model.products.FirstOrDefault().subcategory_id != null)
-                                {
+                                            @if (Model.products.FirstOrDefault().subcategory_id != null)
+                                            {
 
-                                    <strong>
+                                                <strong>
 
-                                        @(
+                                                    @(
                                         Model.products.FirstOrDefault() != null &&
                                         Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id) != null &&
                                         Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).parent_id) != null
@@ -155,41 +176,49 @@
 
 
 
-                                    </strong>
-                                    <strong>
+                                                </strong>
+                                                <strong>
 
-                                        / @Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).name
-
-
-
-                                    </strong>
-                                    if (Model.products.FirstOrDefault().sub_subcategory_id != null)
-                                    {
-                                        <strong>
-
-                                            / @Model.sub_subcategories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().sub_subcategory_id).name
+                                                    / @Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).name
 
 
 
-                                        </strong>
-                                    }
+                                                </strong>
+                                                if (Model.products.FirstOrDefault().sub_subcategory_id != null)
+                                                {
+                                                    <strong>
+
+                                                        / @Model.sub_subcategories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().sub_subcategory_id).name
+
+
+
+                                                    </strong>
+                                                }
 
 
 
 
-                                }
+                                            }
 
+
+
+                                        </div>
+                                        @*<div class="product-tags">
+                    <span>Tags:</span>
+                    <a href="#">black</a>
+                    ,
+                    <a href="#">white</a>
+                </div>*@
+                                    </div>
+                                </div>
 
 
                             </div>
-                            @*<div class="product-tags">
-                                <span>Tags:</span>
-                                <a href="#">black</a>
-                                ,
-                                <a href="#">white</a>
-                            </div>*@
+
+
                         </div>
                     </div>
+
                 </main>
             </div>
             <style>
@@ -212,9 +241,9 @@
                         <a href="#" class="tab-button active" data-tab="descriptions">Açıklama</a>
                     </li>
                    
-                    <li>
+                    @*<li>
                         <a href="#" class="tab-button" data-tab="reviews">Reviews</a>
-                    </li>
+                    </li>*@
                 </ul>
                 <div class="tab-panel">
                     <div id="descriptions" class="tab-content active">
@@ -224,7 +253,7 @@
                      
                     </div>
                    
-                    <div id="reviews" class="tab-content">
+                    @*<div id="reviews" class="tab-content">
                         <h2>Add a review</h2>
                         <form class="comment-form">
                             <p class="comment-notes">
@@ -298,7 +327,7 @@
                                 <input type="submit" class="btn submit">
                             </div>
                         </form>
-                    </div>
+                    </div>*@
                     <!-- comment form end -->
                 
                 </div>
@@ -315,7 +344,6 @@
        
         autoplay: false,
         autoplaySpeed: 2000,
-
         nextArrow: '.glide__arrow--right',
         prevArrow: '.glide__arrow--left',
         
@@ -354,7 +382,15 @@
             success: function (response) {
 
                 if (response.success) {
-                    toastr.success(response.message);
+                    toastr.success(
+
+                        `
+                         <div class="inline-elements" style="display:flex;align-items:center;">
+                             <span>`+ response.message + `</span>
+                             <a href="/Home/Cart" class="success-btn">Sepete Git</a>
+                         </div>
+                         `
+                    );
                     $('#cartItemsList').html(response.cartItemsHtml);
                     var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
                     $(".header-cart-count").text(cartCount);

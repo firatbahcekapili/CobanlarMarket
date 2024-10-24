@@ -1,0 +1,101 @@
+﻿
+
+@media screen and (max-width: 1118px) {
+    .nav {
+        display: block !important;
+    }
+}
+
+#phone {
+    border-color: goldenrod;
+}
+
+    #phone.error {
+        border-color: red;
+    }
+
+    #phone.valid {
+        border-color: green;
+    }
+
+
+#error-msg {
+    color: red;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+
+#valid-msg {
+    color: green;
+    margin-top: 5px;
+    font-size: 14px;
+    display: none;
+}
+
+#editphone {
+    border-color: goldenrod;
+}
+
+    #editphone.error {
+        border-color: red;
+    }
+
+    #editphone.valid {
+        border-color: green;
+    }
+
+
+#edit-error-msg {
+    color: red;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+
+#edit-valid-msg {
+    color: green;
+    margin-top: 5px;
+    font-size: 14px;
+    display: none;
+}
+
+
+.hide {
+    display: none;
+}
+
+
+.show {
+    display: block;
+}
+
+
+#btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+    #btn:hover {
+        background-color: #0056b3;
+    }
+
+.offcanvas-backdrop {
+    opacity: 0.6 !important;
+}
+
+    .offcanvas-backdrop.show {
+        opacity: 0.6 !important;
+    }
+
+.address-card {
+    max-width: 200px;
+    max-height: 200px;
+    overflow: auto;
+}
