@@ -34,11 +34,11 @@ p {
   margin: 0;
 }
 
-.container {
+/*.container {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-}
+}*/
 
 .logo {
   font-size: 24px;
@@ -117,7 +117,7 @@ input[type="number"]::-webkit-inner-spin-button {
 /*! base end  */
 
 /* base responsive  */
-
+/*
 @media (max-width: 1200px) {
   .container {
     max-width: 992px;
@@ -147,3 +147,4 @@ input[type="number"]::-webkit-inner-spin-button {
     max-width: 350px;
   }
 }
+*/

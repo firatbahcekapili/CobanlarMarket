@@ -18,7 +18,7 @@
 <body cz-shortcut-listen="true">
     <div id="root">
         <div>
-            <div class="main-layout">
+            <div class="main-layout d-flex justify-content-center">
 
 
 
@@ -126,8 +126,8 @@
                                                         @foreach (var cartItem in Model.carts.Where(x => x.user_id == user.id).FirstOrDefault().cart_item)
                                                         {
                                                             <tr class="cart-item" id="@cartItem.id">
-                                                              
-                                                                <td class="cart-image d-flex align-items-center" >
+
+                                                                <td class="cart-image d-flex align-items-center">
                                                                     <i class="bi bi-x delete-cart" onclick="removeItemInCart(@cartItem.id)"></i>
                                                                     <img src="@cartItem.products.cover" alt="">
                                                                 </td>
@@ -280,10 +280,221 @@
                                 </div>
                             </section>
 
+
+
+
+
+                            <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+                                <div class="offcanvas-header">
+                                    <button type="button" class="btn-close m-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                </div>
+                                <div class="offcanvas-body">
+                                    <div class="row mb-2">
+                                        <div class="col-6  d-flex align-items-center">
+                                            <h3>Adreslerim</h3>
+                                        </div>
+                                        <div class="col-6 d-flex justify-content-end ">
+
+
+
+                                            <a href="#Adres" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#addAddress" aria-controls="addAddress">
+                                                Yeni Adres
+                                            </a>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row " id="address-cards">
+
+                                     
+                                            @foreach (var itemm in Model.addresses.Where(x => x.user_id == user.id))
+                                            {
+                                                <div class="col-12 ">
+                                                    <div class="card mb-2">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">@itemm.title</h5>
+                                                            <h6 class="card-subtitle mb-2 text-body-secondary">@itemm.name @itemm.surname</h6>
+                                                            <p class="card-text">@itemm.address.</p>
+                                                            <a href="#Adres" class="card-link editbtn" data-bs-toggle="offcanvas" data-bs-target="#editAddress" aria-controls="editAddress" aId="@itemm.id">Düzenle</a>
+                                                            <a onclick="RemoveAddress(@itemm.id)" class="card-link">Sil</a>
+                                                            <a onclick="SelectAddress(@itemm.id)" class="card-link">Seç</a>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            }
+                                        
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <style>
+                                .form-group {
+                                    margin-bottom: 20px;
+                                }
+                            </style>
+
+                            <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="addAddress" aria-labelledby="addAddressLabel">
+                                <div class="offcanvas-header">
+                                    <a href="#Adres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+
+                                    </a>
+                                </div>
+                                <div class="offcanvas-body">
+                                    <div class="row">
+                                        @{
+                                            var u = Session["User"] as CobanlarMarket.Models.users;
+                                            var a = new CobanlarMarket.Models.addresses();
+                                        }
+
+                                        <form id="AddressForm">
+                                            <div class="form-row row">
+                                                <div class="form-label text-primary">
+                                                    Teslim alacak kişinin bilgileri
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="name">Ad *</label>
+                                                    @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
+                                                    @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "name" } })
+                                                    @Html.ValidationMessageFor(model => u.first_name, "")
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="surname">Soyad*</label>
+                                                    @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
+                                                    @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "surname" } })
+                                                    @Html.ValidationMessageFor(model => u.last_name, "")
+
+                                                </div>
+
+                                                <div class="form-group col-12">
+                                                    <label for="tel">Telefon Numarası *</label>
+                                                    @Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { name = "tel", @class = "form-control", id = "phone" } })
+                                                    @Html.ValidationMessageFor(model => u.phone_number, "") <br />
+                                                    <span id="valid-msg" class="hide">✓</span>
+                                                    <span id="error-msg" class="hide"></span>
+                                                    @*<input type="tel" class="form-control" id="tel" />*@
+                                                    @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
+                                                    @Html.ValidationMessageFor(model => u.phone_number, "")
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="title">Adres Başlığı</label>
+                                                    @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "title" } })
+                                                    @Html.ValidationMessageFor(model => a.title, "")
+                                                </div>
+                                                <div class="form-row row">
+                                                    <div class="form-group col-md-6">
+                                                        <label>İl</label>
+                                                        <select class="form-control" disabled>
+                                                            <option value="Trabzon">Trabzon</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label>İlçe</label>
+                                                        <select class="form-control" disabled>
+                                                            <option value="Maçka">Maçka</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12 ">
+                                                    <label for="address"></label>
+                                                    @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "addres", rows = "4" })
+                                                    @Html.ValidationMessageFor(model => a.address, "")
+                                                </div>
+                                                <div class="form-group">
+                                                    <a href="#" id="submitbtn" class="btn btn-primary">Adresi Kaydet</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="offcanvas offcanvas-end" data-bs-scroll="false   " tabindex="-1" id="editAddress" aria-labelledby="editAddressLabel">
+                                <div class="offcanvas-header">
+                                    <a href="#editAdres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+
+                                    </a>
+                                </div>
+                                <div class="offcanvas-body">
+                                    <div class="row">
+                                        @{
+
+                                        }
+
+                                        <form id="editAddressForm">
+
+                                            <div class="form-row row">
+                                                <div class="form-label text-primary">
+                                                    Teslim alacak kişinin bilgileri
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="name">Ad *</label>
+                                                    @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
+                                                    @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "editname" } })
+                                                    @Html.ValidationMessageFor(model => u.first_name, "")
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <label for="surname">Soyad*</label>
+                                                    @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
+                                                    @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "editsurname" } })
+                                                    @Html.ValidationMessageFor(model => u.last_name, "")
+
+                                                </div>
+
+                                                <div class="form-group col-12">
+                                                    <label for="tel">Telefon Numarası *</label>
+                                                    <input class="form-control shadow-none" id="editphone" type="tel"><br />
+                                                    <span id="edit-valid-msg" class="hide">✓</span>
+                                                    <span id="edit-error-msg" class="hide"></span>
+                                                    @*<input type="tel" class="form-control" id="tel" />*@
+                                                    @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
+                                                    @Html.ValidationMessageFor(model => u.phone_number, "")
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="title">Adres Başlığı</label>
+                                                    @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "edittitle" } })
+                                                    @Html.ValidationMessageFor(model => a.title, "")
+                                                </div>
+                                                <div class="form-row row">
+                                                    <div class="form-group col-md-6">
+                                                        <label>İl</label>
+                                                        <select class="form-control" disabled>
+                                                            <option value="Trabzon">Trabzon</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group col-md-6">
+                                                        <label>İlçe</label>
+                                                        <select class="form-control" disabled>
+                                                            <option value="Maçka">Maçka</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12 ">
+                                                    <label for="address"></label>
+                                                    @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "editaddres", rows = "4" })
+                                                    @Html.ValidationMessageFor(model => a.address, "")
+                                                </div>
+                                                <div class="form-group">
+                                                    <a href="#" id="editsubmitbtn" class="btn btn-primary">Adresi Kaydet</a>
+                                                </div>
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
                         }
                         else
                         {
-                            <div class="container row mt-3 mb-3 ">
+                            <div class="container row mt-5 mb-5 ">
                                 <div class="col-12 d-flex justify-content-center">
                                     <h1 class="text-center">Sepetinde ürün bulunmamaktadır</h1>
 
@@ -302,7 +513,7 @@
                     {
 
 
-                        <div class="container row mt-3 mb-3 ">
+                        <div class="container row mt-5 mb-5 ">
                             <div class="col-12 d-flex justify-content-center">
                                 <h1 class="text-center">Sepeti kullanabilmek için giriş yapmalısınız</h1>
 
@@ -322,217 +533,7 @@
             </div>
         </div>
     </div>
-    <script type="module" src="/src/main.jsx"></script>
 
-
-
-    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-        <div class="offcanvas-header">
-            <button type="button" class="btn-close m-0" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div class="row mb-2">
-                <div class="col-6  d-flex align-items-center">
-                    <h3>Adreslerim</h3>
-                </div>
-                <div class="col-6 d-flex justify-content-end ">
-
-
-
-                    <a href="#Adres" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#addAddress" aria-controls="addAddress">
-                        Yeni Adres
-                    </a>
-                </div>
-            </div>
-
-
-            <div class="row " id="address-cards">
-
-                @if (Session["User"] != null)
-                {
-                    var user = Session["User"] as CobanlarMarket.Models.users;
-                    foreach (var item in Model.addresses.Where(x => x.user_id == user.id))
-                    {
-                        <div class="col-12 ">
-                            <div class="card mb-2">
-                                <div class="card-body">
-                                    <h5 class="card-title">@item.title</h5>
-                                    <h6 class="card-subtitle mb-2 text-body-secondary">@item.name @item.surname</h6>
-                                    <p class="card-text">@item.address.</p>
-                                    <a href="#Adres" class="card-link editbtn" data-bs-toggle="offcanvas" data-bs-target="#editAddress" aria-controls="editAddress" aId="@item.id">Düzenle</a>
-                                    <a onclick="RemoveAddress(@item.id)" class="card-link">Sil</a>
-                                    <a onclick="SelectAddress(@item.id)" class="card-link">Seç</a>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    }
-                }
-
-            </div>
-
-        </div>
-    </div>
-
-    <style>
-        .form-group {
-            margin-bottom: 20px;
-        }
-    </style>
-
-    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="addAddress" aria-labelledby="addAddressLabel">
-        <div class="offcanvas-header">
-            <a href="#Adres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
-
-            </a>
-        </div>
-        <div class="offcanvas-body">
-            <div class="row">
-                @{
-                    var u = Session["User"] as CobanlarMarket.Models.users;
-                    var a = new CobanlarMarket.Models.addresses();
-                }
-
-                <form id="AddressForm">
-                    <div class="form-row row">
-                        <div class="form-label text-primary">
-                            Teslim alacak kişinin bilgileri
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="name">Ad *</label>
-                            @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
-                            @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "name" } })
-                            @Html.ValidationMessageFor(model => u.first_name, "")
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="surname">Soyad*</label>
-                            @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
-                            @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "surname" } })
-                            @Html.ValidationMessageFor(model => u.last_name, "")
-
-                        </div>
-
-                        <div class="form-group col-12">
-                            <label for="tel">Telefon Numarası *</label>
-                            @Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { name = "tel", @class = "form-control", id = "phone" } })
-                            @Html.ValidationMessageFor(model => u.phone_number, "") <br />
-                            <span id="valid-msg" class="hide">✓</span>
-                            <span id="error-msg" class="hide"></span>
-                            @*<input type="tel" class="form-control" id="tel" />*@
-                            @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
-                            @Html.ValidationMessageFor(model => u.phone_number, "")
-                        </div>
-                        <div class="form-group">
-                            <label for="title">Adres Başlığı</label>
-                            @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "title" } })
-                            @Html.ValidationMessageFor(model => a.title, "")
-                        </div>
-                        <div class="form-row row">
-                            <div class="form-group col-md-6">
-                                <label>İl</label>
-                                <select class="form-control" disabled>
-                                    <option value="Trabzon">Trabzon</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label>İlçe</label>
-                                <select class="form-control" disabled>
-                                    <option value="Maçka">Maçka</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-12 ">
-                            <label for="address"></label>
-                            @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "addres", rows = "4" })
-                            @Html.ValidationMessageFor(model => a.address, "")
-                        </div>
-                        <div class="form-group">
-                            <a href="#" id="submitbtn" class="btn btn-primary">Adresi Kaydet</a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="offcanvas offcanvas-end" data-bs-scroll="false   " tabindex="-1" id="editAddress" aria-labelledby="editAddressLabel">
-        <div class="offcanvas-header">
-            <a href="#editAdres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
-
-            </a>
-        </div>
-        <div class="offcanvas-body">
-            <div class="row">
-                @{
-
-                }
-
-                <form id="editAddressForm">
-
-                    <div class="form-row row">
-                        <div class="form-label text-primary">
-                            Teslim alacak kişinin bilgileri
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="name">Ad *</label>
-                            @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
-                            @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "editname" } })
-                            @Html.ValidationMessageFor(model => u.first_name, "")
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="surname">Soyad*</label>
-                            @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
-                            @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "editsurname" } })
-                            @Html.ValidationMessageFor(model => u.last_name, "")
-
-                        </div>
-
-                        <div class="form-group col-12">
-                            <label for="tel">Telefon Numarası *</label>
-                            <input class="form-control shadow-none" id="editphone" type="tel"><br />
-                            <span id="edit-valid-msg" class="hide">✓</span>
-                            <span id="edit-error-msg" class="hide"></span>
-                            @*<input type="tel" class="form-control" id="tel" />*@
-                            @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
-                            @Html.ValidationMessageFor(model => u.phone_number, "")
-                        </div>
-                        <div class="form-group">
-                            <label for="title">Adres Başlığı</label>
-                            @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "edittitle" } })
-                            @Html.ValidationMessageFor(model => a.title, "")
-                        </div>
-                        <div class="form-row row">
-                            <div class="form-group col-md-6">
-                                <label>İl</label>
-                                <select class="form-control" disabled>
-                                    <option value="Trabzon">Trabzon</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label>İlçe</label>
-                                <select class="form-control" disabled>
-                                    <option value="Maçka">Maçka</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-12 ">
-                            <label for="address"></label>
-                            @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "editaddres", rows = "4" })
-                            @Html.ValidationMessageFor(model => a.address, "")
-                        </div>
-                        <div class="form-group">
-                            <a href="#" id="editsubmitbtn" class="btn btn-primary">Adresi Kaydet</a>
-                        </div>
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-    </div>
 
 </body>
 <script src="~/Scripts/jquery-3.7.1.js"></script>
@@ -924,9 +925,20 @@
                     type: 'POST',
                     data: { AddressId: addressid },
                     success: function (result) {
-                        console.log(result.message);
-                        toastr.success(result.message);
-                        window.location = "/Home/Payment";
+
+                        if (result.success) {
+                            toastr.success(result.message);
+                            window.location = "/Home/Payment";
+                        } else {
+                            toastr.error(result.message);
+
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+
+                        }
+
+                      
                     }
                 });
             } else {

@@ -1,0 +1,158 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ff6f61, #ffb347);
+    color: #333;
+}
+
+.error-container {
+    text-align: center;
+    max-width: 600px;
+    padding: 40px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .error-container::before {
+        content: "404";
+        position: absolute;
+        top: -60px;
+        left: -60px;
+        font-size: 220px;
+        color: rgba(255, 112, 77, 0.1);
+        font-weight: bold;
+        z-index: 0;
+    }
+
+    .error-container h1 {
+        font-size: 48px;
+        color: #ff6f61;
+        margin-bottom: 10px;
+        z-index: 1;
+    }
+
+    .error-container p {
+        font-size: 18px;
+        color: #555;
+        margin-bottom: 30px;
+        z-index: 1;
+        position: relative;
+    }
+
+    .error-container img {
+        max-width: 80px;
+        margin: 15px;
+        opacity: 0.9;
+        animation: float 2s ease-in-out infinite;
+        z-index: 1;
+    }
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.btn-home {
+    display: inline-block;
+    text-decoration: none;
+    color: #fff;
+    background-color: #ff6f61;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1;
+}
+
+    .btn-home:hover {
+        background-color: #ff8567;
+        transform: scale(1.05);
+    }
+
+.icons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    position: relative;
+}
+
+.error-container .bg-circle {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #ffb347;
+    top: 60%;
+    left: 70%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    opacity: 0.3;
+    animation: pulse 6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 480px) {
+    .error-container {
+        padding: 20px;
+    }
+
+        .error-container h1 {
+            font-size: 36px;
+        }
+
+        .error-container p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .error-container img {
+            max-width: 60px;
+        }
+
+    .btn-home {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .error-container::before {
+        font-size: 150px;
+        top: -40px;
+        left: -40px;
+    }
+
+    .error-container .bg-circle {
+        width: 100px;
+        height: 100px;
+        top: 70%;
+        left: 60%;
+    }
+}

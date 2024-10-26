@@ -37,7 +37,7 @@ a {
 
 /*=============== REUSABLE CSS CLASSES ===============*/
 .container {
-  max-width: 1120px;
+  max-width: 1320px;
   margin-inline: 1.5rem;
 }
 
@@ -111,7 +111,13 @@ a {
     font-weight: var(--font-semi-bold);
 }
 /* Navigation for mobile devices */
-@media screen and (max-width: 1118px) {
+@media screen and (max-width: 1320px) {
+    .nav__data{
+        width:auto !important;
+        margin-inline:1.5rem !important;
+        padding-right:0 !important;
+
+    }
     .nav__menu {
         position: absolute;
         left: 0;
@@ -270,7 +276,7 @@ a {
 }
 
 /* For large devices */
-@media screen and (min-width: 1118px) {
+@media screen and (min-width: 1328px) {
   .container {
     margin-inline: auto;
   }
@@ -350,5 +356,4 @@ a {
         width: 300px;
     }
 }
-
 

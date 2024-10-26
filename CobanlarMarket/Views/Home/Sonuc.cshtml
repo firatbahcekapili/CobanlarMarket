@@ -84,18 +84,6 @@
 </style>
 
 
-@*@if (ViewBag.PaymentStatus == "SUCCESS")
-{
-    <p>Ödemeniz başarıyla alınmıştır!</p>
-    <p>Toplam Ödenen Tutar: @ViewBag.PaidPrice</p>
-    <p>Ödeme ID: @ViewBag.PaymentId</p>
-    <p>Sepet ID: @ViewBag.BasketId</p>
-    <p>Taksit Sayısı: @ViewBag.Installment</p>
-}
-else
-{
-    <p>Ödeme sırasında bir hata oluştu. Lütfen tekrar deneyin.</p>
-}*@
 
 
 
@@ -238,79 +226,4 @@ else
 
 </div>
 
-
-
-@*<div class="col-5">
-    <div class="card p-5">
-
-
-        <div class=" border" style="border-radius:10px;">
-            <table class="table table-borderless" id="dtable">
-                <tr>
-                    <td><h3>Sipariş</h3></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-
-                </tr>
-
-                <tr class="thead-light">
-                    <th>Ürün</th>
-                    <th>SKU</th>
-                    <th>Adet</th>
-                    <th>Tutar</th>
-
-                </tr>
-
-
-                <tbody>
-                    @foreach (var item in Model.order_item)
-                    {
-                        <tr>
-                            <td>
-                                <img src="@item.products.cover" style="width:40px;" />
-                                @item.products.name
-                            </td>
-                            <td>@item.products.products_skus.FirstOrDefault().sku</td>
-                            <td>@item.quantity</td>
-                            <td>@(item.quantity * item.ordered_price)</td>
-
-                        </tr>
-                    }
-
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>Ara Toplam</td>
-                        <td>@Model.order_item.Sum(x => x.ordered_price * x.quantity)</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>Kargo Ücreti</td>
-                        <td>@Model.payment_details.FirstOrDefault().cargoPrice</td>
-                    </tr>
-
-                    @if (order.coupon_id.HasValue)
-                    {
-                        <tr>
-                            <td></td>
-                            <td>Kupon Kodu: <span class="badge badge-success"> @Model.coupons.FirstOrDefault(x => x.Id == order.coupon_id).Code</span></td>
-                            <td class="text-dark font-weight-bold">İndirim Tutarı</td>
-                            <td>-@Model.payment_details.FirstOrDefault().couponDiscountValue</td>
-                        </tr>
-                    }
-
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td class="text-dark font-weight-bold">Toplam</td>
-                        <td class="text-dark font-weight-bold">@Model.payment_details.FirstOrDefault().paidPrice</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-</div>*@
 

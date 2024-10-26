@@ -189,7 +189,7 @@ namespace CobanlarMarket.Controllers
 
             // Sadece campaignProductIds'e ait ürünler
             var products = db.products
-                             .Where(p => campaignProductIds.Contains(p.id) && p.status==true)
+                             .Where(p => campaignProductIds.Contains(p.id) && p.status == true)
                              .ToList();
 
             model.products = products;
@@ -369,12 +369,11 @@ namespace CobanlarMarket.Controllers
         }
 
 
-
         public ActionResult Product(int? Id)
         {
             if (Id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new HttpStatusCodeResult(HttpStatusCode.BadGateway);
             }
 
 
@@ -714,9 +713,9 @@ namespace CobanlarMarket.Controllers
             if (!username.Equals("") && !password.Equals(""))
             {
 
-                if (db.users.Where(x => x.username == username || x.email==username && x.password == password).Count() != 0)
+                if (db.users.Where(x => x.username == username || x.email == username && x.password == password).Count() != 0)
                 {
-                    var user = db.users.FirstOrDefault(x => x.username == username  || x.email==username && x.password == password);
+                    var user = db.users.FirstOrDefault(x => x.username == username || x.email == username && x.password == password);
                     Session["User"] = db.users.FirstOrDefault(x => x.username == username || x.email == username && x.password == password);
 
                     if (user.role == true)
@@ -814,14 +813,69 @@ namespace CobanlarMarket.Controllers
                 string htmlBody = @"
                     <html>
                     <head>
+                        <meta charset='utf-8' />
+                        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
                         <title>Çobanlar Market Kayıt Onay Kodunuz</title>
+                        <style>
+                            body {
+                                font-family: 'Arial', sans-serif;
+                                background-color: #f9f9f9;
+                                margin: 0;
+                                padding: 20px;
+                            }
+                            .container {
+                                max-width: 600px;
+                                margin: auto;
+                                background: #ffffff;
+                                padding: 20px;
+                                border-radius: 8px;
+                                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                            }
+                            h1 {
+                                color: #333;
+                                font-size: 24px;
+                                margin-bottom: 10px;
+                            }
+                            h3 {
+                                color: #4CAF50;
+                                font-size: 20px;
+                                margin-top: 20px;
+                            }
+                            p {
+                                font-size: 16px;
+                                line-height: 1.5;
+                                margin: 10px 0;
+                            }
+                            .footer {
+                                margin-top: 20px;
+                                font-size: 12px;
+                                color: #777;
+                                border-top: 1px solid #e0e0e0;
+                                padding-top: 10px;
+                            }
+                            .code {
+                                display: inline-block;
+                                font-size: 24px;
+                                color: #fff;
+                                background-color: #4CAF50;
+                                padding: 10px 15px;
+                                border-radius: 5px;
+                                margin-top: 15px;
+                            }
+                        </style>
                     </head>
                     <body>
-                        <h1>Merhaba " + Name + @"!</h1>
-                        <p>Kayıt olmak için onay kodunuz:<h3><strong>" + code + @"</strong></h3></p>
-                        
+                        <div class='container'>
+                            <h1>Merhaba " + Name + @"!</h1>
+                            <p>Kayıt olmak için onay kodunuz:</p>
+                            <h3 class='code'>" + code + @"</h3>
+                        </div>
+                        <div class='footer'>
+                            <p>Bu bir otomatik e-posta mesajıdır. Lütfen yanıt vermeyin.</p>
+                        </div>
                     </body>
                     </html>";
+
                 _emailService.SendEmail(Email, "Çobanlar Market Kayıt Onay Kodunuz", htmlBody);
                 Session["ConfirmationCode"] = code.ToString();
                 Session["NewName"] = Name.ToString();
@@ -905,6 +959,124 @@ namespace CobanlarMarket.Controllers
             Session["ConfirmationCode"] = null;
         }
 
+        [HttpPost]
+        public JsonResult ContactMail(String Name, String Email, String Subject, String Message)
+        {
+
+
+            var inputs = new[]
+           {
+                    Name,
+                    Email,
+                    Subject,
+                    Message
+                };
+
+            foreach (var input in inputs)
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    return Json(new { success = false, message = "Tüm alanlar zorunludur." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            bool isvalidemail = true;
+            try
+            {
+                MailAddress m = new MailAddress(Email);
+
+
+            }
+            catch (FormatException)
+            {
+                isvalidemail = false;
+            }
+            if (!isvalidemail)
+            {
+                return Json(new { success = false, message = "Geçersiz Email adresi" }, JsonRequestBehavior.AllowGet);
+
+            }
+
+            string htmlBody = @"
+                <html>
+                <head>
+                    <meta charset='utf-8' />
+                    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+                    <title>" + Subject + @"</title>
+                    <style>
+                        body {
+                            font-family: 'Arial', sans-serif;
+                            background-color: #f9f9f9;
+                            margin: 0;
+                            padding: 20px;
+                        }
+                        .container {
+                            max-width: 600px;
+                            margin: auto;
+                            background: #ffffff;
+                            padding: 20px;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                        }
+                        h1 {
+                            color: #333;
+                            font-size: 24px;
+                            margin-bottom: 10px;
+                            border-bottom: 2px solid #4CAF50;
+                            padding-bottom: 10px;
+                        }
+                        h3 {
+                            color: #4CAF50;
+                            font-size: 18px;
+                            margin-top: 20px;
+                        }
+                        p {
+                            font-size: 16px;
+                            line-height: 1.5;
+                            margin: 10px 0;
+                        }
+                        .footer {
+                            margin-top: 20px;
+                            font-size: 12px;
+                            color: #777;
+                            border-top: 1px solid #e0e0e0;
+                            padding-top: 10px;
+                        }
+                        .button {
+                            display: inline-block;
+                            padding: 10px 15px;
+                            font-size: 16px;
+                            color: #fff;
+                            background-color: #4CAF50;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            margin-top: 20px;
+                        }
+                        .button:hover {
+                            background-color: #45a049;
+                        }
+                    </style>
+                </head>
+                <body>
+                   
+                    <div class='container'>
+                        <h1>" + Subject + @"</h1>
+                        <p>" + Message + @"</p>
+                        <h3>Gönderen: " + Name + @"</h3>
+                        <h3>Gönderen Email: " + Email + @"</h3>
+                    </div>
+                    <div class='footer'>
+                        <p>Bu iletişim formundan gönderilmiş bir mesajdır.</p>
+                    </div>
+                </body>
+                </html>";
+
+
+            _emailService.ContactMail(Subject, htmlBody);
+            return Json(new { success = true, message = "Mesajınız iletilmiştir. Teşekkür Ederiz." }, JsonRequestBehavior.AllowGet);
+        }
+
+
         public ActionResult LogOut()
         {
             Session["User"] = null;
@@ -937,6 +1109,15 @@ namespace CobanlarMarket.Controllers
             if (cart == null)
             {
                 return Json(new { success = false, message = "Sepet bulunamadı" }, JsonRequestBehavior.AllowGet);
+            }
+
+            int id = int.Parse(AddressId);
+
+
+            var address = db.addresses.Find(id);
+            if (address == null)
+            {
+                return Json(new { success = false, message = "Adres bulunamadı." });
             }
 
 
@@ -1751,6 +1932,18 @@ namespace CobanlarMarket.Controllers
         [HttpPost]
         public async Task<ActionResult> Payment(String Price, String PaidPrice, String BasketId, users User, List<cart_item> cart_items, String AddressId)
         {
+
+
+            int id = int.Parse(AddressId);
+
+
+            var address = db.addresses.Find(id);
+            if (address == null)
+            {
+                return Json(new { success = false, message = "Adres bulunamadı." });
+            }
+            Session["AdressId"] = id.ToString();
+
             Options options = new Options();
             options.ApiKey = "sandbox-lfDKd5dEcP9SvjEbRdOaMGX5LOYVcYgO"; //Iyzico Tarafından Sağlanan Api Key
             options.SecretKey = "G4GKghvkujw7YYchDECfiW6MzhfTLhsq"; //Iyzico Tarafından Sağlanan Secret Key
@@ -1774,11 +1967,7 @@ namespace CobanlarMarket.Controllers
             enabledInstallments.Add(9);
             request.EnabledInstallments = enabledInstallments;
 
-            int id = int.Parse(AddressId);
-
-            Session["AdressId"] = id.ToString();
-
-            var address = db.addresses.Find(id);
+          
             string hostName = Dns.GetHostName();
             Console.WriteLine(hostName);
 
@@ -1859,7 +2048,8 @@ namespace CobanlarMarket.Controllers
 
             TempData["Iyzico"] = checkoutFormInitialize.CheckoutFormContent;
 
-            return View();
+            return Json(new { success = true, message = "Ödeme işlemine geçiliyor." });
+
         }
 
 
@@ -1988,7 +2178,7 @@ namespace CobanlarMarket.Controllers
                     };
 
 
-                   
+
 
 
                     db.payment_details.Add(pd);
@@ -1999,7 +2189,7 @@ namespace CobanlarMarket.Controllers
 
                     db.cart_item.RemoveRange(cartItems);
                     await db.SaveChangesAsync();
-                   
+
                     cart.coupon_id = null;
                     cart.discount_value = null;
                     cart.isCargoFree = false;

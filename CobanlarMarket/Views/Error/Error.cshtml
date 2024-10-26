@@ -1,0 +1,37 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hata</title>
+    <link href="~/Content/css/ErrorPages/404.css" rel="stylesheet" />
+
+
+</head>
+
+<body>
+    <style>
+        .error-container::before {
+            content: "Hata!" !important;
+           
+        }
+    </style>
+    <div class="error-container">
+        <div class="bg-circle"></div>
+        <h1>Bir Hata Oluştu</h1>
+        <p>Üzgünüz, beklenmedik bir hata oluştu. Ama sepetinizi doldurmak için ana sayfaya dönebilirsiniz!</p>
+        <div class="icons">
+            <img src="https://img.icons8.com/color/96/shopping-cart.png" alt="Market Sepeti">
+            <img src="https://img.icons8.com/color/96/orange.png" alt="Portakal">
+            <img src="https://img.icons8.com/color/96/bread.png" alt="Ekmek">
+            <img src="https://img.icons8.com/color/96/milk-bottle.png" alt="Süt Şişesi">
+        </div>
+        <a href="/Home/Index/" class="btn-home">Ana Sayfaya Dön</a>
+    </div>
+</body>
+</html>

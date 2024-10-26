@@ -4,29 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<link href="~/Content/css/pages/single-product.css" rel="stylesheet" />
-<link href="~/Content/css/main.css" rel="stylesheet" />
-<link href="~/Content/css/components/single-product/product-gallery.css" rel="stylesheet" />
-<link href="~/Content/css/components/single-product/product-info.css" rel="stylesheet" />
-<link href="~/Content/css/components/single-product/product-tabs.css" rel="stylesheet" />
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css" integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
-<style>
-    .product-gallery{
-        width:500px;
-        height:400px;
-    }
 
-    .product-gallery img {
-        width: 500px;
-        height: 400px;
-        object-fit:contain;
-    }
-</style>
-
-<section class="single-product">
-    <div class="container">
+<section class="single-product d-flex justify-content-center" >
+    <div class="container" style="margin:0 10px;">
         <div class="single-product-wrapper">
          
             <div class="single-content ">
@@ -34,8 +18,8 @@
 
                     <div class="container">
                         <div class="row">
-                            <div class="col-md-7 col-12 ">
-                                <div class="slick-slider slick-initialized" dir="ltr" style="max-block-size:500px;max-width:500px">
+                            <div class="col-lg-7 col-12  mb-3  mb-lg-0">
+                                <div class="slick-slider slick-initialized d-flex justify-content-center " dir="ltr" >
                                     <button class="glide__arrow glide__arrow--left">
                                         <i class="bi bi-chevron-left"></i>
                                     </button>
@@ -60,7 +44,7 @@
 
 
                             </div>
-                            <div class="col-md-5 col-12 align-content-center">
+                            <div class="col-lg-5 col-12 align-content-center justify-content-center">
                                 <div class="product-info">
                                     <h1 class="product-title">
                                         @Model.products.FirstOrDefault().name

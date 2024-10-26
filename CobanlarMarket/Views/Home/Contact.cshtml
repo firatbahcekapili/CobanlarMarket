@@ -4,7 +4,6 @@
 
 
 }
-<link href="~/Content/css/main.css" rel="stylesheet" />
 
 <body cz-shortcut-listen="true">
     <div id="root">
@@ -40,7 +39,7 @@
                     </div>
                     <div class="modal-overlay"></div>
                 </div>
-            
+
                 <section class="contact">
                     <div class="contact-top">
                         <div class="contact-map">
@@ -60,23 +59,41 @@
                                 </p>
                             </div>
                             <div class="contact-elements">
-                                <form class="contact-form">
-                                    <div class="">
-                                        <label>Your Name<span>*</span></label><input type="text" required="">
+                                @{
+                                    CobanlarMarket.Models.users u = new CobanlarMarket.Models.users();
+
+                                }
+                                <form class="contact-form" id="contact-form">
+                                    <div class="form-group col-md-6">
+                                        <label>
+                                            Ad <span class="required">*</span>
+                                        </label>
+                                        @Html.EditorFor(model => u.first_name, new { htmlAttributes = new { @class = "form-control", placeholder = "Ad", required = "required", id = "name" } })
+                                        @Html.ValidationMessageFor(model => u.first_name, "", new { @class = "text-danger" })
                                     </div>
-                                    <div class="">
-                                        <label>Your email<span>*</span></label><input type="text" required="">
+                                    <div class="form-group">
+
+                                        <label>Email <span class="required">*</span></label>
+
+                                        @Html.EditorFor(model => u.email, new { htmlAttributes = new { @class = "form-control", placeholder = "Email", type = "email", required = "required", id = "email" } })
+                                        @Html.ValidationMessageFor(model => u.email, "", new { @class = "text-danger" })
                                     </div>
-                                    <div class="">
-                                        <label>Subjeckt<span>*</span></label><input type="text" required="">
+                                    <div class="form-group">
+                                        <label>Başlık<span>*</span></label>
+                                        <input type="text" required name="subject" id="subject">
+                                        <span class="field-validation-valid text-danger" data-valmsg-for="subject" data-valmsg-replace="true"></span>
                                     </div>
-                                    <div class="">
-                                        <label>Your massage<span>*</span></label><textarea name="author"
-                                                                                           id="author" cols="30"></textarea>
-                                    </div><button class="btn btn-red">
-                                        Send
-                                        Message
-                                    </button>
+                                    <div class="form-group">
+                                        <label>Mesajınız<span>*</span></label>
+                                        <textarea name="message" id="message" rows="5"></textarea>
+                                        <span class="field-validation-valid text-danger" data-valmsg-for="message" data-valmsg-replace="true"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-red" type="submit" id="contactbtn">
+                                            Gönder
+                                        </button>
+                                    </div>
+
                                 </form>
                                 <div class="contact-info">
                                     <div class="contact-info-item">
@@ -100,11 +117,69 @@
                         </div>
                     </div>
                 </section>
-           
+
             </div>
         </div>
     </div>
-    <script type="module" src="/src/main.jsx"></script>
 
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#contact-form').submit(function (e) {
+                console.log("sadadadasd");
+                e.preventDefault();
+                var name = $('#name').val();
+                var email = $('#email').val();
+                var subject = $('#subject').val();
+                var message = $('#message').val();
+
+
+                var formData = new FormData();
+
+                formData.append('Name', name);
+                formData.append('Email', email);
+                formData.append('Subject', subject);
+                formData.append('Message', message);
+
+
+                if ($('#contact-form').valid()) {
+
+                    $.ajax({
+                        url: '/Home/ContactMail/',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (result) {
+                            if (result.success) {
+                                toastr.success(result.message);
+                                $('#contact-form').trigger("reset");
+                            } else {
+                                toastr.error(result.message);
+
+                            }
+
+                        },
+                        error: function (error) {
+                            console.error(error);
+                        }
+
+
+
+
+
+                    });
+                }
+
+
+
+            });
+        });
+
+
+    </script>
 
 </body>
+
+
