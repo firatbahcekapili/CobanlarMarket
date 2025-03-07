@@ -6,9 +6,9 @@ public class EmailService
 {
     public void SendEmail(string toEmail, string subject, string body)
     {
-        var fromAddress = new MailAddress("fratbhckpl@gmail.com", "Fırat");
+        var fromAddress = new MailAddress("", "Fırat");
         var toAddress = new MailAddress(toEmail);
-        string fromPassword = "jlcj mjix aqkw mryz";
+        string fromPassword = "";
 
         var smtp = new SmtpClient
         {
@@ -36,11 +36,11 @@ public class EmailService
 
     public void ContactMail(string subject, string body)
     {
-        var fromAddress = new MailAddress("fratbhckpl@gmail.com", "Fırat");
+        var fromAddress = new MailAddress("", "Fırat");
         //var toAddress = new MailAddress("usermessage@cobanlarmarket.com");
-        var toAddress = new MailAddress("bahcekapilifirat61@gmail.com");
+        var toAddress = new MailAddress("");
 
-        string fromPassword = "jlcj mjix aqkw mryz";
+        string fromPassword = "";
 
         var smtp = new SmtpClient
         {
