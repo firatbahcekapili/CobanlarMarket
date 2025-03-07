@@ -15,6 +15,9 @@
         max-height: 300px;
         overflow-y: auto;
     }
+    img {
+        object-fit: contain;
+    }
 
     .remove-img-btn {
         position: absolute;
@@ -35,78 +38,79 @@
 <div class=" mt-5 ml-5 mr-5">
     
 
-    <form id="campaignForm">
 
-        @{
-            CobanlarMarket.Models.campaigns c = new CobanlarMarket.Models.campaigns();
-        }
-        <div class="row justify-content-center">
+        <form id="campaignForm" action="/Management/AddCampaign" method="post">
+            @Html.AntiForgeryToken()
+            @{
+                CobanlarMarket.Models.campaigns c = new CobanlarMarket.Models.campaigns();
+            }
+            <div class="row justify-content-center">
 
-            <div class="col-12 bg-white p-5">
-                <div class="col-12 pt-4 pb-4 pl-0 " >
-                    <h3>Kampanya Ekle</h3>
+                <div class="col-12 bg-white p-5">
+                    <div class="col-12 pt-4 pb-4 pl-0 ">
+                        <h3>Kampanya Ekle</h3>
 
-                </div>
-                <div class="form-group">
-                    <label>Resim Yükle *</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Resim Yükle *</label>
 
-                    <div class="form-group img-parent">
-                        <div class="d-flex img-pre" id="image-container">
-                            <!-- Resimler buraya eklenecek -->
+                        <div class="form-group img-parent">
+                            <div class="d-flex img-pre" id="image-container">
+                                <!-- Resimler buraya eklenecek -->
+                            </div>
+
+                            <input type="file" class="form-control" id="campaignImg" accept=".jpg,.jpeg,.png" aria-describedby="campaignImg" onchange="dosyaOnizlemeNew(this);">
+
+                        </div>
+                        <small class="form-text text-muted">
+                            1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Kampanya Başlığı *</label>
+                        @*<input type="text" class="form-control" id="name" placeholder="Kategori İsmi">*@
+                        @Html.EditorFor(model => c.campaign_title, "Kampanya Başlığı", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Kampanya Başlığı", id = "title" } })
+                        @Html.ValidationMessageFor(model => c.campaign_title, "")
+
+
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="startdate">Başlangıç Tarihi</label>
+
+                            @Html.EditorFor(model => c.campaign_start_date, "Başlangıç Tarihi", new { htmlAttributes = new { type = "date", name = "startdate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "startdate" } })
+                            @Html.ValidationMessageFor(model => c.campaign_start_date, "", new { @class = "text-danger" })
+
                         </div>
 
-                        <input type="file" class="form-control" id="campaignImg" accept=".jpg,.jpeg,.png" aria-describedby="campaignImg" onchange="dosyaOnizlemeNew(this);">
+                        <div class="form-group col-md-6">
+                            <label for="enddate">Bitiş Tarihi</label>
 
+                            @Html.EditorFor(model => c.campaign_end_date, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate", required = "required", disabled = "disabled" } })
+                            @Html.ValidationMessageFor(model => c.campaign_end_date, "", new { @class = "text-danger" })
+
+                        </div>
                     </div>
-                    <small class="form-text text-muted">
-                        1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
-                    </small>
-                </div>
-                <div class="form-group">
-                    <label for="title">Kampanya Başlığı *</label>
-                    @*<input type="text" class="form-control" id="name" placeholder="Kategori İsmi">*@
-                    @Html.EditorFor(model => c.campaign_title, "Kampanya Başlığı", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Kampanya Başlığı", id = "title" } })
-                    @Html.ValidationMessageFor(model => c.campaign_title, "")
+                    <div class="form-group ">
+                        <label>Kampanya Ürünleri</label>
 
+                        <select class="label ui selection fluid dropdown   " id="products" multiple>
 
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="startdate">Başlangıç Tarihi</label>
-
-                        @Html.EditorFor(model => c.campaign_start_date, "Başlangıç Tarihi", new { htmlAttributes = new { type = "date", name = "startdate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "startdate" } })
-                        @Html.ValidationMessageFor(model => c.campaign_start_date, "", new { @class = "text-danger" })
-
+                            @foreach (var item in Model.products)
+                            {
+                                <option value="@item.id">@item.name</option>
+                            }
+                        </select>
                     </div>
 
-                    <div class="form-group col-md-6">
-                        <label for="enddate">Bitiş Tarihi</label>
-
-                        @Html.EditorFor(model => c.campaign_end_date, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate", required = "required", disabled = "disabled" } })
-                        @Html.ValidationMessageFor(model => c.campaign_end_date, "", new { @class = "text-danger" })
-
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
                     </div>
                 </div>
-                <div class="form-group ">
-                    <label>Kampanya Ürünleri</label>
 
-                    <select class="label ui selection fluid dropdown   " id="products" multiple>
-
-                        @foreach (var item in Model.products)
-                        {
-                            <option value="@item.id">@item.name</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
-                </div>
             </div>
 
-        </div>
-
-    </form>
+        </form>
 </div>
 
 
@@ -140,6 +144,7 @@
             formData.append("EndDate", enddate);
             var selectedProducts = products.getValue(true);
             formData.append("Products", selectedProducts);
+            formData.append("__RequestVerificationToken", $('#campaignForm input[name="__RequestVerificationToken"]').val());
 
             if ($('#campaignForm').valid()) {
 

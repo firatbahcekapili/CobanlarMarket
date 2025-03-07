@@ -1,6 +1,5 @@
 ﻿@model CobanlarMarket.Models.AllViewModel
 @{
-    ViewBag.Title = "CampaingDetails";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -128,11 +127,21 @@
                                 }
                             </ul>
                         </div>
+
+                        @{
+                            var minPrice = (Model.products_skus != null && Model.products_skus.Any())
+                                           ? Math.Round((decimal)Model.products_skus.Min(x => x.price))
+                                           : 0;
+
+                            var maxPrice = (Model.products_skus != null && Model.products_skus.Any())
+                                           ? Math.Round((decimal)Model.products_skus.Max(x => x.price))
+                                           : 0;
+                        }
                         <div class="sidebar__item">
                             <h4>Fiyat</h4>
                             <div class="price-range-wrap">
                                 <div id="price-range-campaign" class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
-                                     data-min="@Math.Round((decimal)Model.products_skus.Min(x => x.price))" data-max="@Math.Round((decimal)Model.products_skus.Max(x => x.price))">
+                                     data-min="@minPrice" data-max="@maxPrice">
                                     <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
                                     <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
                                     <span tabindex="0" class="ui-slider-handle ui-corner-all ui-state-default"></span>
@@ -207,6 +216,9 @@
             url: '/Home/AddCart/',
             type: 'POST',
             data: { Id: id, Adet: 1 },
+            beforeSend: function () {
+                $('#loading').show();
+            },
             success: function (response) {
                 if (response.success) {
                     toastr.success(
@@ -223,6 +235,9 @@
                 } else {
                     toastr.error(response.message);
                 }
+            },
+            complete: function () {
+                $('#loading').hide();
             },
             error: function (xhr, status, error) {
                 toastr.error("Bir hata oluştu: " + error);
@@ -423,7 +438,6 @@ $(document).on('change', '#sortSelect', function () {
 });
 
     $(document).on('click', '#filterbtn', function () {
-        console.log("sdsad");
         $('.filter').toggleClass('show');// İçeriği aç/kapat
         $('#overlay').toggleClass('show');
 
@@ -434,7 +448,7 @@ $(document).on('change', '#sortSelect', function () {
         }
     });
 
-    $(document).on('click', '#close-sidebar', function () {
+    $("#close-sidebar").click(function () {
         $('.filter').removeClass('show'); // Sidebar'ı kapat
         $('#overlay').removeClass('show'); // Overlay'i kapat
         $('body').css('overflow', '');

@@ -10,45 +10,59 @@
 
 <div class=" mt-5 ml-5 mr-5">
 
-    <form id="shippingForm">
+    
 
-        <div class="row justify-content-center">
+        <form id="shippingForm" action="/Management/EditShipping" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row justify-content-center">
 
-            <div class="col-12 bg-white p-5">
-                <div class="col-12 pt-4 pb-4 pl-0 ">
-                    <h3>Teslimat Ayarları</h3>
-
-                </div>
-             
-
-                <div class="form-row ">
-                    <div class="form-group col-md-6">
-                        <label for="minAmount">Ücretsiz Kargo İçin Gerekli Minimum Sepet Tutarı</label>
-                        @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
-                        <input class="form-control text-box single-line input-validation-error" data-val="true" data-val-number="The field min_amonunt_for_free_shipping must be a number." id="minamount" name="m.min_amonunt_for_free_shipping" placeholder="Min Tutarı Giriniz" type="text" value="@(m?.min_amonunt_for_free_shipping?.ToString().Replace(",","."))" aria-describedby="minamount-error" aria-invalid="true">
-                        @Html.ValidationMessageFor(model => m.min_amonunt_for_free_shipping, "")
-                    <span class="mt-2 d-block">Varsayılan olarak ücretsiz kargo için gerekli minimum sepet tutarı 300₺ 'dir.</span>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="shippingCost">Teslimat Ücreti</label>
-                        @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
-                        <input class="form-control text-box single-line input-validation-error" data-val="true" data-val-number="The field shipping_cost must be a number." id="shippingcost" name="m.shipping_cost" placeholder="Teslimat Ücreti Giriniz" type="text" value="@(m?.shipping_cost?.ToString().Replace(",","."))" aria-describedby="shippingCost-error" aria-invalid="true">
-                        @Html.ValidationMessageFor(model => m.shipping_cost, "")
-                        <span class="mt-2 d-block">Varsayılan olarak teslimat ücreti 30₺ 'dir.</span>
+                <div class="col-12 bg-white p-5">
+                    <div class="col-12 pt-4 pb-4 pl-0 ">
+                        <h3>Teslimat Ayarları</h3>
 
                     </div>
+
+
+                    @{
+                        var freeshippng = (m != null && m.min_amonunt_for_free_shipping != null)
+                            ? m.min_amonunt_for_free_shipping.ToString().Replace(",", ".")
+                            : null;
+
+                        var shippingcost = (m != null && m.shipping_cost != null)
+                            ? m.shipping_cost.ToString().Replace(",", ".")
+                            : null;
+                    }
+
+
+
+                    <div class="form-row ">
+                        <div class="form-group col-md-6">
+                            <label for="minAmount">Ücretsiz Kargo İçin Gerekli Minimum Sepet Tutarı</label>
+                            @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
+                            <input class="form-control text-box single-line input-validation-error" data-val="true" data-val-number="The field min_amonunt_for_free_shipping must be a number." id="minamount" name="m.min_amonunt_for_free_shipping" placeholder="Min Tutarı Giriniz" type="text" value="@(freeshippng)" aria-describedby="minamount-error" aria-invalid="true">
+                            @Html.ValidationMessageFor(model => freeshippng, "")
+                            <span class="mt-2 d-block">Varsayılan olarak ücretsiz kargo için gerekli minimum sepet tutarı 300₺ 'dir.</span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="shippingCost">Teslimat Ücreti</label>
+                            @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
+                            <input class="form-control text-box single-line input-validation-error" data-val="true" data-val-number="The field shipping_cost must be a number." id="shippingcost" name="m.shipping_cost" placeholder="Teslimat Ücreti Giriniz" type="text" value="@(shippingcost)" aria-describedby="shippingCost-error" aria-invalid="true">
+                            @Html.ValidationMessageFor(model => shippingcost, "")
+                            <span class="mt-2 d-block">Varsayılan olarak teslimat ücreti 30₺ 'dir.</span>
+
+                        </div>
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
+                    </div>
                 </div>
 
-
-
-                <div class="form-group">
-                    <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
-                </div>
             </div>
 
-        </div>
-
-    </form>
+        </form>
 </div>
 
 
@@ -72,12 +86,13 @@
       
 
 
+        var token = $('#shippingForm input[name="__RequestVerificationToken"]').val();
 
         if ($('#shippingForm').valid()) {
             $.ajax({
                 url: '/Management/EditShipping/',
                 type: 'POST',
-                data: { MinAmount: minAmount, ShippingCost: shippingCost},
+                data: { __RequestVerificationToken: token, MinAmount: minAmount, ShippingCost: shippingCost},
                 success: function (result) {
                  
 

@@ -1,6 +1,5 @@
 ﻿@model CobanlarMarket.Models.AllViewModel
 @{
-    ViewBag.Title = "Sonuc";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
     var order = Model.order_details.First();
@@ -80,7 +79,10 @@
         text-align: center;
         border-radius: 5px;
     }
-
+    .shipping-link a {
+        color:red;
+        
+    }
 </style>
 
 
@@ -117,6 +119,52 @@
         </div>
 
         <div class="col-xl-5 col-12">
+
+            <div class="row mb-4">
+
+                <div class="border" style="border-radius:10px;">
+                    <table class="table table-borderless" id="dtable" style="width:-webkit-fill-available;">
+
+                        <thead>
+
+
+                            <tr>
+                                <th><h3>Kargo Bilgileri</h3></th>
+                                <th></th>
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td class="text-dark font-weight-bold">Kargo Takip Kodu</td>
+                                <td class="">@(order.reference_id.HasValue ? order.reference_id.Value.ToString() : "")</td>
+
+                            </tr>
+                            @if (order.reference_id.HasValue)
+                            {
+
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Kargo Takip Linki</td>
+                                    <td class="shipping-link"> <a href="https://www.yurticikargo.com/tr/online-servisler/gonderi-sorgula?code=@( order.reference_id.Value.ToString() )" target="_blank">Kargo Takibi İçin Tıklayın</a></td>
+
+                                </tr>
+                               
+
+                            }
+                        </tbody>
+
+                    </table>
+                 
+                </div>
+
+
+
+
+
+            </div>
+
             <div class="row mb-4">
 
                 <div class="border" style="border-radius:10px;">
@@ -144,8 +192,8 @@
                             </tr>
 
                             <tr>
-                                <td class="text-dark font-weight-bold">İl/İlçe/Posta Kodu</td>
-                                <td class="">@order.shipping_city / @order.shipping_country / @order.shipping_postal_code </td>
+                                <td class="text-dark font-weight-bold">Mahalle / İlçe / İl / Posta Kodu</td>
+                                <td class="">@order.shipping_quarter / @order.shipping_district / @order.shipping_city / @order.shipping_postal_code </td>
                             </tr>
                             <tr>
                                 <td class="text-dark font-weight-bold">Ad/Soyad</td>
@@ -188,7 +236,7 @@
                                     <td class="text-dark font-weight-bold">Ürünler</td>
                                     <td class="">@payment.amount ₺</td>
                                 </tr>
-                                <tr >
+                                <tr>
                                     <td class="text-dark font-weight-bold">Kargo</td>
                                     <td class="">@(payment.cargoPrice==0 ? "Bedava":payment.cargoPrice+ " ₺") </td>
                                 </tr>
@@ -200,7 +248,7 @@
                                     </tr>
 
                                 }
-                                <tr >
+                                <tr>
                                     <td class="text-dark">Genel Toplam</td>
                                     <td class="">@payment.paidPrice ₺</td>
                                 </tr>

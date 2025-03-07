@@ -1,0 +1,312 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+
+@{
+    ViewBag.Title = "SeoSettings";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-10">
+        <div class="card text-white bg-success mb-3 mt-3">
+            <h5 class="card-header text-white border-bottom-0">Bilgilendirme</h5>
+            <div class="card-body">
+                <p class="card-text" style="font-size:17px;">
+                    Sayfa adını girerken sayfa uzantısını girmeniz gerekmektedir. Örnek olarak "https://cobanlarmarket.com/Home/Shop" böyle bir linkte sayfa adı olarak /Home/Shop girilmelidir. Eğer sayfa uzantısı yoksa /Home/Index 'e ait etiketler geçerli olacaktır (örnek: https://cobanlarmarket.com).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class=" m-5">
+
+
+
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 bg-white p-5">
+            <div class="col-12 pt-4 pb-4 pl-0 ">
+                <h3>SEO Ayarları</h3>
+
+            </div>
+
+
+
+            <div class="">
+                <!-- Sayfa seçici -->
+                <label for="pageSelector">Sayfa Seçin:</label>
+                <div class="" style="display: flex;flex-wrap: wrap;">
+                    <select id="pageSelector" class="form-control mr-3" style="width: auto;min-width: 300px;">
+                        <option value="">Sayfa Seçin</option>
+                        @foreach (var page in Model.SeoSettings.Keys)
+                        {
+                            <option value="@page">@page</option>
+                        }
+                    </select>
+
+                    <button id="addNewSeo" type="button" class="btn btn-primary btn-pill" data-toggle="modal" data-target="#addseoModal">
+                        Yeni SEO Ayarı Ekle
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- SEO Ayarları Formu -->
+            <div id="seoFormParent" style="display: none; margin-top: 20px;">
+                <h3>SEO Ayarları Düzenle</h3>
+             
+
+                    <form id="seoForm" action="/Management/SaveSeoSettings" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="form-group">
+                            <label for="Title">Sayfa Adı</label>
+                            <input type="text" class="form-control" id="Page" name="Page" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Title">SEO Title</label>
+                            <input type="text" class="form-control" id="Title" name="Title" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Keywords">SEO Keywords</label>
+                            <input type="text" class="form-control" id="Keywords" name="Keywords" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Description">SEO Description</label>
+                            <textarea class="form-control" id="Description" name="Description"></textarea>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="NoIndex" name="NoIndex" />
+                            <label class="form-check-label" for="NoIndex">No Index</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="NoFollow" name="NoFollow" />
+                            <label class="form-check-label" for="NoFollow">No Follow</label>
+                        </div>
+
+                        <button type="button" class="btn btn-primary" id="saveSeoBtn">Kaydet</button>
+
+
+                        <button type="button" class="btn btn-danger" id="deleteSeoBtn">Sil</button>
+                    </form>
+
+</div>
+        </div>
+
+        <div class="modal fade" id="addseoModal" tabindex="-1" role="dialog" aria-labelledby="addseoModal"
+             aria-hidden="true" >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content p-5">
+                    <div id="addseoForm">
+                        <h3>SEO Ayarı Ekle</h3>
+                            <form id="addseoForm" action="/Management/SaveSeoSettings" method="post">
+                                @Html.AntiForgeryToken()
+                                <div class="form-group">
+                                    <label for="Pageadd">Sayfa Adı</label>
+                                    <input type="text" class="form-control" id="Pageadd" name="Pageadd" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="Titleadd">SEO Title</label>
+                                    <input type="text" class="form-control" id="Titleadd" name="Titleadd" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Keywordsadd">SEO Keywords</label>
+                                    <input type="text" class="form-control" id="Keywordsadd" name="Keywordsadd" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Descriptionadd">SEO Description</label>
+                                    <textarea class="form-control" id="Descriptionadd" name="Descriptionadd"></textarea>
+                                </div>
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="NoIndexadd" name="NoIndexadd" />
+                                    <label class="form-check-label" for="NoIndexadd">No Index</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="NoFollowadd" name="NoFollowadd" />
+                                    <label class="form-check-label" for="NoFollowadd">No Follow</label>
+                                </div>
+
+                                <button type="button" class="btn btn-primary" id="saveSeoBtnadd">Kaydet</button>
+                            </form>
+
+</div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+
+
+
+        function ShowAddSeo(id) {
+            $('#addseoForm').modal('show');
+
+
+        }
+  
+        $('#pageSelector').change(function () {
+            const page = $(this).val();
+            if (page) {
+                loadSeoSettings(page);
+            } else {
+                $('#seoFormParent').hide();
+            }
+        });
+
+    
+        $('#addNewSeo').click(function () {
+            $('#Pageadd').val('');
+            $('#Titleadd').val('');
+            $('#Keywordsadd').val('');
+            $('#Descriptionadd').val('');
+            $('#NoIndexadd').prop('checked', false);
+            $('#NoFollowadd').prop('checked', false);
+        });
+
+      
+        function loadSeoSettings(page) {
+            $.ajax({
+                url: '/Management/LoadSeoSettings',
+                type: 'GET',
+                data: { page: page },
+                success: function (data) {
+                    console.log(data);
+                    if (data) {
+                        $('#Page').val(data.Page);
+                        $('#Title').val(data.SeoSettings.Title);
+                        $('#Keywords').val(data.SeoSettings.Keywords);
+                        $('#Description').val(data.SeoSettings.Description);
+                        $('#NoIndex').prop('checked', data.SeoSettings.NoIndex);
+                        $('#NoFollow').prop('checked', data.SeoSettings.NoFollow);
+                        $('#seoFormParent').show();
+                    }
+                },
+                error: function () {
+                    alert("SEO bilgileri yüklenirken hata oluştu.");
+                }
+            });
+        }
+
+        $('#saveSeoBtnadd').click(function () {
+            var formData = new FormData();
+          
+            var Page = $('#Pageadd').val();
+            var Title = $('#Titleadd').val();
+            var Keywords= $('#Keywordsadd').val();
+            var Description= $('#Descriptionadd').val();
+            var NoIndex= $('#NoIndexadd').is(':checked');
+            var NoFollow = $('#NoFollowadd').is(':checked');
+           
+            formData.append("Page", Page);
+            formData.append("Title", Title);
+            formData.append("Keywords", Keywords);
+            formData.append("Description", Description);
+            formData.append("NoIndex", NoIndex);
+            formData.append("NoFollow", NoFollow);
+
+            formData.append("__RequestVerificationToken", $('#addseoForm input[name="__RequestVerificationToken"]').val());
+            $.ajax({
+                url: '/Management/SaveSeoSettings',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Yeni SEO ayarı eklenemedi.");
+                }
+            });
+        });
+
+
+        $('#saveSeoBtn').click(function () {
+            var formData = new FormData();
+         
+
+            var Page = $('#Page').val();
+            var Title = $('#Title').val();
+            var Keywords = $('#Keywords').val();
+            var Description = $('#Description').val();
+            var NoIndex = $('#NoIndex').is(':checked');
+            var NoFollow = $('#NoFollow').is(':checked');
+
+
+            formData.append("Page", Page);
+            formData.append("Title", Title);
+            formData.append("Keywords", Keywords);
+            formData.append("Description", Description);
+            formData.append("NoIndex", NoIndex);
+            formData.append("NoFollow", NoFollow);
+            formData.append("__RequestVerificationToken", $('#seoForm input[name="__RequestVerificationToken"]').val());
+
+            $.ajax({
+                url: '/Management/SaveSeoSettings',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function () {
+                    alert("SEO ayarları kaydedilemedi.");
+                }
+            });
+        });
+        $('#deleteSeoBtn').click(function () {
+            const page = $('#pageSelector').val();
+            var token = $('#seoForm input[name="__RequestVerificationToken"]').val();
+
+            if (confirm("Bu SEO ayarlarını silmek istediğinize emin misiniz?" + page)) {
+                $.ajax({
+                    url: '/Management/DeleteSeoSettings',
+                    type: 'POST',
+                    data: { __RequestVerificationToken: token, Page: page },
+                    success: function (response) {
+                        alert(response.message);
+                        if (response.success) {
+                            $('#pageSelector option[value="' + page + '"]').remove();
+                            $('#seoFormParent').hide();
+                            location.reload();
+
+                        }
+                    },
+                    error: function () {
+                        alert("SEO ayarları silinemedi.");
+                    }
+                });
+            }
+        });
+
+    });
+</script>

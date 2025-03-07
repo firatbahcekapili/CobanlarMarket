@@ -4,13 +4,22 @@
     Layout = "~/Views/Shared/_ManagementLayout.cshtml";
 }
 
+<style>
+ 
+    .img-thumbnail{
+        height:200px;
+        width:250px;
+    }
+
+</style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.css">
 <link href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/gh/bbbootstrap/libraries@main/choices.min.js"></script>
 
 <div class=" mt-5 ml-5 mr-5">
-   
-    <form id="campaignForm">
+
+    <form id="campaignForm" action="/Management/EditCampaign" method="post">
+        @Html.AntiForgeryToken()
         <div class="row justify-content-center position-relative">
             <div class="col-12 bg-white mb-5">
                 <div class="col-12 pt-4 pb-4 ">
@@ -80,19 +89,19 @@
                         </select>
                     </div>
 
-                        <label class="switch switch-text switch-secondary switch-pill form-control-label position-absolute " style="top:0;right:15px;">
-                            <input type="checkbox" class="switch-input form-check-input" id="status" @(Model.campaigns.FirstOrDefault().is_active==true?" checked":"") >
-                            <span class="switch-label" data-on="Aktif" data-off="Pasif"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-                   
+                    <label class="switch switch-text switch-secondary switch-pill form-control-label position-absolute " style="top:0;right:15px;">
+                        <input type="checkbox" class="switch-input form-check-input" id="status" @(Model.campaigns.FirstOrDefault().is_active == true ? " checked" : "")>
+                        <span class="switch-label" data-on="Aktif" data-off="Pasif"></span>
+                        <span class="switch-handle"></span>
+                    </label>
+
                     <div class="form-group" style="height:35px;">
                         <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
                     </div>
                 </div>
 
             </div>
-            </div>
+        </div>
     </form>
 </div>
 
@@ -170,6 +179,7 @@
             formData.append("EndDate", enddate);
             formData.append("Products", selectedProducts);
             formData.append("Status", status);
+            formData.append("__RequestVerificationToken", $('#campaignForm input[name="__RequestVerificationToken"]').val());
 
             // Eğer img boşsa image-container'daki mevcut resmi kullan
             if (!img) {

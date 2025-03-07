@@ -1,0 +1,139 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "TopluMesaj";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+<style>
+    .mdi {
+        font-size: 22px;
+        margin: 0 5px 0 5px;
+    }
+
+    .couponTable th, .couponTable td {
+        font-size: 13px;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.2/quill.snow.css" integrity="sha512-ggYQiYwuFFyThzEv6Eo6g/uPLis4oUynsE88ovEde5b2swycOh9SlAI8FL/cL2AkGGNnWADPXcX2UnPIJS2ozw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/2.0.2/quill.min.js" integrity="sha512-1nmY9t9/Iq3JU1fGf0OpNCn6uXMmwC1XYX9a6547vnfcjCY1KvU9TE5e8jHQvXBoEH7hcKLIbbOjneZ8HCeNLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<div class=" mt-5 ml-5 mr-5">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+
+                </div>
+                <div class="card-body">
+                    <div class="col-12">
+                        <div class="  email-body p-4 p-xl-5">
+                            <div class="email-body-head mb-5 ">
+                                <h4 class="text-dark">Toplu Mesaj</h4>
+                                <h6>(E-Bülteninize kayıtlı @(Model.newsletters.Count(x=>x.status==true)) adet üye vardır.)</h6>
+                            </div>
+                            <form class="email-compose mb-5" id="mailForm">
+                                @Html.AntiForgeryToken()
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="Subject" placeholder="Konu ">
+                                </div>
+                                <div id="standalone">
+                                    <div id="toolbar">
+
+                                    </div>
+                                </div>
+                                <div id="editor"></div>
+
+                            </form>
+                         
+                            <button class="btn btn-primary btn-pill mb-5" type="submit">Gönder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote', 'code-block'],
+        ['link', 'image', 'video', 'formula'],
+        [{ 'header': 1 }, { 'header': 2 }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+        [{ 'script': 'sub' }, { 'script': 'super' }],
+        [{ 'indent': '-1' }, { 'indent': '+1' }],
+        [{ 'direction': 'rtl' }],
+        [{ 'size': ['small', false, 'large', 'huge'] }],
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'font': [] }],
+        [{ 'align': [] }],
+        ['clean']
+    ];
+
+    var quill = new Quill('#editor', {
+        modules: {
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Metninizi girin ...',
+        theme: 'snow'
+    });
+
+    // Resim yükleme işlemi için ekleme
+    var toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', function () {
+        var input = document.createElement('input');
+        input.setAttribute('type', 'file');
+        input.setAttribute('accept', 'image/*');
+        input.click();
+
+        input.onchange = function () {
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var base64Image = reader.result;
+                    // Quill editörüne base64 formatında resim ekleyin
+                    const range = quill.getSelection();
+                    quill.insertEmbed(range.index, 'image', base64Image);
+                };
+                reader.readAsDataURL(file); // Dosyayı Base64 formatına çevir
+            }
+        };
+    });
+
+    // Form verilerini göndermek için AJAX
+    document.querySelector("button[type='submit']").addEventListener("click", function (e) {
+        e.preventDefault();
+
+        var formData = new FormData();
+
+        var subject = $("#Subject").val();
+        var content = quill.root.innerHTML;
+
+        formData.append("subject", subject);
+        formData.append("content", content);
+        formData.append("__RequestVerificationToken", $('#mailForm input[name="__RequestVerificationToken"]').val());
+
+        $.ajax({
+            url: '/Management/SendBulkMail',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            error: function () {
+                alert("Mesaj gönderilirken bir hata oluştu!");
+            }
+        });
+    });
+</script>

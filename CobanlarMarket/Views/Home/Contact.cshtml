@@ -1,5 +1,4 @@
 ﻿@{
-    ViewBag.Title = "Contact";
     Layout = "~/Views/Shared/_Layout.cshtml";
 
 
@@ -9,37 +8,7 @@
     <div id="root">
         <div>
             <div class="main-layout">
-                <div class="modal-dialog ">
-                    <div class=" modal-content">
-                        :<button class="modal-close"><i class="bi bi-x"></i></button>
-                        <div class="modal-image"><img src="/img/modal-dialog.jpg" alt=""></div>
-                        <div class="popup-wrapper">
-                            <div class="popup-content">
-                                <div class="popup-title">
-                                    <h3>YENİ ÜRÜNLER</h3>
-                                </div>
-                                <p class="popup-text">
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laborum,
-                                    voluptates.
-                                </p>
-                                <form class="popup-form">
-                                    <input type="text"
-                                           placeholder="Enter Email Adress Here"><button class="btn btn-lg btn-red">
-                                        ABONE
-                                        OL
-                                    </button><label>
-                                        <input type="checkbox"><span>
-                                            Lorem ipsum dolor
-                                            sit.
-                                        </span>
-                                    </label>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-overlay"></div>
-                </div>
-
+              
                 <section class="contact">
                     <div class="contact-top">
                         <div class="contact-map">
@@ -51,19 +20,19 @@
                     <div class="contact-bottom">
                         <div class="container">
                             <div class="contact-titles">
-                                <h4>Contact with us</h4>
-                                <h2>Get In Touch</h2>
-                                <p>
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Id quisquam voluptatibus
-                                    impedit doloribus fugit voluptatum!
-                                </p>
+                                <h4>Bizimle iletişime geçin</h4>
+                                <h2>İletişim</h2>
+                              
                             </div>
                             <div class="contact-elements">
                                 @{
                                     CobanlarMarket.Models.users u = new CobanlarMarket.Models.users();
 
                                 }
-                                <form class="contact-form" id="contact-form">
+                                <form class="contact-form" id="contact-form" action="/Home/ContactMail" method="post">
+
+
+
                                     <div class="form-group col-md-6">
                                         <label>
                                             Ad <span class="required">*</span>
@@ -93,23 +62,44 @@
                                             Gönder
                                         </button>
                                     </div>
+                                    @Html.AntiForgeryToken()
 
                                 </form>
+
                                 <div class="contact-info">
                                     <div class="contact-info-item">
                                         <div class="contact-info-texts">
-                                            <strong>Clotya Store</strong>
-                                            <p class="contact-street">
-                                                Çobanlar Şarküteri Türkiye - 785 15h Street ,
-                                                Office 478/B Green Mall Berlin, De 81125
-                                            </p><a href="tel:Phone: +1 1234 567 88">Phone: +1 1234 567 88</a><a href="mailto:Email: contact@gmail.com">Email: contact@gmail.com</a>
+                                            <h2>Çobanlar Market</h2>
+
                                         </div>
                                     </div>
                                     <div class="contact-info-item">
                                         <div class="contact-info-texts">
-                                            <strong>Opwningg</strong>
-                                            <p class="contact-date">Monday - Friday : 9am -5pm</p>
-                                            <p>Haftasonu Kapaliyiz</p>
+                                            <p class="contact-date">ÇOBAN GIDA MAD.TİC.LMT.ŞTİ</p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date">Adres: Merkez Mahallesi Atatürk Caddesi No:17 TRABZON / MAÇKA</p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date"><a href="tel:Telefon: 0462 512 36 66">Telefon: 0462 512 36 66</a></p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date"><a href="mailto:Email: iletisim@cobanlarmarket.com">Email: iletisim@cobanlarmarket.com</a></p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date">Vergi No : 258 009 4457</p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date">Vergi Dairesi : Maçka</p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date">Mensubu Olduğu Sektörel Kuruluş  : TRABZON TİCARET VE SANAYİ ODASI</p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date">Kep Adresi : mertsamet.coban@hs01.kep.tr </p>
+                                        </div>
+                                        <div class="contact-info-texts">
+                                            <p class="contact-date">Mersis NO : 0258009445100019</p>
                                         </div>
                                     </div>
                                 </div>
@@ -133,6 +123,7 @@
                 var email = $('#email').val();
                 var subject = $('#subject').val();
                 var message = $('#message').val();
+                var token = $('#contact-form input[name="__RequestVerificationToken"]').val();
 
 
                 var formData = new FormData();
@@ -141,7 +132,7 @@
                 formData.append('Email', email);
                 formData.append('Subject', subject);
                 formData.append('Message', message);
-
+                formData.append("__RequestVerificationToken",token);
 
                 if ($('#contact-form').valid()) {
 
@@ -151,6 +142,9 @@
                         data: formData,
                         contentType: false,
                         processData: false,
+                        beforeSend: function () {
+                            $('#loading').show();
+                        },
                         success: function (result) {
                             if (result.success) {
                                 toastr.success(result.message);
@@ -160,6 +154,8 @@
 
                             }
 
+                        }, complete: function () {
+                            $('#loading').hide();
                         },
                         error: function (error) {
                             console.error(error);

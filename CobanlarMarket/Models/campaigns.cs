@@ -11,8 +11,7 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class campaigns
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -22,19 +21,9 @@ namespace CobanlarMarket.Models
         }
     
         public int id { get; set; }
-        [Required(ErrorMessage = "Kampanya baþlýðý gereklidir")]
-        [StringLength(100, ErrorMessage = "Kampanya baþlýðý en fazla 100 karakter olmalýdýr")]
         public string campaign_title { get; set; }
-
-        [Required(ErrorMessage = "Kampanya baþlangýç tarihi gereklidir")]
-        [DataType(DataType.Date)]
-        public DateTime campaign_start_date { get; set; }
-
-        [Required(ErrorMessage = "Kampanya bitiþ tarihi gereklidir")]
-        [DataType(DataType.Date)]
-        public DateTime campaign_end_date { get; set; }
-
-        [Required(ErrorMessage = "Kampanya görseli gereklidir")]
+        public System.DateTime campaign_start_date { get; set; }
+        public System.DateTime campaign_end_date { get; set; }
         public string campaign_cover { get; set; }
         public Nullable<bool> is_active { get; set; }
     

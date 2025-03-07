@@ -1,13 +1,11 @@
 ﻿@model CobanlarMarket.Models.AllViewModel
 @{
-    ViewBag.Title = "Product";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var product = Model.products.FirstOrDefault();
 }
 
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap-grid.min.css" integrity="sha512-i1b/nzkVo97VN5WbEtaPebBG8REvjWeqNclJ6AItj7msdVcaveKrlIIByDpvjk5nwHjXkIqGZscVxOrTb9tsMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
 
 <section class="single-product d-flex justify-content-center" >
     <div class="container" style="margin:0 10px;">
@@ -28,7 +26,7 @@
 
 
 
-                                        @foreach (var item in Model.products.FirstOrDefault().product_images)
+                                        @foreach (var item in product.product_images)
                                         {
                                             <div style="width:inherit;height:inherit;">
                                                 <img src="@item.image_path" alt="" class="img-fluid">
@@ -47,7 +45,7 @@
                             <div class="col-lg-5 col-12 align-content-center justify-content-center">
                                 <div class="product-info">
                                     <h1 class="product-title">
-                                        @Model.products.FirstOrDefault().name
+                                        @product.name
                                     </h1>
                                     @*<div class="product-review">
                                         <ul class="product-star">
@@ -59,13 +57,22 @@
                                         </ul>
                                         <span>2 reviews</span>
                                     </div>*@
-                                    <div class="product-price">
-                                        <strong>&#8378;@Model.products.FirstOrDefault().products_skus.FirstOrDefault().price</strong>
+                                <div class="product-price">
 
-                                    </div>
-                                    <p class="product-description">
+                                 
+
+                                    @if (product.products_skus.FirstOrDefault().old_price != null)
+                                    {
+                                        <del>&#8378;@product.products_skus.FirstOrDefault().old_price</del>
+                                    }
+                                 
+
+                                    <strong>&#8378;@product.products_skus.FirstOrDefault().price</strong>
+
+                                </div>
+                                    @*<p class="product-description">
                                         @Model.products.FirstOrDefault().description
-                                    </p>
+                                    </p>*@
                                     <form class="variations-form">
                                         <div class="variations">
                                             @*<div class="colors">
@@ -115,19 +122,33 @@
                     </div>*@
                                             <div class="cart-button">
                                                 <input type="number" value="1" min="1">
-                                                <a class="btn btn-lg btn-primary" onclick="AddCart(@Model.products.FirstOrDefault().id)">Sepete Ekle</a>
+
+                                                @if (product.products_skus.FirstOrDefault().quantity > 0)
+                                                {
+                                                    <a class="btn btn-lg btn-primary" onclick="AddCart(@product.id)">Sepete Ekle</a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-lg btn-primary" onclick="" >Stok Yok</a>
+
+                                                }
+
+
                                             </div>
                                             <div class="product-extra-buttons">
 
+                                          
                                                 @{
-                                                    // Mevcut protokol ve domaini al
-                                                    string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
-                                                    // Ürün yolunu dinamik olarak oluştur
-                                                    string productPath = Url.Action("Product", "Home", new { id = Model.products.FirstOrDefault().id });
-                                                    // Domain ile yolu birleştir
-                                                    string fullUrl = $"{domain}{productPath}";
-                                                }
-                                                <a class="shareBtn" link="@fullUrl">
+                                                // Mevcut protokol ve domaini al
+                                                string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+    
+                                                // Ürün yolunu dinamik olarak oluştur
+                                                string productPath = Url.Action("Product", "Home", new { id = product.id });
+    
+                                                // Domain ile yolu birleştir
+                                                string fullUrl = string.Format("{0}{1}", domain, productPath); // string.Format kullanımı
+                                            }
+                                            <a class="shareBtn" link="@fullUrl">
                                                     <i class="bi bi-share"></i>
                                                     <span>Bu ürünü paylaş</span>
                                                 </a>
@@ -138,7 +159,7 @@
                                     <div class="product-meta">
                                         <div class="product-sku">
                                             <span>SKU:</span>
-                                            <strong>@Model.products.FirstOrDefault().products_skus.FirstOrDefault().sku</strong>
+                                            <strong>@product.products_skus.FirstOrDefault().sku</strong>
 
 
                                         </div>
@@ -149,34 +170,39 @@
                                             {
 
                                                 <strong>
+                                                    @{
 
-                                                    @(
-                                        Model.products.FirstOrDefault() != null &&
-                                        Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id) != null &&
-                                        Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).parent_id) != null
-                                        ? Model.categories.FirstOrDefault(x => x.id == Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).parent_id).name.ToString()
-                                        : ""
-)
+                                                        var subCategory = product != null
+                                                            ? Model.sub_categories.FirstOrDefault(sc => sc.id == product.subcategory_id)
+                                                            : null;
+                                                        var category = subCategory != null
+                                                            ? Model.categories.FirstOrDefault(c => c.id == subCategory.parent_id)
+                                                            : null;
 
+                                                        var categoryName = (product != null && subCategory != null && category != null)
+                                                            ? category.name.ToString()
+                                                            : "";
+                                                    }
 
-
+                                                  
+                                                    <a href="/Home/Shop#category-@category.id">@categoryName</a>
                                                 </strong>
                                                 <strong>
-
-                                                    / @Model.sub_categories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().subcategory_id).name
+                                                    /<a href="/Home/Shop#subcategory-@Model.sub_categories.FirstOrDefault(x => x.id == product.subcategory_id).id"> @Model.sub_categories.FirstOrDefault(x => x.id == product.subcategory_id).name</a>
 
 
 
                                                 </strong>
-                                                if (Model.products.FirstOrDefault().sub_subcategory_id != null)
+                                                if (product.sub_subcategory_id != null)
                                                 {
-                                                    <strong>
-
-                                                        / @Model.sub_subcategories.FirstOrDefault(x => x.id == Model.products.FirstOrDefault().sub_subcategory_id).name
+                                        <strong>
 
 
+                                            /<a href="/Home/Shop#subsubcategory-@Model.sub_subcategories.FirstOrDefault(x => x.id == product.sub_subcategory_id).id"> @Model.sub_subcategories.FirstOrDefault(x => x.id == product.sub_subcategory_id).name</a>
 
-                                                    </strong>
+
+
+                                        </strong>
                                                 }
 
 
@@ -232,7 +258,7 @@
                 <div class="tab-panel">
                     <div id="descriptions" class="tab-content active">
                         <p>
-                           @Model.products.FirstOrDefault().description
+                           @product.description
                         </p>
                      
                     </div>
@@ -361,7 +387,10 @@
         $.ajax({
             url: '/Home/AddCart/',
             type: 'POST',
-            data: { Id: id ,Adet:adet},
+            data: { Id: id, Adet: adet },
+            beforeSend: function () {
+                $('#loading').show();
+            },
 
             success: function (response) {
 
@@ -384,6 +413,9 @@
 
 
             }
+            , complete: function () {
+                $('#loading').hide();
+            },
 
         });
        

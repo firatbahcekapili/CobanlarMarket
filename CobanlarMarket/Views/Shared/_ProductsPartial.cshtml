@@ -6,7 +6,6 @@
     var pageNumber = ViewBag.pageNumber;
     var orderType = ViewBag.orderType;
 }
-@*<link href="~/Content/css/shoppage/nice-select.css" rel="stylesheet" />*@
 
 <div class="filter__item">
     <div class="row">
@@ -68,16 +67,20 @@
                         @*<li><a href="#" onclick="event.preventDefault(); event.stopPropagation();"><i class="fa fa-heart"></i></a></li>*@
 
 
+
                         @{
+                            // Mevcut protokol ve domaini al
                             string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+
                             // Ürün yolunu dinamik olarak oluştur
                             string productPath = Url.Action("Product", "Home", new { id = product.id });
+
                             // Domain ile yolu birleştir
-                            string fullUrl = $"{domain}{productPath}";
+                            string fullUrl = string.Format("{0}{1}", domain, productPath); 
                         }
 
                         <li><a class="shareBtn" link="@fullUrl" onclick="event.preventDefault(); event.stopPropagation();"><i class="fa fa-share-alt"></i></a></li>
-                        <li><a href="#" onclick="event.preventDefault(); event.stopPropagation(); AddCart(@product.id)"><i class="fa fa-shopping-cart"></i></a></li>
+                        <li><a  onclick="event.preventDefault(); event.stopPropagation(); AddCart(@product.id);"><i class="fa fa-shopping-cart"></i></a></li>
 
                     </ul>
                 </div>
@@ -118,7 +121,6 @@
         }
     </div>
 }
-@*<script src="~/Content/css/shoppage/js/jquery.nice-select.min.js"></script>*@
 
 
 <script>

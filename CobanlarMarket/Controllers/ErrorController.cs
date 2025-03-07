@@ -11,6 +11,8 @@ namespace CobanlarMarket.Controllers
         // GET: Error
         public ActionResult Error()
         {
+
+            Exception exception = Server.GetLastError();
             return View("Error");
         }
 
@@ -23,9 +25,11 @@ namespace CobanlarMarket.Controllers
 
         public ActionResult ManagementError()
         {
+            Exception exception = Server.GetLastError();
+
             return View();
         }
 
-        
+
     }
 }

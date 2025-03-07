@@ -7,7 +7,7 @@ namespace CobanlarMarket.Models
 {
     public class AllViewModel
     {
-
+        public Dictionary<string, SeoModel> SeoSettings { get; set; }
         public List<products> products;
         public List<products_skus> products_skus;
 
@@ -25,6 +25,7 @@ namespace CobanlarMarket.Models
         public List<addresses> addresses;
         public List<payment_details> payment_details;
         public List<company_details> company_details;
+        public List<newsletter> newsletters;
 
 
 

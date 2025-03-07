@@ -1,0 +1,1013 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = Session["User"] as CobanlarMarket.Models.users;
+    if (user == null)
+    {
+        <script>
+            window.location.href = "/Home/Auth";
+        </script>
+    }
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+@*<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>*@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/css/intlTelInput.css" integrity="sha512-tagom4p++vFNtgZ4S8pIVdKkPIH9jKvBT9velKm57KkVicjjNzVtSdTI0Yu1QrWZoP7tnIkB1y9Rmwkz2oWfMA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/js/intlTelInput.js" integrity="sha512-vny9j2GDMbTV//GY4S0kQogKJ7fK5fhSje76Z/eEodHaWIBisFm2RlsJGQVi3fxHr+wb2uJ80TJj4na722XnUw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style>
+    #dtable tbody tr {
+        border-bottom: 1px solid #e5e9f2;
+    }
+
+        #dtable tbody tr:nth-last-child(1) {
+            border-bottom: none !important;
+        }
+
+
+    table {
+        border-collapse: collapse;
+        background-color: white;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        overflow: hidden;
+        width: 500px;
+        border-radius: 10px;
+    }
+
+    th, td {
+        font-family: 'Motnserrat',sans-serif;
+        text-align: left;
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    th {
+        background-color: red;
+        color: white;
+    }
+
+    .product-card {
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        border-radius: 10px;
+        height: 100px;
+    }
+
+        .product-card img {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .product-card span:first-child {
+            margin-bottom: 5px;
+        }
+
+
+
+    #ptable tbody tr {
+        border-bottom: none !important;
+    }
+
+        #ptable tbody tr:nth-last-child(2) {
+            border-bottom: 1px solid #e5e9f2 !important;
+        }
+
+        #ptable tbody tr:nth-last-child(1) td {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+    .badge {
+        background-color: red;
+        color: white;
+        padding: 4px 8px;
+        text-align: center;
+        border-radius: 5px;
+    }
+
+
+
+    .order-card {
+        color: #fff;
+    }
+
+    .bg-c-blue {
+        background: linear-gradient(45deg,#4099ff,#73b4ff);
+    }
+
+    .bg-c-green {
+        background: linear-gradient(45deg,#2ed8b6,#59e0c5);
+    }
+
+    .bg-c-yellow {
+        background: linear-gradient(45deg,#FFB64D,#ffcb80);
+    }
+
+    .bg-c-pink {
+        background: linear-gradient(45deg,#FF5370,#ff869a);
+    }
+
+
+    .card {
+        border-radius: 5px;
+        -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+        box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+        border: none;
+        margin-bottom: 30px;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .card .card-block {
+            padding: 25px;
+        }
+
+    .order-card i {
+        font-size: 26px;
+    }
+
+    .f-left {
+        float: left;
+    }
+
+    .f-right {
+        float: right;
+    }
+
+    .select-btn{
+        display:none;
+    }
+</style>
+
+
+<div class="container account-container">
+    <div class="d-flex row">
+        <!-- Tab Navigation -->
+        <div class="nav flex-column nav-pills col-lg-3 h-auto shadow pt-5 pb-5 pe-0 ps-0 gap-3 sticky-sidebar rounded-4" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <div class="container pb-4">
+                <div class="row">
+                    <div class="col-3 col-md-5 d-flex justify-content-center align-content-center">
+                        <div class="userImgContainer">
+                            <img src="@(user.avatar !=null ?user.avatar : "/Content/theme/images/User_Icon.png")" alt="user image">
+                        </div>
+                      
+                    </div>
+                    <div class="col-9 col-md-7 align-content-center">
+                        <div class="userInfoContainer">
+                            <p>
+
+                            @(user.first_name +" "+user.last_name)
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="nav-link active" id="v-pills-dashboard-tab" data-bs-toggle="pill" data-bs-target="#v-pills-dashboard" type="button" role="tab" aria-controls="v-pills-dashboard" aria-selected="true">Bilgilerim</button>
+            <button class="nav-link" id="v-pills-orders-tab" data-bs-toggle="pill" data-bs-target="#v-pills-orders" type="button" role="tab" aria-controls="v-pills-orders" aria-selected="false">Siparişlerim</button>
+            <button class="nav-link" id="v-pills-addresses-tab" data-bs-toggle="pill" data-bs-target="#v-pills-addresses" type="button" role="tab" aria-controls="v-pills-addresses" aria-selected="false">Adreslerim</button>
+            <button class="nav-link" id="v-pills-account-tab" data-bs-toggle="pill" data-bs-target="#v-pills-account" type="button" role="tab" aria-controls="v-pills-account" aria-selected="false">Hesap Detayları</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content col-lg-9 pt-5 pb-5 ps-0 pe-0" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel" aria-labelledby="v-pills-dashboard-tab" tabindex="0">
+
+
+                <div class="col-xl-7  w-100 ms-md-4 me-md-4 m-0 col-12 p-0">
+
+                    <script src="https://kit.fontawesome.com/00c5ff292c.js" crossorigin="anonymous"></script>
+                    <div class="container">
+                        <div class="row">
+
+
+
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card bg-c-pink order-card" style="height:121px;">
+                                    <div class="card-block">
+                                        @{
+                                            var lastorder = Model.order_details
+                                                .Where(x => x.user_id == user.id
+                                                    && x.payment_details != null
+                                                    && x.payment_details.FirstOrDefault() != null
+                                                    && x.payment_details.FirstOrDefault().status == "success")
+                                                .LastOrDefault();
+                                        }
+
+                                        @if (lastorder != null)
+                                        {
+
+
+                                            <h6 class="m-b-20">Son Sipariş</h6>
+                                            <h4 class="text-end d-flex align-items-center justify-content-between">
+                                                <i class="fa fa-credit-card f-left"></i>
+
+                                                <span>
+                                                    @(lastorder.created_at.HasValue ? lastorder.created_at.Value.ToString("dd/MM/yyyy") : "")
+                                                </span>
+
+
+                                            </h4>
+                                            <p class="m-b-0"><span class="f-right">₺@lastorder.payment_details.FirstOrDefault().paidPrice</span></p>
+
+
+                                        }
+                                        else
+                                        {
+                                            <h6 class="m-b-20"> <i class="fa-solid fa-star"></i></h6>
+                                            <h4 class="text-end d-flex align-items-center justify-content-between">
+
+
+                                                <span>
+                                                    @("Merhaba "+user.first_name)
+                                                </span>
+
+
+                                            </h4>
+                                            <p class="m-b-0"><span class="f-right"> </span></p>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                            @{
+                                var ordercount = Model.order_details.Where(x => x.user_id == user.id).Count();
+                                var successordercount = Model.order_details.Where(x => x.user_id == user.id && x.payment_details.FirstOrDefault() != null
+                                && x.payment_details.FirstOrDefault().status == "success").Count();
+                            }
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card bg-c-blue order-card">
+                                    <div class="card-block">
+                                        <h6 class="m-b-20">Sipariş Sayısı</h6>
+                                        <h4 class="text-end d-flex align-items-center justify-content-between"><i class="fa fa-cart-plus f-left"></i><span>@ordercount</span></h4>
+                                        <p class="m-b-0">Başarılı Siparişler<span class="f-right">@successordercount</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            @{ 
+                                var amountSpent = Model.order_details.Where(x => x.user_id == user.id && x.payment_details.FirstOrDefault() != null
+                                && x.payment_details.FirstOrDefault().status == "success").Sum(pd => pd.payment_details.FirstOrDefault().paidPrice);
+
+
+                                var earnedDiscount = Model.order_details.Where(x => x.user_id == user.id && x.payment_details.FirstOrDefault() != null && x.payment_details.FirstOrDefault().status == "success").Sum(spd => spd.payment_details.FirstOrDefault().couponDiscountValue) + Model.order_details.Where(od => od.user_id == user.id &&
+                                od.payment_details.FirstOrDefault() != null && od.payment_details.FirstOrDefault().status == "success").Count(cp => cp.payment_details.FirstOrDefault().cargoPrice == 0) * Model.company_details.FirstOrDefault().shipping_cost;
+
+                                var usedCouponCount = Model.order_details.Where(x => x.user_id == user.id && x.payment_details.FirstOrDefault() != null && x.payment_details.FirstOrDefault().status == "success").Count(pd => pd.payment_details.FirstOrDefault().couponId != null);
+                                }
+
+
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card bg-c-green order-card">
+                                    <div class="card-block">
+                                        <h6 class="m-b-20">Harcanan Tutar</h6>
+                                        <h4 class="text-end d-flex align-items-center justify-content-between"><i class="fa-solid fa-wallet"></i><span>₺@amountSpent</span></h4>
+                                        <p class="m-b-0">
+                                            &#12644; <span class="f-right"></span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card bg-c-yellow order-card">
+                                    <div class="card-block">
+                                        <h6 class="m-b-20">Kazanılan İndirim</h6>
+                                        <h4 class="text-end d-flex align-items-center justify-content-between"><i class="fa fa-percent f-left"></i><span>₺@earnedDiscount </span></h4>
+                                        <p class="m-b-0">Kullanılan Kupon<span class="f-right"> @usedCouponCount</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+           </div>
+                <div class="tab-pane fade" id="v-pills-orders" role="tabpanel" aria-labelledby="v-pills-profile-tab" tabindex="0">
+                    <div class="col-xl-7  w-100 ms-md-4 me-md-4 m-0 col-12 p-0">
+
+                        @if (Model.order_details != null && Model.order_details.Any())
+                        {
+                            foreach (var item in Model.order_details.OrderByDescending(x=>x.created_at))
+                            {
+                                if (item != null)
+                                {
+
+                                    var paymentDetails = item.payment_details.Any() ? item.payment_details.FirstOrDefault() : null;
+                                    var products = item.order_item.FirstOrDefault() !=null ? item.order_item.FirstOrDefault().products : null;
+                                    if (paymentDetails != null)
+                                    {
+                                        <div class="row mb-3 me-1 ms-1 align-items-center product-card" onclick="window.location.href = '/Home/SiparisDetay/?orderid=@item.id';">
+                                            <div class="col-md-6 col-4">
+                                                <div class="container">
+                                                    <div class="row">
+                                                        <div class="col-md-6 col-12">
+                                                            <img class="orderimg" src="@(products != null ? products.cover: "")" />
+                                                        </div>
+                                                        <div class="col-md-6 col-12 align-content-center">
+                                                            <span class="badge @(paymentDetails.status == "success" ? "text-bg-success" : "text-bg-danger")">
+                                                                @(paymentDetails.status == "success" ? "Başarılı" : paymentDetails.status)
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3 col-4">
+                                                Sipariş No: @item.id
+                                            </div>
+                                            <div class="col-md-3 col-4">
+                                                <div class="container p-0">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            @(item.created_at.HasValue ? item.created_at.Value.ToString("dd/MM/yyyy") : "")
+                                                        </div>
+                                                        <div class="col-12">₺@paymentDetails.paidPrice</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                        }
+                            }
+                        }
+                        else
+                        {
+                            <p>Henüz siparişiniz bulunmamaktadır.</p>
+                        }
+
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-addresses" role="tabpanel" aria-labelledby="v-pills-addresses-tab" tabindex="0">
+
+
+                    <div class="col-xl-7  w-100 ms-md-4 me-md-4 m-0 col-12 p-0">
+                        <div class="row mb-2">
+                            <div class="col-6  d-flex align-items-center">
+                                <h3>Adreslerim</h3>
+                            </div>
+                            <div class="col-6 d-flex justify-content-end ">
+
+
+
+                                <a href="#Adres" class="btn btn-primary" data-bs-toggle="offcanvas" data-bs-target="#addAddress" aria-controls="addAddress">
+                                    Yeni Adres
+                                </a>
+                            </div>
+                        </div>
+                        <form id="RemoveAddressForm" action="/Home/RemoveAddress" method="post">
+
+                            @Html.AntiForgeryToken()
+
+                            <div class="row " id="address-cards">
+
+
+                                @foreach (var itemm in Model.users.FirstOrDefault().addresses)
+                                {
+                                    <div class="col-12 ">
+                                        <div class="card mb-2">
+                                            <div class="card-body">
+
+
+                                                <h5 class="card-title">@itemm.title</h5>
+                                                <h6 class="card-subtitle mb-2 text-body-secondary">@itemm.name @itemm.surname</h6>
+                                                <p class="card-text">@itemm.address.</p>
+                                                <a href="#Adres" class="card-link editbtn" data-bs-toggle="offcanvas" data-bs-target="#editAddress" aria-controls="editAddress" aId="@itemm.id">Düzenle</a>
+
+                                                <a onclick="RemoveAddress(@itemm.id)" class="card-link">Sil</a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+
+
+                            </div>
+                        </form>
+
+                    </div>
+
+
+                    <div class="offcanvas offcanvas-end" data-bs-backdrop="static" tabindex="-1" id="addAddress" aria-labelledby="addAddressLabel">
+                        <div class="offcanvas-header">
+                            <a href="#Adres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+
+                            </a>
+                        </div>
+                        <div class="offcanvas-body">
+                            <div class="row">
+                                @{
+        var u = Session["User"] as CobanlarMarket.Models.users;
+        var a = new CobanlarMarket.Models.addresses();
+    }
+
+                                
+                                    <form id="AddressForm" action="/Home/AddAdress" method="post">
+
+                                        @Html.AntiForgeryToken()
+                                        <div class="form-row row">
+                                            <div class="form-label text-primary">
+                                                Teslim alacak kişinin bilgileri
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="name">Ad *</label>
+                                                @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
+                                                @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "name" } })
+                                                @Html.ValidationMessageFor(model => u.first_name, "")
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="surname">Soyad*</label>
+                                                @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
+                                                @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "surname" } })
+                                                @Html.ValidationMessageFor(model => u.last_name, "")
+
+                                            </div>
+
+                                            <div class="form-group col-12">
+                                                <label for="tel">Telefon Numarası *</label>
+                                                @Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { name = "tel", @class = "form-control", id = "phone" } })
+                                                @Html.ValidationMessageFor(model => u.phone_number, "") <br />
+                                                <span id="valid-msg" class="hide">✓</span>
+                                                <span id="error-msg" class="hide"></span>
+                                                @*<input type="tel" class="form-control" id="tel" />*@
+                                                @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
+
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="title">Adres Başlığı</label>
+                                                @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "title" } })
+                                                @Html.ValidationMessageFor(model => a.title, "")
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>İl</label>
+
+                                                <select class="form-control" id="il" onchange="loadIlceler()">
+                                                    <option value="">İl Seçin</option>
+                                                </select>
+                                                <span class="field-validation-valid" data-valmsg-for="il" data-valmsg-replace="true"></span>
+
+
+
+
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>İlçe</label>
+
+                                                <select class="form-control" id="ilce" onchange="loadMahalleler()" disabled>
+                                                    <option value="">İlçe Seçin</option>
+                                                </select>
+                                                <span class="field-validation-valid" data-valmsg-for="ilce" data-valmsg-replace="true"></span>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>Mahalle</label>
+
+                                                <select class="form-control" id="mahalle" disabled>
+                                                    <option value="">Mahalle Seçin</option>
+                                                </select>
+                                                <span class="field-validation-valid" data-valmsg-for="mahalle" data-valmsg-replace="true"></span>
+
+                                            </div>
+                                            <div class="form-group col-12 ">
+                                                <label for="address"></label>
+                                                @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "addres", rows = "4" })
+                                                @Html.ValidationMessageFor(model => a.address, "")
+                                            </div>
+                                            <div class="form-group">
+                                                <a href="#" id="submitbtn" class="btn btn-primary">Adresi Kaydet</a>
+                                            </div>
+                                        </div>
+                                    </form>
+</div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="offcanvas offcanvas-end" data-bs-scroll="false   " tabindex="-1" id="editAddress" aria-labelledby="editAddressLabel">
+                        <div class="offcanvas-header">
+                            <a href="#editAdres" class="btn-close m-0" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+
+                            </a>
+                        </div>
+                        <div class="offcanvas-body">
+                            <div class="row">
+                                @{
+
+                                }
+
+                                    <form id="editAddressForm" action="/Home/EditAdress" method="post">
+
+                                        @Html.AntiForgeryToken()
+                                        <div class="form-row row">
+                                            <div class="form-label text-primary">
+                                                Teslim alacak kişinin bilgileri
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="name">Ad *</label>
+                                                @*<input type="text" class="form-control" id="name" placeholder="İsim">*@
+                                                @Html.EditorFor(model => u.first_name, "İsim", new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "Ad", id = "editname" } })
+                                                @Html.ValidationMessageFor(model => u.first_name, "")
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label for="surname">Soyad*</label>
+                                                @*<input type="text" class="form-control" id="surname" placeholder="Soyad">*@
+                                                @Html.EditorFor(model => u.last_name, "Soyad", new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "editsurname" } })
+                                                @Html.ValidationMessageFor(model => u.last_name, "")
+
+                                            </div>
+
+                                            <div class="form-group col-12">
+                                                <label for="editphone">Telefon Numarası *</label>
+                                                <input class="form-control shadow-none" id="editphone" type="tel"><br />
+                                                <span id="edit-valid-msg" class="hide">✓</span>
+                                                <span id="edit-error-msg" class="hide"></span>
+                                                @*<input type="tel" class="form-control" id="tel" />*@
+                                                @*@Html.EditorFor(model => u.phone_number, "Telefon Numarası", new { htmlAttributes = new { type = "tel", name = "phone", @class = "form-control", placeholder = "Telefon Numarası", id = "phone", pattern = "[+]{90}[0-9]{11,14}" } })*@
+                                                @Html.ValidationMessageFor(model => u.phone_number, "")
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="title">Adres Başlığı</label>
+                                                @Html.EditorFor(model => a.title, "Adres Başlığı", new { htmlAttributes = new { name = "title", @class = "form-control", placeholder = "Adres Başlığı", id = "edittitle" } })
+                                                @Html.ValidationMessageFor(model => a.title, "")
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>İl</label>
+
+                                                <select class="form-control" id="ilEdit" name="ilEdit" onchange="loadIlceler()">
+                                                    <option value="">İl Seçin</option>
+                                                </select>
+
+                                                <span class="field-validation-valid" data-valmsg-for="ilEdit" data-valmsg-replace="true"></span>
+
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>İlçe</label>
+
+                                                <select class="form-control" id="ilceEdit" onchange="loadMahalleler()" disabled>
+                                                    <option value="">İlçe Seçin</option>
+                                                </select>
+                                                <span class="field-validation-valid" data-valmsg-for="ilceEdit" data-valmsg-replace="true"></span>
+
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>Mahalle</label>
+
+                                                <select class="form-control" id="mahalleEdit" disabled>
+                                                    <option value="">Mahalle Seçin</option>
+                                                </select>
+                                                <span class="field-validation-valid" data-valmsg-for="mahalleEdit" data-valmsg-replace="true"></span>
+
+                                            </div>
+                                            <div class="form-group col-12 ">
+                                                <label for="address"></label>
+                                                @Html.TextAreaFor(model => a.address, new { name = "address", @class = "form-control", placeholder = "Adres", id = "editaddres", rows = "4" })
+                                                @Html.ValidationMessageFor(model => a.address, "")
+                                            </div>
+                                            <div class="form-group">
+                                                <a href="#" id="editsubmitbtn" class="btn btn-primary">Adresi Kaydet</a>
+                                            </div>
+                                        </div>
+
+                                    </form>
+
+</div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <div class="tab-pane fade" id="v-pills-account" role="tabpanel" aria-labelledby="v-pills-account-tab" tabindex="0">
+
+                    <div class="col-xl-7  w-100 ms-md-4 me-md-4 m-0 col-12 p-0">
+                    
+
+                        <form id="UserForm" action="/Home/EditUser" method="post">
+
+                            @Html.AntiForgeryToken()
+                            <div class="row justify-content-center">
+
+
+
+                                <div class="col-md-5 p-5 pt-0 ">
+                                    <div class="form-group">
+                                        <label for="UserImg" class="col-12 pl-0">Kullanıcı Fotoğrafı</label>
+                                        <div class="img " id="imgpre" style="height:300px;">
+                                            <img class="img" src="@user.avatar" alt="User Img" style="block-size:300px;" />
+                                        </div>
+
+                                        <input type="file" class="form-control" id="userImg" accept=".jpg,.jpeg,.png" aria-describedby="userImg" onchange="dosyaOnizlemeNew(this);">
+                                    </div>
+                                </div>
+                                <div class="col-md-7 p-5 pt-0 d-grid gap-3">
+                                    <div class="form-group">
+                                        <label for="name">İsim *</label>
+                                        @Html.EditorFor(model => user.first_name, new { htmlAttributes = new { name = "name", @class = "form-control", placeholder = "İsim", id = "uname" } })
+                                        @Html.ValidationMessageFor(model => user.first_name, "")
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="surname">Soyad*</label>
+                                        @Html.EditorFor(model => user.last_name, new { htmlAttributes = new { name = "surname", @class = "form-control", placeholder = "Soyad", id = "usurname" } })
+                                        @Html.ValidationMessageFor(model => user.last_name, "")
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="userName">Kullanıcı Adı *</label>
+                                        @Html.EditorFor(model => user.username, new { htmlAttributes = new { name = "userName", @class = "form-control", placeholder = "Kullanıcı Adı", id = "userName" } })
+                                        @Html.ValidationMessageFor(model => user.username, "")
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Şifre *</label>
+                                        @*@Html.EditorFor(model => user.password, new { htmlAttributes = new { type = "password", name = "password", @class = "form-control", placeholder = "Şifre", id = "password" } })
+        @Html.ValidationMessageFor(model => user.password, "")*@
+                                        <input class="form-control text-box single-line " id="password" name="u.password" placeholder="Şifre" type="password">
+                                        <span for="passworddesc" style="font-size: 13px;color: gray;">
+                                        Eğer şifrenizi değiştirmek istiyorsanız yeni şifre giriniz. <br /> Şifrenizin aynı kalmasını istiyorsanız boş geçebilirsiniz.</span>
+
+                                    </div>
+
+                                    <div class="form-group" id="email-parent">
+                                        @Html.AntiForgeryToken()
+
+                                        <label for="Email">E-mail *</label>
+                                        @Html.EditorFor(model => user.email, new { htmlAttributes = new { type = "email", name = "Email", @class = "form-control", placeholder = "Email", id = "Email" } })
+                                        @Html.ValidationMessageFor(model => user.email, "")
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tel">Telefon Numarası *</label><br />
+                                        @Html.EditorFor(model => user.phone_number, new { htmlAttributes = new { type = "tel", name = "tel", @class = "form-control", placeholder = "Telefon Numarası", id = "tel" } })
+                                        @Html.ValidationMessageFor(model => user.phone_number, "")
+                                        <br />
+
+                                        <span id="user-error-msg" class="hide"></span>
+                                    </div>
+
+                                    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+                                    <div class="form-group">
+                                        <label for="birthdate">Doğum Tarihi</label>
+                                        <input type="date" id="birthdate" name="birthdate" class="form-control" placeholder="Doğum Tarihi">
+                                        @Html.ValidationMessageFor(model => user.birth_of_date, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <button id="usersubmitbtn" class="btn btn-red float-right" uid="@user.id">Kaydet</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.7.1.js"></script>
+
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+<script src="~/Content/scripts/locationdata.js"></script>
+<script src="~/Content/scripts/common.js"></script>
+<script>
+
+
+
+    const errorMap = ["Geçersiz Numara", "Geçersiz Ülke Kodu", "Çok Kısa", "Çok Uzun", "Geçersiz Numara"];
+
+    const initTelInput = (input, errorMsg, validMsg) => {
+        const iti = window.intlTelInput(input, {
+            initialCountry: "tr",
+            onlyCountries: ["tr"],
+            strictMode: true,
+            allowDropdown: false,
+            separateDialCode: true,
+            showFlags: true,
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/23.4.1/js/utils.js"
+        });
+
+        const reset = () => {
+            input.classList.remove("error");
+            input.classList.remove("valid");
+            errorMsg.innerHTML = "";
+            errorMsg.classList.add("hide");
+            validMsg.classList.add("hide");
+        };
+
+        const showError = (msg) => {
+            input.classList.add("error");
+            errorMsg.innerHTML = msg;
+            errorMsg.classList.remove("hide");
+        };
+
+        const validateNumber = () => {
+            reset();
+            if (input.value.trim()) {
+                if (iti.isValidNumber()) {
+                    validMsg.classList.remove("hide");
+                    input.classList.add("valid");
+                } else {
+                    const errorCode = iti.getValidationError();
+                    const msg = errorMap[errorCode] || "Geçersiz Numara";
+                    showError(msg);
+                }
+            } else {
+                showError("Telefon numarası gereklidir");
+            }
+        };
+
+        input.addEventListener('keyup', validateNumber);
+        input.addEventListener('change', validateNumber);
+    };
+
+    const input = document.querySelector("#phone");
+    const errorMsg = document.querySelector("#error-msg");
+    const validMsg = document.querySelector("#valid-msg");
+    initTelInput(input, errorMsg, validMsg);
+
+    const editinput = document.querySelector("#editphone");
+    const editerrorMsg = document.querySelector("#edit-error-msg");
+    const editvalidMsg = document.querySelector("#edit-valid-msg");
+    initTelInput(editinput, editerrorMsg, editvalidMsg);
+
+    const userinput = document.querySelector("#tel");
+    const usererrorMsg = document.querySelector("#user-error-msg");
+    const uservalidMsg = document.querySelector("#user-valid-msg");
+    initTelInput(userinput, usererrorMsg, uservalidMsg);
+
+
+    function validatePhoneNumber(phoneNumber) {
+        // Numaranın 10 haneli olmasını veya başka kuralları kontrol edin
+        var phoneRegex = /([(]?)([5])([0-9]{2})([)]?)([\s]?)([0-9]{3})([\s]?)([0-9]{2})([\s]?)([0-9]{2})$/;
+        return phoneRegex.test(phoneNumber);
+    }
+
+        $(document).ready(function() {
+            var dateFromServer = '@user.birth_of_date'
+
+            // Moment.js kullanarak tarihi biçimlendirme
+             var formattedDate = moment(dateFromServer, "DD.MM.YYYY HH:mm:ss").format("YYYY-MM-DD");
+
+
+
+            document.getElementById('birthdate').value = formattedDate;
+
+
+            $(document).on("click", "#usersubmitbtn", function (e) {
+
+                e.preventDefault();
+                var tel = $('#tel').val() || "";
+                console.log(tel);
+                var telIsValid = validatePhoneNumber(tel);
+
+                if (!telIsValid) {
+                    toastr.error("Geçerli bir telefon numarası girin.", "Hata");
+                    return; // Eğer numara geçersizse form gönderimini durdur
+                }
+
+                    if ($('#UserForm').valid()) {
+
+                        var formData = new FormData();
+                        var img = $('#userImg')[0].files[0];
+                        formData.append('Img', img);
+
+                        var Id = $(this).attr("uid");
+                        var name = $('#uname').val() ||"";
+                        var surname = $('#usurname').val() || "";
+                        var username = $('#userName').val() || "";
+                        var password = $('#password').val() || "";
+                        var email = $('#Email').val() || "";
+                        var tel = $('#tel').val() || "";
+                        var birthdate = $('#birthdate').val() || "";
+                        var token = $('#UserForm input[name="__RequestVerificationToken"]').val();
+
+
+                        if (email != '@user.email') {
+
+                            var fdata = new FormData();
+                            fdata.append("Email", email);
+                            fdata.append("OldMail", '@user.email');
+                            var token = $('#email-parent input[name="__RequestVerificationToken"]').val();
+                            fdata.append("__RequestVerificationToken", token);
+                            $.ajax({
+                                url: '/Home/ChangeEmail/',
+                                type: 'POST',
+                                data: fdata,
+                                contentType: false,
+                                processData: false,
+                                success: function (result) {
+
+                                    if (result.success) {
+
+                                        $('.confirmation').remove();
+
+
+                                        var element = '  <div class="confirmation">' +
+                                            ' <p class="mb-3">E-mail adresinize gönderdiğimiz onay kodunu giriniz.</p > ' +
+                                            ' <input class="me-1" type = "number" name = "code" id="confirmcode" value = "" />' +
+                                            '<span class="text-danger" id="confirm-message"></span>' +
+                                            '<button id="confirmbtn" class="btn btn-sm btn-red me-1" required>Onayla</button>' +
+                                            '<button id="confirmcancelbtn" class="btn btn-sm btn-red" required>İptal</button>' +
+                                            ' <div id="countdown"></div>' +
+                                            '</div>';
+
+                                        $('#email-parent').append(element);
+                                        var countdownSeconds = 100;
+                                        startCountdown(countdownSeconds);
+
+                                        $('#Email').prop("disabled", true);
+
+
+                                    } else {
+                                        toastr.error(result.message);
+                                    }
+
+
+                                },
+                                error: function (error) {
+                                    console.error(error);
+                                }
+                            });
+                            return;
+                        }
+
+
+
+                        formData.append('Id', Id);
+                        formData.append('Name', name);
+                        formData.append('Surname', surname);
+                        formData.append('Username', username);
+                        formData.append('Password', password);
+                        formData.append('Email', email);
+                        formData.append('Tel', tel);
+                        formData.append('Birthdate', birthdate);
+                        formData.append("__RequestVerificationToken", token);
+
+                            $.ajax({
+                                url: '/Home/EditUser/',
+                                type: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                beforeSend: function () {
+                                    $('#loading').show();
+                                },
+                                success: function(result) {
+                                    if (result.success) {
+                                        toastr.success(result.message);
+                                        window.location.reload();
+                                    } else {
+                                        toastr.error(result.message, 'Hata');
+                                    }
+
+
+                                },
+                                complete: function () {
+                                    $('#loading').hide();
+                                },
+                                error: function (xhr, status, error)
+                                {
+
+                                    window.location.href="/Home/Auth";
+
+                                    console.error('AJAX Error: ' + error);
+                                }
+                            });
+                    }
+               });
+        });
+
+
+
+            function dosyaOnizlemeNew(input) {
+                if (input.files && input.files[0]) {
+                    var file = input.files[0];
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        var preview = document.getElementById('imgpre');
+                        preview.innerHTML = "";
+                        preview.style.width = 'fit-content';
+                        var imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+                        imgElement.style.height = 'inherit';
+                        preview.append(imgElement);
+                    };
+
+                    reader.readAsDataURL(file);
+                }
+            }
+
+    $(document).on('click', '#confirmbtn', function (e) {
+        e.preventDefault();
+        var code = $('#confirmcode').val();
+        console.log(code);
+
+        if (code != "") {
+            $.ajax({
+                url: '/Home/ConfirmChangeMailCode/',
+                type: 'POST',
+                data: { Code: code },
+                success: function (result) {
+
+                    if (result.success) {
+                        toastr.success(result.message);
+                        window.location = result.redirectUrl;
+                        $('#Email').prop("disabled", false);
+
+                    } else {
+                        toastr.error(result.message);
+
+                        if (result.redirectUrl!=null) {
+                            window.location = result.redirectUrl;
+
+                        }
+
+                    }
+
+
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+
+
+
+
+
+            });
+        }
+
+
+    });
+
+
+    $(document).on('click', '#confirmcancelbtn', function (e) {
+
+        $.ajax({
+            url: '/Home/ResetChangeMailConfirmCode/',
+            type: 'POST',
+
+            success: function (result) {
+
+
+                $('#Email').prop("disabled", false);
+
+            },
+            error: function (error) {
+                console.error(error);
+            }
+
+        });
+        clearInterval(countdownInterval);
+        $('.confirmation').remove();
+        $('#RegisterForm').show();
+
+    });
+
+    var countdownInterval;
+    function startCountdown(duration) {
+        var timer = duration, minutes, seconds;
+        countdownInterval = setInterval(function () {
+            minutes = Math.floor(timer / 60);
+            seconds = Math.floor(timer % 60);
+
+            // Tek basamaklı sayıları düzgün göstermek için sıfır ekleme işlemi
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            document.getElementById('countdown').textContent = minutes + ":" + seconds;
+            console.log(timer);
+            if (--timer < 0) {
+                timer = 0;
+                clearInterval(countdownInterval);
+                $('#countdown').empty();
+                $('#countdown').append(`<a onclick="$('#usersubmitbtn').trigger('click')">Tekrar Gönder</a>`);
+
+                $.ajax({
+                    url: '/Home/ResetConfirmCode/',
+                    type: 'POST',
+
+                    success: function (result) {
+
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+
+                });
+
+            }
+        }, 1000);
+    }
+   
+
+</script>

@@ -25,6 +25,12 @@ using Iyzipay.Model.V2.Subscription;
 using System.Web.WebPages;
 using System.Web.UI.WebControls;
 using System.Threading.Tasks;
+using System.Data.Entity.Core;
+using System.Data.Entity.Validation;
+using System.Numerics;
+using HtmlAgilityPack;
+using MailKit.Security;
+using MimeKit;
 
 namespace CobanlarMarket.Controllers
 {
@@ -32,6 +38,9 @@ namespace CobanlarMarket.Controllers
     {
 
         private CobanlarMarketEntities db = new CobanlarMarketEntities();
+        private readonly string seoFilePath;
+        private EmailService _emailService = new EmailService();
+
         // GET: Management
         public ActionResult Dashboard()
         {
@@ -61,31 +70,38 @@ namespace CobanlarMarket.Controllers
             return View(model);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult AddProduct(IEnumerable<HttpPostedFileBase> Imgs, string Name, string SubCategory, string SubSubCategory, int categoryType, string Description, string Size, string Color, int Quantity, string Price, string OldPrice)
         {
 
+            var encodedName = EncodeFileName(Name);
 
-            var path = Server.MapPath("~/Content/ProductImg/" + Name.Replace(" ", "") + "/");
-            List<String> imgPaths = null;
+            var path = Server.MapPath("~/Content/ProductImg/" + encodedName + "/");
+            List<string> imgPaths = new List<string>();
             if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
             {
                 Directory.CreateDirectory(path); // Klasörü oluştur
             }
-
             if (Imgs != null)
             {
                 foreach (var img in Imgs)
                 {
                     if (img != null && img.ContentLength > 0)
                     {
-                        var fileName = Path.GetFileName(img.FileName);
-                        var filePath = Path.Combine(path, fileName);
+                        var originalFileName = Path.GetFileNameWithoutExtension(img.FileName);
+                        var extension = Path.GetExtension(img.FileName);
+
+                        // Dosya adını encode et
+                        var encodedFileName = EncodeFileName(originalFileName) + extension;
+
+                        var filePath = Path.Combine(path, encodedFileName);
                         img.SaveAs(filePath);
+
+                        imgPaths.Add("/Content/ProductImg/" + encodedName + "/" + encodedFileName);
                     }
                 }
-                imgPaths = Imgs.Select(img => "/Content/ProductImg/" + Name.Replace(" ", "") + "/" + Path.GetFileName(img.FileName)).ToList();
-
             }
+
             else
             {
                 return Json(new { success = false, message = "En az 1 resim eklemelisiniz!" });
@@ -278,16 +294,41 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveProduct(int Id)
         {
             products product = db.products.Find(Id);
             product.status = false;
 
+            //if (!db.order_item.Any(x=>x.product_id==product.id))
+            //{
+            //    foreach (var item in product.product_images.ToList())
+            //    {
+            //        var path = Server.MapPath(item.image_path);
+
+            //        if (System.IO.File.Exists(path))
+            //        {
+            //            // Dosyayı sil
+            //            System.IO.File.Delete(path);
+            //            db.product_images.Remove(item);
+            //        }
+
+            //        // Klasörün yolunu al (Dosya yolundan klasör yolunu elde etmek için)
+            //        var directoryPath = Path.GetDirectoryName(path);
+
+            //        // Klasörde başka dosya kalmadıysa, klasörü sil
+            //        if (Directory.Exists(directoryPath) && !Directory.EnumerateFiles(directoryPath).Any())
+            //        {
+            //            Directory.Delete(directoryPath);
+            //        }
+            //    }
+            //}
+
 
             db.SaveChanges();
             var list = db.products
                     .Where(x => x.status == true)
-                    .ToList()  // Retrieve data from database before formatting
+                    .ToList()
                     .Select(x => new
                     {
                         x.id,
@@ -298,7 +339,9 @@ namespace CobanlarMarket.Controllers
                         x.subcategory_id,
                         created_at = x.created_at != null ? x.created_at.Value.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
                         product_skus_count = x.products_skus.Count(),
-                        product_sku_quantity = x.products_skus.FirstOrDefault().quantity
+                        product_sku_quantity = x.products_skus.FirstOrDefault().quantity,
+                        product_sku = x.products_skus.FirstOrDefault().sku,
+                        sold_count = x.order_item.Where(o => o.status == "success" && o.product_id == x.id).Sum(y => y.quantity)
 
                     })
                     .ToList();
@@ -327,7 +370,8 @@ namespace CobanlarMarket.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditProduct(IEnumerable<HttpPostedFileBase> Imgs, int Id, string Name, int? SubCategory, string SubSubCategory, int categoryType, string Description, int? Size, int? Color, string Sku, int Quantity, string Price, string OldPrice)
+        [ValidateAntiForgeryToken]
+        public ActionResult EditProduct(IEnumerable<HttpPostedFileBase> Imgs, int Id, string Name, int? SubCategory, string SubSubCategory, int categoryType, string Description, int Quantity, string Price, string OldPrice)
         {
             try
             {
@@ -359,9 +403,12 @@ namespace CobanlarMarket.Controllers
                         product.sub_subcategory_id = SubSubCategory;
 
                         product.category_type = categoryType;
-                        product.products_skus.FirstOrDefault().size_attribute_id = Size ?? -1;
-                        product.products_skus.FirstOrDefault().color_attribute_id = Color ?? -1;
-                        product.products_skus.FirstOrDefault().sku = Sku;
+                        product.products_skus.FirstOrDefault().size_attribute_id =-1;
+                        product.products_skus.FirstOrDefault().color_attribute_id =  -1;
+                        if (product.products_skus.FirstOrDefault().sku.IsNullOrWhiteSpace())
+                        {
+                            product.products_skus.FirstOrDefault().sku= (Name + product.id).Replace(" ", "");
+                        }
                         product.products_skus.FirstOrDefault().quantity = Quantity;
 
                         decimal? price = null;
@@ -380,7 +427,13 @@ namespace CobanlarMarket.Controllers
                         product.products_skus.FirstOrDefault().price = price;
                         product.products_skus.FirstOrDefault().old_price = old_price;
 
-                        var path = Server.MapPath("~/Content/ProductImg/" + Name.Replace(" ", "") + "/");
+
+
+                        var encodedName = EncodeFileName(Name);
+
+
+
+                        var path = Server.MapPath("~/Content/ProductImg/" + encodedName + "/");
 
                         if (!Directory.Exists(path))
                         {
@@ -403,10 +456,19 @@ namespace CobanlarMarket.Controllers
                             {
                                 if (img != null && img.ContentLength > 0)
                                 {
-                                    // Dosya adındaki boşlukları "-" ile değiştir
-                                    var fileName = Path.GetFileName(img.FileName.Replace(" ", "-"));
-                                    var filePath = Path.Combine(path, fileName);
-                                    var imgPath = "/Content/ProductImg/" + Name.Replace(" ", "") + "/" + fileName;
+
+                                    var originalFileName = Path.GetFileNameWithoutExtension(img.FileName);
+                                    var extension = Path.GetExtension(img.FileName);
+
+                                    // Dosya adını encode et
+                                    var encodedFileName = EncodeFileName(originalFileName) + extension;
+
+                                    var filePath = Path.Combine(path, encodedFileName);
+
+
+
+
+                                    var imgPath = "/Content/ProductImg/" + encodedName + "/" + encodedFileName;
 
                                     if (!System.IO.File.Exists(filePath))
                                     {
@@ -424,7 +486,7 @@ namespace CobanlarMarket.Controllers
                                     else
                                     {
                                         // Dosya zaten varsa listeye ekle ve hata vermeden devam et
-                                        skippedFiles.Add(fileName);
+                                        skippedFiles.Add(encodedFileName);
                                     }
                                 }
                             }
@@ -571,6 +633,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult AddCategory(HttpPostedFileBase Img, string Name, string Description)
         {
 
@@ -578,9 +641,17 @@ namespace CobanlarMarket.Controllers
             if (!db.categories.Any(x => x.name == Name))
             {
                 if (Img != null)
+
+
                 {
-                    var fileName = Path.GetFileName(Img.FileName.Replace(" ","-"));
-                    var path = Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + Name.Replace(" ", "") + "/"));
+                    var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                    var extension = Path.GetExtension(Img.FileName);
+
+                    // Dosya adını encode et
+                    var fileName = EncodeFileName(originalFileName) + extension;
+                    var folderName = EncodeFileName(Name);
+
+                    var path = Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + folderName + "/"));
 
                     if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
                     {
@@ -596,8 +667,8 @@ namespace CobanlarMarket.Controllers
 
 
 
-                    Img.SaveAs(Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + Name.Replace(" ", "") + "/"), fileName));
-                    imgpath = "/Content/CategoriesImg/" + Name.Replace(" ", "") + "/" + fileName;
+                    Img.SaveAs(Path.Combine(Server.MapPath("~/Content/CategoriesImg/" + folderName + "/"), fileName));
+                    imgpath = "/Content/CategoriesImg/" + folderName + "/" + fileName;
 
 
 
@@ -658,6 +729,8 @@ namespace CobanlarMarket.Controllers
 
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveCategory(int Id)
         {
             using (db)
@@ -752,13 +825,14 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditCategory(HttpPostedFileBase Img, int Id, string Name, string Description)
         {
 
             if (db.categories.Any(x => x.id == Id))
             {
 
-                if (Name != "")
+                if (!Name.IsNullOrWhiteSpace())
                 {
 
                     string imgPath = null;
@@ -785,12 +859,6 @@ namespace CobanlarMarket.Controllers
                     }
 
 
-                    var path = Server.MapPath("~/Content/CategoriesImg/" + Name.Replace(" ", "") + "/");
-
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
 
 
 
@@ -800,7 +868,24 @@ namespace CobanlarMarket.Controllers
 
                         if (Img != null && Img.ContentLength > 0)
                         {
-                            var fileName = Path.GetFileName(Img.FileName.Replace(" ","-"));
+
+
+                            var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                            var extension = Path.GetExtension(Img.FileName);
+
+                            // Dosya adını encode et
+                            var fileName = EncodeFileName(originalFileName) + extension;
+                            var folderName = EncodeFileName(Name);
+
+                            var path = Server.MapPath("~/Content/CategoriesImg/" + folderName + "/");
+
+                            if (!Directory.Exists(path))
+                            {
+                                Directory.CreateDirectory(path);
+                            }
+
+
+
                             var filePath = Path.Combine(path, fileName);
 
                             if (!System.IO.File.Exists(filePath))
@@ -832,7 +917,7 @@ namespace CobanlarMarket.Controllers
 
 
                             }
-                            imgPath = "/Content/CategoriesImg/" + Name.Replace(" ", "") + "/" + fileName;
+                            imgPath = "/Content/CategoriesImg/" + folderName + "/" + fileName;
 
 
                         }
@@ -860,7 +945,7 @@ namespace CobanlarMarket.Controllers
                 }
                 else
                 {
-                    return Json(new { success = false, message = "İsim Ve Açıklama Boş Geçilemez." });
+                    return Json(new { success = false, message = "İsim Boş Geçilemez." });
 
                 }
             }
@@ -886,8 +971,18 @@ namespace CobanlarMarket.Controllers
             }
             else
             {
-                category.cover = null;
-                db.SaveChanges();
+                try
+                {
+                    category.cover = null;
+                    db.SaveChanges();
+                }
+                catch (DbEntityValidationException e)
+                {
+
+                    return Json(new { success = false, message = e.EntityValidationErrors.First().ValidationErrors.First().ErrorMessage }, JsonRequestBehavior.AllowGet);
+
+                }
+
                 return Json(new { success = true, message = "Resim Kaldırıldı" }, JsonRequestBehavior.AllowGet);
 
             }
@@ -914,6 +1009,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult EditSubCategory(int Id, int ParentId, string Name, string Description)
         {
 
@@ -980,6 +1076,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult EditSubSubCategory(int Id, int ParentId, string Name, string Description)
         {
 
@@ -1035,7 +1132,8 @@ namespace CobanlarMarket.Controllers
 
 
 
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveSubCategory(int Id)
         {
             using (db)
@@ -1074,18 +1172,8 @@ namespace CobanlarMarket.Controllers
                         transaction.Commit();
 
 
-                        var listt = db.sub_categories
-                         .ToList()
-                         .Select(x => new
-                         {
-                             x.id,
-                             x.name,
-                             x.description,
-                             created_at = x.created_at != null ? x.created_at.Value.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
-                             parentCategory = db.categories.FirstOrDefault(c => c.id == x.parent_id) == null ? "Kategori Yok" : db.categories.FirstOrDefault(c => c.id == x.parent_id).name
-                         })
-                         .ToList();
-                        return Json(new { success = true, message = "Alt Kategori Başarıyla Silindi.", list = listt });
+
+                        return Json(new { success = true, message = "Alt Kategori Başarıyla Silindi." });
                     }
                     catch (Exception ex)
                     {
@@ -1097,7 +1185,8 @@ namespace CobanlarMarket.Controllers
 
         }
 
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveSubSubCategory(int Id)
         {
             using (db)
@@ -1129,18 +1218,18 @@ namespace CobanlarMarket.Controllers
                         transaction.Commit();
 
 
-                        var listt = db.sub_categories
-                         .ToList()
-                         .Select(x => new
-                         {
-                             x.id,
-                             x.name,
-                             x.description,
-                             created_at = x.created_at != null ? x.created_at.Value.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
-                             parentCategory = db.categories.FirstOrDefault(c => c.id == x.parent_id) == null ? "Kategori Yok" : db.categories.FirstOrDefault(c => c.id == x.parent_id).name
-                         })
-                         .ToList();
-                        return Json(new { success = true, message = "Alt Alt Kategori Başarıyla Silindi.", list = listt });
+                        //var listt = db.sub_categories
+                        // .ToList()
+                        // .Select(x => new
+                        // {
+                        //     x.id,
+                        //     x.name,
+                        //     x.description,
+                        //     created_at = x.created_at != null ? x.created_at.Value.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
+                        //     parentCategory = db.categories.FirstOrDefault(c => c.id == x.parent_id) == null ? "Kategori Yok" : db.categories.FirstOrDefault(c => c.id == x.parent_id).name
+                        // })
+                        // .ToList();
+                        return Json(new { success = true, message = "Alt Alt Kategori Başarıyla Silindi." });
 
                     }
                     catch (Exception ex)
@@ -1156,6 +1245,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult AddSubCategory(int ParentId, string Name, string Description)
         {
 
@@ -1213,6 +1303,7 @@ namespace CobanlarMarket.Controllers
 
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult AddSubSubCategory(int ParentId, string Name, string Description)
         {
             if (db.sub_categories.Any(x => x.id == ParentId))
@@ -1311,6 +1402,7 @@ namespace CobanlarMarket.Controllers
             return View(model);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddAttribute(string Value, string Type)
         {
 
@@ -1336,7 +1428,8 @@ namespace CobanlarMarket.Controllers
             model.carts = db.cart.ToList();
             return View(model);
         }
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveAttribute(int Id)
         {
             try
@@ -1417,6 +1510,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditAttribute(int Id, string Value, string Type)
         {
 
@@ -1486,6 +1580,44 @@ namespace CobanlarMarket.Controllers
             model.carts = db.cart.ToList();
             return View(model);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult EditReferenceId(String ReferenceId, int OrderId)
+        {
+
+
+            if (db.order_details.Any(x => x.id == OrderId))
+            {
+                var order = db.order_details.FirstOrDefault(x => x.id == OrderId);
+                if (long.TryParse(ReferenceId, out long referenceid))
+                {
+                    order.reference_id = referenceid;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Bir hata oluştu." }, JsonRequestBehavior.AllowGet);
+
+                }
+
+
+                return Json(new { success = true, message = "Takip kodu başarıyla düzenlendi." }, JsonRequestBehavior.AllowGet);
+
+            }
+            else
+            {
+
+                return Json(new { success = false, message = "Sipariş bulunamadı." }, JsonRequestBehavior.AllowGet);
+
+            }
+
+
+
+        }
+
+
         public ActionResult OrderList()
         {
             AllViewModel model = new AllViewModel();
@@ -1511,6 +1643,16 @@ namespace CobanlarMarket.Controllers
 
             return View(model);
         }
+        private string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        // Şifre Doğrulama
+        private bool VerifyPassword(string password, string hashedPassword)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+        }
 
 
         [HttpPost]
@@ -1530,7 +1672,7 @@ namespace CobanlarMarket.Controllers
                     return Json(new { success = false, message = "Bu telefon numarasına sahip bir kullanıcı bulunmaktadır." }, JsonRequestBehavior.AllowGet);
 
                 }
-                users tempuser = new users() { first_name = Name, last_name = Surname, username = Username, password = Password, email = Email, phone_number = Tel, birth_of_date = DateTime.Parse(Birthdate), avatar = imgpath, role = false, created_at = DateTime.Now, status = true };
+                users tempuser = new users() { first_name = Name, last_name = Surname, username = Username, password = HashPassword(Password), email = Email, phone_number = Tel, birth_of_date = DateTime.Parse(Birthdate), avatar = imgpath, role = false, created_at = DateTime.Now, status = true };
 
                 if (!TryValidateModel(tempuser))
                 {
@@ -1544,8 +1686,14 @@ namespace CobanlarMarket.Controllers
 
                 if (Img != null)
                 {
-                    var fileName = Path.GetFileName(Img.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Content/UserImg/" + Username + "/"));
+
+                    var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                    var extension = Path.GetExtension(Img.FileName);
+
+                    // Dosya adını encode et
+                    var fileName = EncodeFileName(originalFileName) + extension;
+                    var folderName = EncodeFileName(Username);
+                    var path = Path.Combine(Server.MapPath("~/Content/UserImg/" + folderName + "/"));
 
                     if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
                     {
@@ -1561,8 +1709,8 @@ namespace CobanlarMarket.Controllers
 
 
 
-                    Img.SaveAs(Path.Combine(Server.MapPath("~/Content/UserImg/" + Username + "/"), fileName));
-                    imgpath = "/Content/UserImg/" + Username + "/" + fileName;
+                    Img.SaveAs(Path.Combine(Server.MapPath("~/Content/UserImg/" + folderName + "/"), fileName));
+                    imgpath = "/Content/UserImg/" + folderName + "/" + fileName;
 
                 }
 
@@ -1598,7 +1746,7 @@ namespace CobanlarMarket.Controllers
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
 
-            return View(model);
+            return Json(new { success = true, message = "Kullanıcı başarıyla eklendi." }, JsonRequestBehavior.AllowGet);
 
 
         }
@@ -1671,9 +1819,19 @@ namespace CobanlarMarket.Controllers
                 if (Img != null)
                 {
                     string imgpath = null;
-                    var fileName = Path.GetFileName(Img.FileName);
-                    var path = Path.Combine(Server.MapPath("~/Content/UserImg/" + Username + "/"));
-                    imgpath = "/Content/UserImg/" + Username + "/" + fileName;
+
+
+
+
+                    var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                    var extension = Path.GetExtension(Img.FileName);
+
+                    // Dosya adını encode et
+                    var fileName = EncodeFileName(originalFileName) + extension;
+                    var folderName = EncodeFileName(Username);
+                    var path = Path.Combine(Server.MapPath("~/Content/UserImg/" + folderName + "/"));
+
+                    imgpath = "/Content/UserImg/" + folderName + "/" + fileName;
 
                     if (Directory.Exists(path))
                     {
@@ -1696,8 +1854,26 @@ namespace CobanlarMarket.Controllers
                 user.last_name = Surname;
                 user.username = Username;
                 user.email = Email;
-                user.password = Password;
                 user.phone_number = Tel;
+
+
+
+                if (!Password.IsNullOrWhiteSpace())
+                {
+                    if (Password.Length < 8)
+                    {
+                        return Json(new { success = false, message = "Şifre en az 8 karakterden oluşmalıdır." }, JsonRequestBehavior.AllowGet);
+
+                    }
+
+                    user.password = HashPassword(Password);
+
+
+                }
+                else
+                {
+                    user.password = user.password;
+                }
 
 
                 if (!TryValidateModel(user))
@@ -1724,18 +1900,32 @@ namespace CobanlarMarket.Controllers
 
                 db.SaveChanges();
 
-                return Json(new { success = true, user = user }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    success = true,
+                    user = new
+                    {
+                        Id = user.id,
+                        first_name = user.first_name,
+                        last_name = user.last_name,
+                        username = user.username,
+                        email = user.email,
+                        phone_number = user.phone_number,
+                        birth_of_date = user.birth_of_date,
+                        avatar = user.avatar
+                    }
+                }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new { success = false, message = "Kullanıcı bulunamadı" }, JsonRequestBehavior.AllowGet);
         }
 
-
+     
         public ActionResult UserList()
         {
             AllViewModel model = new AllViewModel();
             model.products = db.products.ToList();
-            model.users = db.users.ToList();
+            model.users = db.users.Include(x=>x.order_details).ToList();
             model.categories = db.categories.ToList();
             model.carts = db.cart.ToList();
             return View(model);
@@ -1752,7 +1942,7 @@ namespace CobanlarMarket.Controllers
             new SelectListItem { Text = "Sabit", Value = "Sabit" }
         };
             AllViewModel model = new AllViewModel();
-            model.products = db.products.ToList();
+            model.products = db.products.Where(x => x.status == true).ToList();
             model.users = db.users.ToList();
             model.categories = db.categories.ToList();
             model.sub_categories = db.sub_categories.ToList();
@@ -1763,6 +1953,7 @@ namespace CobanlarMarket.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult AddCoupon(string Code, string Type, string Value, string MinPrice, string MaxPrice, string StartDate, string EndDate, string CategoryIds, string Products)
         {
             List<int> categories = new List<int>(); ;
@@ -1920,6 +2111,7 @@ namespace CobanlarMarket.Controllers
 
 
         }
+
         public ActionResult EditCoupon(int id)
         {
 
@@ -1942,7 +2134,7 @@ namespace CobanlarMarket.Controllers
             ViewBag.DiscountTypes = discountTypes;
             var coupon = db.coupons.Find(id);
             AllViewModel model = new AllViewModel();
-            model.products = db.products.ToList();
+            model.products = db.products.Where(x => x.status == true).ToList();
             model.users = db.users.ToList();
             model.coupons = db.coupons.Where(x => x.Id == id).Include(c => c.coupon_categories).Include(c => c.coupon_products).ToList();
             model.categories = db.categories.ToList();
@@ -1955,6 +2147,7 @@ namespace CobanlarMarket.Controllers
 
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult EditCoupon(int Id, string Code, string Type, string Value, string MinPrice, string MaxPrice, string StartDate, string EndDate, string CategoryIds, string Products, string Status)
         {
             List<int> categories = new List<int>(); ;
@@ -2165,6 +2358,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveCoupon(int Id)
         {
 
@@ -2181,28 +2375,8 @@ namespace CobanlarMarket.Controllers
                 coupon.IsActive = false;
 
                 db.SaveChanges();
-                var list = db.coupons
-                        .Where(x => x.Status == true)
-                        .ToList()
-                        .Select(x => new
-                        {
-                            x.Id,
-                            x.Code,
-                            x.DiscountType,
-                            x.DiscountValue,
-                            x.MinimumSpend,
-                            x.MaxDiscountAmount,
-                            x.IsActive,
 
-                            EndDate = x.EndDate != null ? x.EndDate.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
-                            StartDate = x.StartDate != null ? x.StartDate.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
-                            CreatedAt = x.CreatedAt != null ? x.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm:ss") : "N/A"
-
-
-
-                        })
-                        .ToList();
-                return Json(new { success = true, message = "Kupon Başarıyla Silindi", coupons = list }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "Kupon Başarıyla Silindi" }, JsonRequestBehavior.AllowGet);
 
             }
             else
@@ -2222,7 +2396,7 @@ namespace CobanlarMarket.Controllers
         public ActionResult AddCampaign()
         {
             AllViewModel model = new AllViewModel();
-            model.products = db.products.ToList();
+            model.products = db.products.Where(x => x.status == true).ToList();
             model.product_attributes = db.product_attributes.ToList();
             model.users = db.users.ToList();
             model.campaigns = db.campaigns.ToList();
@@ -2231,6 +2405,7 @@ namespace CobanlarMarket.Controllers
             return View(model);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult AddCampaign(HttpPostedFileBase Img, string Title, string StartDate, string EndDate, string Products)
         {
 
@@ -2243,7 +2418,15 @@ namespace CobanlarMarket.Controllers
                     return Json(new { success = false, message = "Kampanya resmi eklenmesi zorunludur." }, JsonRequestBehavior.AllowGet);
 
                 }
-                string encodedTitle = System.Web.HttpUtility.UrlEncode(Title);
+
+
+                var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                var extension = Path.GetExtension(Img.FileName);
+
+                // Dosya adını encode et
+                var fileName = EncodeFileName(originalFileName) + extension;
+                var encodedTitle = EncodeFileName(Title);
+
                 var path = Server.MapPath("~/Content/CampaignCover/" + encodedTitle + "/");
                 String imgPath = null;
                 if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
@@ -2256,12 +2439,12 @@ namespace CobanlarMarket.Controllers
 
                     if (Img.ContentLength > 0)
                     {
-                        var fileName = Path.GetFileName(Img.FileName);
+
                         var filePath = Path.Combine(path, fileName);
                         Img.SaveAs(filePath);
                     }
 
-                    imgPath = "/Content/CampaignCover/" + encodedTitle + "/" + Path.GetFileName(Img.FileName);
+                    imgPath = "/Content/CampaignCover/" + encodedTitle + "/" + fileName;
 
                 }
 
@@ -2352,6 +2535,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult RemoveCampaign(int Id)
         {
 
@@ -2388,23 +2572,8 @@ namespace CobanlarMarket.Controllers
                 db.campaigns.Remove(campaign);
 
                 db.SaveChanges();
-                var list = db.campaigns
-                        .ToList()
-                        .Select(x => new
-                        {
-                            x.id,
-                            x.campaign_title,
-                            x.campaign_cover,
-                            x.is_active,
-                            EndDate = x.campaign_end_date != null ? x.campaign_end_date.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
-                            StartDate = x.campaign_start_date != null ? x.campaign_start_date.ToString("dd/MM/yyyy HH:mm:ss") : "N/A",
 
-
-
-
-                        })
-                        .ToList();
-                return Json(new { success = true, message = "Kampanya Başarıyla Silindi", campaigns = list }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, message = "Kampanya Başarıyla Silindi" }, JsonRequestBehavior.AllowGet);
 
             }
             else
@@ -2447,7 +2616,7 @@ namespace CobanlarMarket.Controllers
             }
 
             AllViewModel model = new AllViewModel();
-            model.products = db.products.ToList();
+            model.products = db.products.Where(x => x.status == true).ToList();
             model.users = db.users.ToList();
             model.coupons = db.coupons.ToList();
             model.campaigns = db.campaigns.Where(x => x.id == Id).Include(x => x.campaign_products).ToList();
@@ -2459,6 +2628,7 @@ namespace CobanlarMarket.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditCampaign(HttpPostedFileBase Img, int Id, string Title, string StartDate, string EndDate, string Products, string Status)
         {
 
@@ -2506,15 +2676,21 @@ namespace CobanlarMarket.Controllers
 
 
 
+                        var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                        var extension = Path.GetExtension(Img.FileName);
 
-                        var path = Server.MapPath("~/Content/CampaignCover/" + Title.Replace(" ", "-") + "/");
+                        // Dosya adını encode et
+                        var fileName = EncodeFileName(originalFileName) + extension;
+                        var encodedTitle = EncodeFileName(Title);
+
+                        var path = Server.MapPath("~/Content/CampaignCover/" + encodedTitle + "/");
                         String imgPath = null;
                         if (!Directory.Exists(path)) // Klasör daha önce oluşturulmamışsa
                         {
                             Directory.CreateDirectory(path); // Klasörü oluştur
                             if (Title != campaign.campaign_title)
                             {
-                                var oldpath = Server.MapPath("~/Content/CampaignCover/" + campaign.campaign_title.Replace(" ", "-") + "/");
+                                var oldpath = Server.MapPath("~/Content/CampaignCover/" + EncodeFileName(campaign.campaign_title) + "/");
 
                                 if (Directory.Exists(oldpath))
                                 {
@@ -2553,12 +2729,12 @@ namespace CobanlarMarket.Controllers
 
                             if (Img.ContentLength > 0)
                             {
-                                var fileName = Path.GetFileName(Img.FileName);
+
                                 var filePath = Path.Combine(path, fileName);
                                 Img.SaveAs(filePath);
                             }
 
-                            imgPath = "/Content/CampaignCover/" + Title.Replace(" ", "-") + "/" + Path.GetFileName(Img.FileName);
+                            imgPath = "/Content/CampaignCover/" + encodedTitle + "/" + fileName;
 
                         }
 
@@ -2641,7 +2817,7 @@ namespace CobanlarMarket.Controllers
 
         }
 
-
+        [HttpPost]
         public async Task<JsonResult> Refund(String PaymentId)
         {
 
@@ -2686,6 +2862,8 @@ namespace CobanlarMarket.Controllers
                     foreach (var item in db.order_item.Where(x => x.order_id == p.order_id))
                     {
                         item.status = "iade";
+                        item.products.products_skus.FirstOrDefault().quantity += item.quantity;
+
                     }
 
                     db.SaveChanges();
@@ -2714,6 +2892,23 @@ namespace CobanlarMarket.Controllers
                 }
                 else
                 {
+                    if (refund.ErrorMessage == "Ödeme önceden iptal edilmiştir" || refund.ErrorMessage== "Ödeme önceden iade edilmiştir")
+                    {
+                        var p = db.payment_details.FirstOrDefault(x => x.paymentId == PaymentId);
+                        p.status = "İade";
+
+
+                        foreach (var item in db.order_item.Where(x => x.order_id == p.order_id))
+                        {
+                            item.status = "iade";
+                            item.products.products_skus.FirstOrDefault().quantity += item.quantity;
+
+                        }
+
+                        db.SaveChanges();
+
+                    }
+
                     //iade başarısız
                     return Json(new { success = false, message = refund.ErrorMessage });
 
@@ -2743,13 +2938,17 @@ namespace CobanlarMarket.Controllers
                     c.title,
                     c.is_read,
                     c.status,
+                    c.type,
+                    c.product_id,
+                    c.campaign_id,
                     User = new
                     {
                         c.users.first_name,
                         c.users.last_name,
                         c.users.id,
                         c.users.avatar
-                    }
+                    },
+
                 });
                 return Json(new { success = true, list = list });
 
@@ -2763,6 +2962,7 @@ namespace CobanlarMarket.Controllers
 
 
         }
+        [HttpPost]
         public JsonResult RemoveNotification(int id)
         {
 
@@ -2785,6 +2985,9 @@ namespace CobanlarMarket.Controllers
                         c.title,
                         c.is_read,
                         c.status,
+                        c.type,
+                        c.product_id,
+                        c.campaign_id,
                         User = new
                         {
                             c.users.first_name,
@@ -2840,6 +3043,9 @@ namespace CobanlarMarket.Controllers
                         c.title,
                         c.is_read,
                         c.status,
+                        c.type,
+                        c.campaign_id,
+                        c.product_id,
                         User = new
                         {
                             c.users.first_name,
@@ -2870,7 +3076,7 @@ namespace CobanlarMarket.Controllers
 
         }
 
-
+        [HttpPost]
         public JsonResult ReadNotification(int id)
         {
 
@@ -2895,6 +3101,9 @@ namespace CobanlarMarket.Controllers
                         c.title,
                         c.is_read,
                         c.status,
+                        c.type,
+                        c.campaign_id,
+                        c.product_id,
                         User = new
                         {
                             c.users.first_name,
@@ -2951,6 +3160,9 @@ namespace CobanlarMarket.Controllers
                         c.title,
                         c.is_read,
                         c.status,
+                        c.type,
+                        c.campaign_id,
+                        c.product_id,
                         User = new
                         {
                             c.users.first_name,
@@ -2980,7 +3192,7 @@ namespace CobanlarMarket.Controllers
 
 
         }
-
+        [HttpPost]
         public string isDelivered(int id)
         {
 
@@ -2996,7 +3208,7 @@ namespace CobanlarMarket.Controllers
             }
         }
 
-
+        [HttpPost]
         public JsonResult ChangeDeliveryStatus(int Id)
         {
             if (!db.order_details.Any(x => x.id == Id))
@@ -3049,6 +3261,8 @@ namespace CobanlarMarket.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult EditShipping(String MinAmount, String ShippingCost)
         {
             var cd = db.company_details.FirstOrDefault();
@@ -3094,14 +3308,14 @@ namespace CobanlarMarket.Controllers
         {
             try
             {
-                db.company_details.FirstOrDefault().homepage_top_text = content;
+                db.company_details.FirstOrDefault().homepage_top_text = content.Trim();
                 db.SaveChanges();
 
             }
-            catch (Exception)
+            catch (DbEntityValidationException e)
             {
 
-                return Json(new { success = false, message = "Bir hata oluştu" });
+                return Json(new { success = false, message = e.EntityValidationErrors.First().ValidationErrors.First().ErrorMessage });
 
             }
 
@@ -3133,7 +3347,19 @@ namespace CobanlarMarket.Controllers
 
 
         }
+        private string EncodeFileName(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return string.Empty;
 
+            // Dosya adını küçük harfe çevir ve boşlukları "-" ile değiştir
+            fileName = fileName.Replace(" ", "-");
+
+            // Özel karakterleri kaldır ve yalnızca harf, rakam ve "-" karakterlerini bırak
+            fileName = System.Text.RegularExpressions.Regex.Replace(fileName, @"[^A-Za-z0-9-]", "");
+
+            return fileName;
+        }
         [HttpPost]
         public JsonResult EditSliderImg(HttpPostedFileBase Img)
         {
@@ -3142,7 +3368,14 @@ namespace CobanlarMarket.Controllers
                 if (Img != null)
                 {
                     string imgpath = null;
-                    var fileName = Path.GetFileName(Img.FileName);
+
+                    var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                    var extension = Path.GetExtension(Img.FileName);
+
+                    // Dosya adını encode et
+                    var fileName = EncodeFileName(originalFileName) + extension;
+
+
                     var path = Path.Combine(Server.MapPath("~/Content/PageContentImg/SliderImg/"));
                     imgpath = "/Content/PageContentImg/SliderImg/" + fileName;
 
@@ -3257,7 +3490,15 @@ namespace CobanlarMarket.Controllers
                 if (Img != null)
                 {
                     string imgpath = null;
-                    var fileName = Path.GetFileName(Img.FileName);
+
+                    var originalFileName = Path.GetFileNameWithoutExtension(Img.FileName);
+                    var extension = Path.GetExtension(Img.FileName);
+
+                    // Dosya adını encode et
+                    var fileName = EncodeFileName(originalFileName) + extension;
+
+
+
                     var path = Path.Combine(Server.MapPath("~/Content/PageContentImg/BottomImg/"));
                     imgpath = "/Content/PageContentImg/BottomImg/" + fileName;
 
@@ -3293,6 +3534,293 @@ namespace CobanlarMarket.Controllers
 
 
 
+        }
+
+
+
+
+        public ActionResult SeoSettings()
+        {
+            var allSeoSettings = LoadAllSeoSettings();
+
+
+
+
+            AllViewModel model = new AllViewModel();
+            model.SeoSettings = allSeoSettings;
+
+            model.products = db.products.Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
+            model.users = db.users.ToList();
+            model.order_details = db.order_details.Include(o => o.order_item).ToList();
+            model.order_item = db.order_item.Include(o => o.products_skus).Include(o => o.products).ToList();
+            model.payment_details = db.payment_details.ToList();
+            model.company_details = db.company_details.ToList();
+            model.categories = db.categories.ToList();
+            model.carts = db.cart.ToList();
+            return View(model);
+        }
+
+
+        private Dictionary<string, SeoModel> LoadAllSeoSettings()
+        {
+            string seoFilePath = Server.MapPath("~/Content/seoSettings.json");
+            if (System.IO.File.Exists(seoFilePath))
+            {
+                var jsonData = System.IO.File.ReadAllText(seoFilePath);
+                return JsonConvert.DeserializeObject<Dictionary<string, SeoModel>>(jsonData);
+            }
+            return new Dictionary<string, SeoModel>();
+        }
+
+
+        public JsonResult LoadSeoSettings(string page)
+        {
+            var seoData = LoadAllSeoSettings();
+            seoData.TryGetValue(page, out var seoSettings);
+
+            var result = new
+            {
+                Page = page,
+                SeoSettings = seoSettings ?? new SeoModel()
+            };
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SaveSeoSettings(string Page, string Title, string Keywords, string Description, bool NoIndex, bool NoFollow)
+        {
+
+            SeoModel model = new SeoModel()
+            {
+                Page = Page,
+                Title = Title,
+                Keywords = Keywords,
+                Description = Description,
+                NoIndex = NoIndex,
+                NoFollow = NoFollow
+            };
+            if (ModelState.IsValid)
+            {
+                var seoData = LoadAllSeoSettings();
+
+
+                if (seoData.ContainsKey(model.Page))
+                {
+                    // Mevcut sayfa için güncelleme
+                    seoData[model.Page] = model;
+                }
+                else
+                {
+                    // Yeni SEO kaydı ekleme
+                    seoData.Add(model.Page, model);
+                }
+
+                SaveSeoSettingsToFile(seoData);
+                return Json(new { success = true, message = "SEO ayarları başarıyla kaydedildi!" });
+            }
+
+            return Json(new { success = false, message = "Ayarlar kaydedilemedi!" });
+        }
+
+
+        // SEO ayarlarını dosyaya kaydeder veya günceller
+        private void SaveSeoSettingsToFile(Dictionary<string, SeoModel> seoData)
+        {
+            string path = Server.MapPath("~/Content/seoSettings.json");
+            var jsonData = JsonConvert.SerializeObject(seoData, Formatting.Indented);
+            System.IO.File.WriteAllText(path, jsonData);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult DeleteSeoSettings(string Page)
+        {
+            if (string.IsNullOrEmpty(Page))
+            {
+                return Json(new { success = false, message = "Sayfa adı boş olamaz." });
+            }
+
+            var seoData = LoadAllSeoSettings();
+            if (seoData.ContainsKey(Page))
+            {
+                seoData.Remove(Page);
+                SaveSeoSettingsToFile(seoData);
+                return Json(new { success = true, message = "SEO ayarları başarıyla silindi!" });
+            }
+            return Json(new { success = false, message = "SEO ayarları bulunamadı!" });
+        }
+        public ActionResult GetSeoSettings()
+        {
+            // JSON dosyasının yolu
+            string path = Server.MapPath("~/Content/seoSettings.json");
+
+
+            var json = System.IO.File.ReadAllText(path);
+            return Json(json, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public ActionResult EBulten()
+        {
+
+
+            AllViewModel model = new AllViewModel();
+            model.products = db.products.Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
+            model.users = db.users.ToList();
+            model.order_details = db.order_details.Include(o => o.order_item).ToList();
+            model.order_item = db.order_item.Include(o => o.products_skus).Include(o => o.products).ToList();
+            model.payment_details = db.payment_details.ToList();
+
+            model.categories = db.categories.ToList();
+            model.carts = db.cart.ToList();
+            model.newsletters = db.newsletter.ToList();
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult RemoveMail(int Id)
+        {
+
+            if (db.newsletter.Any(x => x.id == Id))
+            {
+
+                newsletter mail = db.newsletter.FirstOrDefault(x => x.id == Id);
+
+
+                db.newsletter.Remove(mail);
+                db.SaveChanges();
+
+                return Json(new { success = true, message = "Mail Başarıyla Silindi" }, JsonRequestBehavior.AllowGet);
+
+            }
+            else
+            {
+                return Json(new { success = false, message = "Böyle Bir Mail Bulunamadı" }, JsonRequestBehavior.AllowGet);
+
+
+            }
+
+
+
+
+        }
+
+        public ActionResult TopluMesaj()
+        {
+
+
+            AllViewModel model = new AllViewModel();
+            model.products = db.products.Include(x => x.products_skus).ToList();
+            model.products_skus = db.products_skus.ToList();
+            model.users = db.users.ToList();
+            model.order_details = db.order_details.Include(o => o.order_item).ToList();
+            model.order_item = db.order_item.Include(o => o.products_skus).Include(o => o.products).ToList();
+            model.payment_details = db.payment_details.ToList();
+
+            model.categories = db.categories.ToList();
+            model.carts = db.cart.ToList();
+            model.newsletters = db.newsletter.ToList();
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
+        public JsonResult SendBulkMail(string subject, string content)
+        {
+            var mailList = db.newsletter.Where(x => x.status == true);
+
+
+            if (subject.IsNullOrWhiteSpace())
+            {
+                return Json(new { success = false, message = "Konu boş geçilemez." }, JsonRequestBehavior.AllowGet);
+
+            }
+
+            if (mailList.Any())
+            {
+                int count = 0;
+                foreach (var mail in mailList)
+                {
+                    try
+                    {
+                        // HtmlAgilityPack ile HTML içeriği yükleme
+                        var doc = new HtmlAgilityPack.HtmlDocument();
+                        doc.LoadHtml(content);
+
+                        // Tüm resimleri al
+                        var images = doc.DocumentNode.SelectNodes("//img");
+
+                        // MimeMessage oluşturma
+                        var message = new MimeMessage();
+                        message.From.Add(new MailboxAddress("Çobanlar Market", "info@cobanlarmarket.com"));
+                        message.To.Add(new MailboxAddress("", mail.email)); // Alıcı adresi
+                        message.Subject = subject;
+
+                        var bodyBuilder = new BodyBuilder { HtmlBody = doc.DocumentNode.OuterHtml };
+
+                        // Resimleri inline olarak ekleyelim
+                        if (images != null)
+                        {
+                            int imageIndex = 0;
+                            foreach (var img in images)
+                            {
+                                var src = img.GetAttributeValue("src", string.Empty);
+                                if (src.StartsWith("data:image"))
+                                {
+                                    // Base64 verisini çözme
+                                    var base64Data = src.Substring(src.IndexOf(',') + 1);
+                                    byte[] imageBytes = Convert.FromBase64String(base64Data);
+
+                                    // Resmi inline olarak ekleme
+                                    var imagePart = new MimePart("image", "jpeg")
+                                    {
+                                        Content = new MimeContent(new MemoryStream(imageBytes)),
+                                        ContentId = $"image{imageIndex++}",
+                                        ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                                        ContentTransferEncoding = ContentEncoding.Base64
+                                    };
+
+                                    // Inline resmin cid'sini img tag'ine ekleme
+                                    img.SetAttributeValue("src", $"cid:image{imageIndex - 1}");
+
+                                    // Resmi e-postaya ekleme
+                                    bodyBuilder.Attachments.Add(imagePart);
+                                }
+                            }
+                        }
+
+                        // Gövdeyi e-postaya ekleyelim
+                        message.Body = bodyBuilder.ToMessageBody();
+                   
+
+                        // SMTP ile e-postayı gönderme
+                        using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+                        {
+                            smtp.Connect("srvm15.trwww.com", 465, SecureSocketOptions.SslOnConnect); // SMTP sunucu bilgilerini kullanın
+                            smtp.Authenticate("info@cobanlarmarket.com", "Sananelan6151."); // SMTP kullanıcı adı ve şifresi
+                            smtp.Send(message); // E-postayı gönder
+                            smtp.Disconnect(true);
+                        }
+
+                        count++;
+                    }
+                    catch (Exception e)
+                    {
+                        // Hata loglama
+                        return Json(new { success = false, message = "Bir hata oluştu: " + e.Message }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+
+                return Json(new { success = true, message = count + " kişiye mail yollandı." }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new { success = false, message = "Bültene kayıtlı üye bulunamadı." }, JsonRequestBehavior.AllowGet);
         }
 
 

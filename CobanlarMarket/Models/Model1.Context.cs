@@ -43,10 +43,10 @@ namespace CobanlarMarket.Models
         public virtual DbSet<users> users { get; set; }
         public virtual DbSet<wishlist> wishlist { get; set; }
         public virtual DbSet<sub_subcategories> sub_subcategories { get; set; }
-        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<cart_item> cart_item { get; set; }
         public virtual DbSet<notification> notification { get; set; }
         public virtual DbSet<campaigns> campaigns { get; set; }
         public virtual DbSet<company_details> company_details { get; set; }
+        public virtual DbSet<newsletter> newsletter { get; set; }
     }
 }

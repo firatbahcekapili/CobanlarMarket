@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="b82135c607c44c5182d71f5fc94c3532" Name="Diagram1">
+      <Diagram DiagramId="b82135c607c44c5182d71f5fc94c3532" Name="Diagram1" ZoomLevel="92">
         <EntityTypeShape EntityType="CobanlarMarketModel.addresses" Width="1.5" PointX="9.75" PointY="40" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.campaign_products" Width="1.5" PointX="9.75" PointY="21.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.cart" Width="1.5" PointX="9.75" PointY="28" IsExpanded="true" />
@@ -12,8 +12,8 @@
         <EntityTypeShape EntityType="CobanlarMarketModel.coupon_categories" Width="1.5" PointX="5.25" PointY="16.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.coupon_products" Width="1.5" PointX="9.75" PointY="18.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.coupons" Width="1.5" PointX="3" PointY="13.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="CobanlarMarketModel.order_details" Width="1.5" PointX="12.75" PointY="24" IsExpanded="true" />
-        <EntityTypeShape EntityType="CobanlarMarketModel.order_item" Width="1.5" PointX="15" PointY="28.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.order_details" Width="1.5" PointX="13.75" PointY="23.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.order_item" Width="1.5" PointX="16.25" PointY="27.875" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.payment_details" Width="1.5" PointX="15" PointY="18" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.product_attributes" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="CobanlarMarketModel.product_images" Width="1.5" PointX="9.75" PointY="32.75" IsExpanded="true" />
@@ -45,7 +45,6 @@
         <AssociationConnector Association="CobanlarMarketModel.FK_wishlist_product_id" ManuallyRouted="false" />
         <AssociationConnector Association="CobanlarMarketModel.FK_wishlist_user_id" ManuallyRouted="false" />
         <EntityTypeShape EntityType="CobanlarMarketModel.sub_subcategories" Width="1.5" PointX="5.25" PointY="20.375" />
-        <EntityTypeShape EntityType="CobanlarMarketModel.sysdiagrams" Width="1.5" PointX="3.375" PointY="0.75" />
         <AssociationConnector Association="CobanlarMarketModel.FK_products_sub_subcategories" />
         <AssociationConnector Association="CobanlarMarketModel.FK_sub_subcategories_sub_categories" />
         <AssociationConnector Association="CobanlarMarketModel.FK_coupon_categories_sub_subcategories" />
@@ -58,6 +57,7 @@
         <EntityTypeShape EntityType="CobanlarMarketModel.campaigns" Width="1.5" PointX="0.75" PointY="4" />
         <AssociationConnector Association="CobanlarMarketModel.FK_campaign_products_campaign" />
         <EntityTypeShape EntityType="CobanlarMarketModel.company_details" Width="2.75" PointX="3.375" PointY="3.75" />
+        <EntityTypeShape EntityType="CobanlarMarketModel.newsletter" Width="1.5" PointX="3.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

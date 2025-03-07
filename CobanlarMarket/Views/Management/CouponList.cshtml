@@ -51,7 +51,7 @@
                             }
                             @foreach (var item in Model.coupons)
                             {
-                                <tr>
+                                <tr couponid="@item.Id">
                                     <td class="">
                                         @item.Code
                                     </td>
@@ -106,10 +106,13 @@
                         Onaylamanız halinde kupon silinecektir. Bir daha bu kupona erişiminiz olmayacaktır. Onaylıyor musunuz?
                     </p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
-                </div>
+                <form id="RemoveCouponForm" action="/Management/RemoveCoupon" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                        <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                    </div>
+               </form>
             </div>
         </div>
     </div>
@@ -120,39 +123,26 @@
 <script>
 
     function Remove(Id) {
+        var token = $('#RemoveCouponForm input[name="__RequestVerificationToken"]').val();
 
         $.ajax({
             url: '/Management/RemoveCoupon/',
             type: 'Post',
-            data: { Id: Id },
+            data: { __RequestVerificationToken: token, Id: Id },
             success: function (response) {
 
 
                 if (response.success) {
                     toastr.success(response.message);
 
-                    var tbody = $("#couponTable tbody");
-                    tbody.empty();
+              
+                    var row = $('[couponid=' + Id + ']');
 
-                    response.coupons.forEach(function (coupon) {
-                        var row = "<tr>" +
-                            "<td >" + coupon.Code + "</td>" +
-                            "<td>" + coupon.DiscountType + "</td>" +
-                            "<td>" + coupon.DiscountValue + "</td>" +
-                            "<td>" + coupon.MinimumSpend + "</td>" +
-                            "<td>" + coupon.MaxDiscountAmount + "</td>" +
-                            "<td>" + coupon.StartDate + "</td>" +
-                            "<td>" + coupon.EndDate + "</td>" +
-                            "<td>" + coupon.CreatedAt + "</td>" + 
-                            "<td><span class='badge " + (coupon.IsActive ? "badge-success" : "badge-danger") + "'>" +
-                            (coupon.IsActive ? "Aktif" : "Pasif") + "</span></td>" +
-                            "<td>" +
-                            "<a  href='/Management/EditCoupon/" + coupon.Id + "'><span class='mdi mdi-pen text-success'></span></a>" +
-                            "<a onclick='Remove(" + coupon.Id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                            "</td>" +
-                            "</tr>";
-                        tbody.append(row);
-                    });
+                    var table = $('#couponTable').DataTable();
+
+                    table.row(row).remove().draw();
+
+
 
                     $('#RemoveModal').modal('hide');
 

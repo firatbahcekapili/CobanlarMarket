@@ -143,16 +143,16 @@
             
                                                     if (carts.FirstOrDefault(x => x.user_id == user.id).coupon_id.HasValue)
                                                     {
-                                                        if (coupons.FirstOrDefault(x => x.Id == carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code != null)
+                                                        if (coupons.FirstOrDefault(x => x.Id == carts.FirstOrDefault(c => c.user_id == user.id).coupon_id).Code != null)
                                                         {
                                                 <tr class='couponadded' style='border:none;'><th> İndirim</th>  </tr>
                                                 <tr class='couponadded'>
                                                     <th>
-                                                        Kupon Kodu Uygulandı:<strong>  @coupons.FirstOrDefault(x => x.Id == carts.FirstOrDefault(x => x.user_id == user.id).coupon_id).Code   </strong>
+                                                        Kupon Kodu Uygulandı:<strong>  @coupons.FirstOrDefault(x => x.Id == carts.FirstOrDefault(c => c.user_id == user.id).coupon_id).Code   </strong>
                                                     </th>
-                                                    <td> İndirim -&#8378; @carts.FirstOrDefault(x => x.user_id == user.id).discount_value </td>
+                                                    <td> İndirim -&#8378; @float.Parse(carts.FirstOrDefault(x => x.user_id == user.id).discount_value.Replace(".", ",")).ToString("F2").Replace(".", ",") </td>
 
-
+                                                  
                                                 </tr>
 
 
@@ -191,7 +191,7 @@
 
                                     <tr class="lasttotal">
                                         <th>Toplam</th>
-                                        <td><strong id="cart-total">&#8378;@(toplam+kargo-couponDiscount)</strong></td>
+                                        <td><strong id="cart-total">&#8378;@((toplam+kargo-couponDiscount).Value.ToString("F2"))</strong></td>
                                     </tr>
                                 </tbody>
                             </table>

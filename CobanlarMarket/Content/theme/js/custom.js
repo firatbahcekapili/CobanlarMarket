@@ -265,18 +265,7 @@ $(document).ready(function () {
     }
 
     /*======== 8. QUILL TEXT EDITOR ========*/
-    var quillHook = document.getElementById("editor");
-    if (quillHook !== null) {
-        var quill = new Quill(quillHook, {
-            modules: {
-                formula: false,
-                syntax: false,
-                toolbar: "#toolbar",
-            },
-            placeholder: "Enter Text ...",
-            theme: "snow",
-        });
-    }
+
 
     /*======== 9. MULTIPLE SELECT ========*/
     var select2Multiple = $(".js-example-basic-multiple");
@@ -373,13 +362,11 @@ $(document).ready(function () {
         productsTable.DataTable({
 
             info: false,
-            lengthChange: false,
+            lengthChange: true,
             responsive: true,
 
-            lengthMenu: [
-                [5, 10, 15, -1],
-                [5, 10, 15, "All"],
-            ],
+
+        
             scrollX: true,
             order: [[2, "asc"]],
             columnDefs: [
@@ -391,6 +378,7 @@ $(document).ready(function () {
             language: {
                 search: "_INPUT_",
                 searchPlaceholder: "Ara...",
+                lengthMenu: "_MENU_ ürün göster",
             },
         });
     }
@@ -578,6 +566,32 @@ $(document).ready(function () {
 
         });
     }
+
+
+
+
+    var mailTable = $("#mailTable");
+    if (mailTable.length != 0) {
+        mailTable.DataTable({
+            order: [
+                [2, 'desc']
+            ],
+            info: false,
+
+            lengthChange: false,
+            responsive: true,
+
+
+            scrollX: true,
+
+         
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Ara...",
+            },
+        });
+    }
+
 
     /*======== 15. OWL CAROUSEL ========*/
     var slideOnly = $(".slide-only");
@@ -805,10 +819,10 @@ $(document).ready(function () {
                 }
                 else {
                     toastr.error(response.message);
-                    if (status=="delivered") {
+                    if (status == "delivered") {
                         element.removeAttr("checked");
                     } else {
-                        element.attr("checked","checked");
+                        element.attr("checked", "checked");
                     }
                 }
 
@@ -817,45 +831,59 @@ $(document).ready(function () {
                 console.log(e);
             }
         });
-      
+
     });
 
 
     var notificationHub = $.connection.notificationHub;
 
     notificationHub.client.receiveNotification = function (message, orderItems, paymentDetails, orderDetails, notifications) {
-        toastr.success(message, "Yeni Sipariş");
+        toastr.success(message, notifications.text);
 
-        paymentDetails.forEach(function (p) {
+        if (paymentDetails != null) {
 
-            toastr.success("₺" + p.paidPrice + "'lik bir sipariş aldınız.");
+            paymentDetails.forEach(function (p) {
 
-        });
+                toastr.success("₺" + p.paidPrice + "'lik bir sipariş aldınız.");
+
+            });
+        }
+
         $('#myTabContent #all').empty();
         var anyUnread = false;
         notifications.forEach(function (notification) {
 
             var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
-                '  <div class="media-sm-wrapper" >' +
-                ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
-                ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
+                '  <div class="media-sm-wrapper">' +
+                '<a href="/Management/' +
+                (notification.type == "campaign" ? "EditCampaign" :
+                    (notification.type == "order" ? "OrderDetail" :
+                        (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                (notification.type == "campaign" ? notification.campaign_id :
+                    (notification.type == "order" ? notification.order_id :
+                        (notification.type == "product" ? notification.product_id : ""))) + '">' +
 
-
-                ' </div >' +
+                ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image" style="width:50px;height:50px;object-fit: cover;"></a>' +
+                ' </div>' +
                 ' <div class="media-body">' +
-                '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                '  <a href="/Management/' +
+                (notification.type == "campaign" ? "EditCampaign" :
+                    (notification.type == "order" ? "OrderDetail" :
+                        (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                (notification.type == "campaign" ? notification.campaign_id :
+                    (notification.type == "order" ? notification.order_id :
+                        (notification.type == "product" ? notification.product_id : ""))) + '">' +
                 ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                 '<span class="discribe">' + notification.text + '</span>' +
-                ' </a>  ' +
-                '</div > ' +
-                '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' + (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
-                '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + ' " ></span >' +
-
-                '</a> ' +
+                ' </a>' +
+                '</div>' +
+                '<a class="readNotification" onclick="ReadNotification(' + notification.id + ')" data-toggle="tooltip" title="' +
+                (notification.is_read == false ? "Okundu Olarak İşaretle" : "Okundu") + '">' +
+                '<span class="mdi ' + (notification.is_read == false ? "mdi-eye-remove-outline" : "mdi-eye-check-outline") + '"></span>' +
+                '</a>' +
                 '<a class="removeNotification" onclick="RemoveNotification(' + notification.id + ')">' +
-                '<span class="mdi mdi-trash-can-outline text-danger" ></span >' +
-
-                '</a> ';
+                '<span class="mdi mdi-trash-can-outline text-danger"></span>' +
+                '</a>';
 
 
             $('#myTabContent #all').append(element);
@@ -869,28 +897,31 @@ $(document).ready(function () {
 
 
         if (orderTable != null) {
-            orderItems.forEach(function (order) {
-                var orderId = order.order_id;
+            if (orderItems != null) {
+
+                orderItems.forEach(function (order) {
+                    var orderId = order.order_id;
 
 
-                var rowData = [
-                    '<img src="' + (order.products ? order.products.cover : '') + '" alt="Alternate Text" />', // 1. sütun
-                    order.id, // 2. sütun
-                    order.order_id, // 3. sütun
-                    order.orderDetails && order.orderDetails.User ? order.orderDetails.User.username : '', // 4. sütun
-                    order.products ? order.products.name : '', // 5. sütun
-                    order.quantity, // 6. sütun
-                    order.products && order.products.price ? (order.quantity * order.products.price) : 0, // 7. sütun
-                    order.orderDetails ? order.orderDetails.payment_details.status : '', // 8. sütun
-                    order.orderDetails ? order.orderDetails.created_at : '', // 9. sütun
-                    '' // 10. sütun
-                ];
+                    var rowData = [
+                        '<img src="' + (order.products ? order.products.cover : '') + '" alt="Alternate Text" />', // 1. sütun
+                        order.id, // 2. sütun
+                        order.order_id, // 3. sütun
+                        order.orderDetails && order.orderDetails.User ? order.orderDetails.User.username : '', // 4. sütun
+                        order.products ? order.products.name : '', // 5. sütun
+                        order.quantity, // 6. sütun
+                        order.products && order.products.price ? (order.quantity * order.products.price) : 0, // 7. sütun
+                        order.orderDetails ? order.orderDetails.payment_details.status : '', // 8. sütun
+                        order.orderDetails ? order.orderDetails.created_at : '', // 9. sütun
+                        '' // 10. sütun
+                    ];
 
 
-                var addedRow = orderTable.row.add(rowData).draw(false).node();
+                    var addedRow = orderTable.row.add(rowData).draw(false).node();
 
-                addedRow.classList.add("notDelivered", "blink-effect");
-            });
+                    addedRow.classList.add("notDelivered", "blink-effect");
+                });
+            }
 
         }
 
@@ -932,13 +963,25 @@ $.ajax({
 
                 var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
                     '  <div class="media-sm-wrapper" >' +
-                    ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                    '<a href="/Management/' +
+                    (notification.type == "campaign" ? "EditCampaign" :
+                        (notification.type == "order" ? "OrderDetail" :
+                            (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                    (notification.type == "campaign" ? notification.campaign_id :
+                        (notification.type == "order" ? notification.order_id :
+                            (notification.type == "product" ? notification.product_id : ""))) + '">' +
                     ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
 
 
                     ' </div >' +
                     ' <div class="media-body">' +
-                    '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                    '  <a href="/Management/' +
+                    (notification.type == "campaign" ? "EditCampaign" :
+                        (notification.type == "order" ? "OrderDetail" :
+                            (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                    (notification.type == "campaign" ? notification.campaign_id :
+                        (notification.type == "order" ? notification.order_id :
+                            (notification.type == "product" ? notification.product_id : ""))) + '">' +
                     ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                     '<span class="discribe">' + notification.text + '</span>' +
                     ' </a>  ' +
@@ -1001,13 +1044,25 @@ $('#refress-button').on("click", function () {
 
                     var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
                         '  <div class="media-sm-wrapper" >' +
-                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '<a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
 
 
                         ' </div >' +
                         ' <div class="media-body">' +
-                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '  <a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                         '<span class="discribe">' + notification.text + '</span>' +
                         ' </a>  ' +
@@ -1074,13 +1129,25 @@ function RemoveNotification(id) {
 
                     var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
                         '  <div class="media-sm-wrapper" >' +
-                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '<a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
 
 
                         ' </div >' +
                         ' <div class="media-body">' +
-                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '  <a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                         '<span class="discribe">' + notification.text + '</span>' +
                         ' </a>  ' +
@@ -1140,13 +1207,25 @@ function RemoveAllNotifiactions() {
 
                     var element = '<div class="media media-sm' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
                         '  <div class="media-sm-wrapper" >' +
-                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '<a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
 
 
                         ' </div >' +
                         ' <div class="media-body">' +
-                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '  <a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                         '<span class="discribe">' + notification.text + '</span>' +
                         ' </a>  ' +
@@ -1202,13 +1281,25 @@ function ReadNotification(id) {
 
                     var element = '<div class="media media-sm ' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
                         '  <div class="media-sm-wrapper" >' +
-                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '<a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
 
 
                         ' </div >' +
                         ' <div class="media-body">' +
-                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '  <a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                         '<span class="discribe">' + notification.text + '</span>' +
                         ' </a>  ' +
@@ -1267,13 +1358,25 @@ function ReadAllNotifiactions() {
 
                     var element = '<div class="media media-sm' + (notification.is_read == false ? "bg-warning-10" : "") + ' border p-4 mb-0">' +
                         '  <div class="media-sm-wrapper" >' +
-                        ' <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '<a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <img src="' + (notification.User.avatar == null ? "/content/theme/images/User_Icon.png" : notification.User.avatar) + '" alt="User Image"style="width:50px;height:50px;object-fit: cover;"></a>' +
 
 
                         ' </div >' +
                         ' <div class="media-body">' +
-                        '  <a href="/Management/OrderDetail/' + notification.order_id + '">' +
+                        '  <a href="/Management/' +
+                        (notification.type == "campaign" ? "EditCampaign" :
+                            (notification.type == "order" ? "OrderDetail" :
+                                (notification.type == "product" ? "EditProduct" : ""))) + '/' +
+                        (notification.type == "campaign" ? notification.campaign_id :
+                            (notification.type == "order" ? notification.order_id :
+                                (notification.type == "product" ? notification.product_id : ""))) + '">' +
                         ' <span class="title mb-0">' + notification.User.first_name + '</span>' +
                         '<span class="discribe">' + notification.text + '</span>' +
                         ' </a>  ' +
@@ -1313,4 +1416,53 @@ function ReadAllNotifiactions() {
 
 
     });
+}
+
+
+
+
+function Refund(payId) {
+
+    $.ajax({
+        url: '/Management/Refund/',
+        type: 'POST',
+        data: { PaymentId: payId },
+        beforeSend: function () {
+            NProgress.start();
+
+        },
+        success: function (result) {
+            if (result.success) {
+                toastr.success(result.message, 'İşlem Başarılı');
+
+                var tr = $("#orderTable tbody [orderId='" + result.list[0].order_id + "']");
+
+                tr.find(".paymentstatus").text(result.list[0].paymentstatus);
+
+
+
+
+
+
+            } else {
+                toastr.error(result.message, 'İşlem Başarısız');
+
+            }
+
+
+
+
+
+
+        }, complete: function () {
+            NProgress.done();
+
+        }
+
+
+    });
+
+
+
+
 }

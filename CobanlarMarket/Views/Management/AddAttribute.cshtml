@@ -8,41 +8,44 @@
 <div class=" mt-5 ml-5 mr-5">
     <h2>Özellik Ekle</h2>
 
-    <form id="attributeForm">
-        <div class="row justify-content-center">
+ 
+        <form id="attributeForm" action="/Management/AddAttribute" method="post">
+            @Html.AntiForgeryToken()
 
-            <div class="col-12 bg-white p-5">
+            <div class="row justify-content-center">
+
+                <div class="col-12 bg-white p-5">
 
 
-                @{ 
-                   CobanlarMarket.Models.product_attributes a = new CobanlarMarket.Models.product_attributes();
-                }
-                <div class="form-group">
-                    <label for="value">Özellik İsmi *</label>
-                    @*<input type="text" class="form-control" id="value" placeholder="Özellik İsmi" required>*@
-                    @Html.EditorFor(model => a.value, "Özellik İsmi", new { htmlAttributes = new { name = "value", @class = "form-control", placeholder = "Özellik İsmi", id = "value" } })
-                    @Html.ValidationMessageFor(model => a.value, "")
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    @{
+                        CobanlarMarket.Models.product_attributes a = new CobanlarMarket.Models.product_attributes();
+                    }
+                    <div class="form-group">
+                        <label for="value">Özellik İsmi *</label>
+                        @*<input type="text" class="form-control" id="value" placeholder="Özellik İsmi" required>*@
+                        @Html.EditorFor(model => a.value, "Özellik İsmi", new { htmlAttributes = new { name = "value", @class = "form-control", placeholder = "Özellik İsmi", id = "value" } })
+                        @Html.ValidationMessageFor(model => a.value, "")
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
 
+                    </div>
+                    <div class="form-group">
+                        <label for="type">Özellik Tipi*</label>
+                        @*<input type="text" class="form-control" id="type" placeholder="Özellik Tipi" required>*@
+                        @Html.EditorFor(model => a.type, "Özellik Tipi", new { htmlAttributes = new { name = "type", @class = "form-control", placeholder = "Özellik Tipi", id = "type" } })
+                        @Html.ValidationMessageFor(model => a.type, "")
+                        <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
+                    </div>
+
+
+                    <div class="form-group">
+                        <a id="submitbtn" class="btn btn-outline-primary float-right">Kaydet</a>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="type">Özellik Tipi*</label>
-                    @*<input type="text" class="form-control" id="type" placeholder="Özellik Tipi" required>*@
-                    @Html.EditorFor(model => a.type, "Özellik Tipi", new { htmlAttributes = new { name = "type", @class = "form-control", placeholder = "Özellik Tipi",  id = "type" } })
-                    @Html.ValidationMessageFor(model => a.type, "")
-                    <small class="form-text text-muted">Do not exceed 20 characters when entering the product name.</small>
-                </div>
 
-
-                <div class="form-group">
-                    <a id="submitbtn" class="btn btn-outline-primary float-right">Kaydet</a>
-                </div>
             </div>
 
-        </div>
-
-    </form>
-</div>
+        </form>
+    </div>
 
 
 <script>
@@ -53,13 +56,14 @@
             e.preventDefault();
             var value = $('#value').val();
             var type = $('#type').val();
+            var token = $('#attributeForm input[name="__RequestVerificationToken"]').val();
 
             if ($('#attributeForm').valid()) {
 
                 $.ajax({
                     url: '/Management/AddAttribute/',
                     type: 'POST',
-                    data: { Value: value, Type: type },
+                    data: { __RequestVerificationToken: token, Value: value, Type: type },
                     success: function (result) {
                         toastr.success('Özellik Başarıyla Eklendi', 'Başarılı');
                         $('#value').val("");

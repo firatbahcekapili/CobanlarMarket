@@ -9,152 +9,154 @@
 
 <div class=" mt-5 ml-5 mr-5">
 
-    <form id="couponForm">
-        <div class="row justify-content-center bg-white mb-5">
-            <div class="col-12  pt-4 pb-4 pl-5  ">
-                <h3>Kupon Ekle</h3>
+    
+        <form id="couponForm" action="/Management/AddCoupon" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row justify-content-center bg-white mb-5">
+                <div class="col-12  pt-4 pb-4 pl-5  ">
+                    <h3>Kupon Ekle</h3>
 
-            </div>
+                </div>
 
-            <div class="col-12  p-5">
-
-
-                @{
-                    CobanlarMarket.Models.coupons m = new CobanlarMarket.Models.coupons();
-                }
+                <div class="col-12  p-5">
 
 
-                <div class="form-horizontal">
+                    @{
+                        CobanlarMarket.Models.coupons m = new CobanlarMarket.Models.coupons();
+                    }
 
-                    <div class="form-group">
-                        <label for="code">Kupon Kodu</label>
 
-                        @Html.EditorFor(model => m.Code, new { htmlAttributes = new { name = "code", @class = "form-control", placeholder = "Kupon Kodunu Giriniz", id = "code" } })
-                        @Html.ValidationMessageFor(model => m.Code, "", new { @class = "text-danger" })
+                    <div class="form-horizontal">
 
-                    </div>
+                        <div class="form-group">
+                            <label for="code">Kupon Kodu</label>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="dtype">İndirim Türü</label>
-
-                            @Html.DropDownListFor(model => m.DiscountType, (IEnumerable<SelectListItem>)ViewBag.DiscountTypes, "Seçiniz", new { name = "dtype", @class = "form-control", placeholder = "İndirim Türü Seçiniz", id = "dtype" })
-                            @Html.ValidationMessageFor(model => m.DiscountType, "", new { @class = "text-danger" })
+                            @Html.EditorFor(model => m.Code, new { htmlAttributes = new { name = "code", @class = "form-control", placeholder = "Kupon Kodunu Giriniz", id = "code" } })
+                            @Html.ValidationMessageFor(model => m.Code, "", new { @class = "text-danger" })
 
                         </div>
 
-                        <div class="form-group col-md-6">
-                            <label for="dvalue">İndirim Değeri</label>
-                            @{
-                                var a = 0;
-                            }
-                            @Html.EditorFor(model => a, new { htmlAttributes = new { name = "dvalue", @class = "form-control", placeholder = "İndirim Değeri Giriniz", id = "dvalue" } })
-                            @Html.ValidationMessageFor(model => m.DiscountValue, "", new { @class = "text-danger" })
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="dtype">İndirim Türü</label>
 
-                        </div>
-                    </div>
+                                @Html.DropDownListFor(model => m.DiscountType, (IEnumerable<SelectListItem>)ViewBag.DiscountTypes, "Seçiniz", new { name = "dtype", @class = "form-control", placeholder = "İndirim Türü Seçiniz", id = "dtype" })
+                                @Html.ValidationMessageFor(model => m.DiscountType, "", new { @class = "text-danger" })
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="minprice">Kupon İçin Gerekli Minumum Tutar</label>
+                            </div>
 
-                            @Html.EditorFor(model => m.MinimumSpend, new { htmlAttributes = new { type = "number", name = "minprice", min = "0", @class = "form-control", placeholder = "Fiyatı Giriniz", id = "minprice" } })
-                            @Html.ValidationMessageFor(model => m.MinimumSpend, "", new { @class = "text-danger" })
+                            <div class="form-group col-md-6">
+                                <label for="dvalue">İndirim Değeri</label>
+                                @{
+                                    var a = 0;
+                                }
+                                @Html.EditorFor(model => a, new { htmlAttributes = new { name = "dvalue", @class = "form-control", placeholder = "İndirim Değeri Giriniz", id = "dvalue" } })
+                                @Html.ValidationMessageFor(model => m.DiscountValue, "", new { @class = "text-danger" })
 
-                        </div>
-
-                        <div class="form-group col-md-6">
-                            <label for="minprice">Maksimum İndirim Tutarı</label>
-
-
-                            @Html.EditorFor(model => m.MaxDiscountAmount, new { htmlAttributes = new { type = "number", name = "maxprice", min = "0", @class = "form-control", placeholder = "Fiyatı Giriniz", id = "maxprice" } })
-                            @Html.ValidationMessageFor(model => m.MaxDiscountAmount, "", new { @class = "text-danger" })
-
+                            </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="minprice">Kupon İçin Gerekli Minumum Tutar</label>
 
-                    </div>
+                                @Html.EditorFor(model => m.MinimumSpend, new { htmlAttributes = new { type = "number", name = "minprice", min = "0", @class = "form-control", placeholder = "Fiyatı Giriniz", id = "minprice" } })
+                                @Html.ValidationMessageFor(model => m.MinimumSpend, "", new { @class = "text-danger" })
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="startdate">Başlangıç Tarihi</label>
+                            </div>
 
-                            @Html.EditorFor(model => m.StartDate, "Başlangıç Tarihi", new { htmlAttributes = new { type = "date", name = "startdate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "startdate" } })
-                            @Html.ValidationMessageFor(model => m.StartDate, "", new { @class = "text-danger" })
+                            <div class="form-group col-md-6">
+                                <label for="minprice">Maksimum İndirim Tutarı</label>
+
+
+                                @Html.EditorFor(model => m.MaxDiscountAmount, new { htmlAttributes = new { type = "number", name = "maxprice", min = "0", @class = "form-control", placeholder = "Fiyatı Giriniz", id = "maxprice" } })
+                                @Html.ValidationMessageFor(model => m.MaxDiscountAmount, "", new { @class = "text-danger" })
+
+                            </div>
+
 
                         </div>
 
-                        <div class="form-group col-md-6">
-                            <label for="enddate">Bitiş Tarihi</label>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="startdate">Başlangıç Tarihi</label>
 
-                            @Html.EditorFor(model => m.EndDate, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate", disabled = "disabled" } })
-                            @Html.ValidationMessageFor(model => m.EndDate, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => m.StartDate, "Başlangıç Tarihi", new { htmlAttributes = new { type = "date", name = "startdate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "startdate" } })
+                                @Html.ValidationMessageFor(model => m.StartDate, "", new { @class = "text-danger" })
 
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="enddate">Bitiş Tarihi</label>
+
+                                @Html.EditorFor(model => m.EndDate, "Bitiş Tarihi", new { htmlAttributes = new { type = "date", name = "enddate", @class = "form-control", placeholder = "Başlangıç Tarihi", id = "enddate", disabled = "disabled" } })
+                                @Html.ValidationMessageFor(model => m.EndDate, "", new { @class = "text-danger" })
+
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label>Kuponun Geçerli Olacağı Kategorileri Seçin</label>
-                      
-                            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
-                            <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Kuponun Geçerli Olacağı Kategorileri Seçin</label>
 
-                        
+                                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/themes/default/style.min.css" />
+                                <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.12/jstree.min.js"></script>
+
+
                                 <div id="categoryTree" style="max-height:300px;overflow:auto;">
                                     <ul>
                                         @foreach (var category in Model.categories)
                                         {
                                             <li id="c-@category.id">
                                                 @category.name
-                                            <ul>
-                                                @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
-                                                {
-                                                    <li id="sc-@subcategory.id">
-                                                        @subcategory.name
-                                                    <ul>
-                                                        @foreach (var subsubCategory in Model.sub_subcategories.Where(ss => ss.parent_sub_category_id == subcategory.id))
-                                                        {
-                                                            <li id="ssc-@subsubCategory.id">@subsubCategory.name</li>
-                                                        }
-                                                    </ul>
-                                                </li>
-                                            }
-                                            </ul>
-                                        </li>
-                                    }
+                                                <ul>
+                                                    @foreach (var subcategory in Model.sub_categories.Where(x => x.parent_id == category.id))
+                                                    {
+                                                        <li id="sc-@subcategory.id">
+                                                            @subcategory.name
+                                                            <ul>
+                                                                @foreach (var subsubCategory in Model.sub_subcategories.Where(ss => ss.parent_sub_category_id == subcategory.id))
+                                                                {
+                                                                    <li id="ssc-@subsubCategory.id">@subsubCategory.name</li>
+                                                                }
+                                                            </ul>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
                                     </ul>
                                 </div>
-                           
 
+
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Kuponun Geçerli Olacağı Ürünleri Seçin</label>
+
+                                <select class="label ui selection fluid dropdown   " id="products" multiple>
+
+                                    @foreach (var item in Model.products)
+                                    {
+                                        <option value="@item.id">@item.name</option>
+                                    }
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>Kuponun Geçerli Olacağı Ürünleri Seçin</label>
 
-                            <select class="label ui selection fluid dropdown   " id="products" multiple>
 
-                                @foreach (var item in Model.products)
-                                {
-                                    <option value="@item.id">@item.name</option>
-                                }
-                            </select>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-2 ">
+                                <a id="submitbtn" class="btn btn-outline-primary float-right">Kaydet</a>
+                            </div>
                         </div>
                     </div>
 
 
 
-                    <div class="form-group">
-                        <div class="col-md-offset-2 ">
-                            <a id="submitbtn" class="btn btn-outline-primary float-right">Kaydet</a>
-                        </div>
-                    </div>
                 </div>
-
-
-
             </div>
-        </div>
 
-    </form>
+        </form>
 </div>
 <script>
     $(document).ready(function () {
@@ -318,6 +320,7 @@
             formData.append("MaxPrice", maxprice);
             formData.append("StartDate", startdate);
             formData.append("EndDate", enddate);
+            formData.append("__RequestVerificationToken", $('#couponForm input[name="__RequestVerificationToken"]').val());
 
             
             var selectedNodes = $('#categoryTree').jstree('get_checked', true);

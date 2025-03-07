@@ -7,6 +7,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
+    <title>@(ViewBag.Title ?? " ")</title>
+    <meta name="description" content="@(ViewBag.Description ?? string.Empty)" />
+    <meta name="keywords" content="@(ViewBag.Keywords ?? string.Empty)" />
+    <meta name="robots" content="@(ViewBag.NoIndex == true ? "noindex" : "index")@(ViewBag.NoFollow == true ? ", nofollow" : ", follow")">
+
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
@@ -33,7 +40,7 @@
     <script src="~/Content/scripts/slick.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css" integrity="sha512-csw0Ma4oXCAgd/d4nTcpoEoz4nYvvnk21a8VA2h2dzhPAvjbUIK6V3si7/g/HehwdunqqW18RwCJKpD7rL67Xg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css" integrity="sha512-/k658G6UsCvbkGRB3vPXpsPHgWeduJwiWGPCGS14IQw3xpr63AEMdA8nMYG2gmYkXitQxDTn6iiK/2fD4T87qA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" integrity="sha512-q583ppKrCRc7N5O0n2nzUiJ+suUv7Et1JGels4bXOaMFQcamPk9HjdUknZuuFjBNs7tsMuadge5k9RzdmO+1GQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
 
         .dropbtn {
@@ -96,7 +103,7 @@
             background-color: white;
             border: 1px solid #ddd;
             margin-top: 5px;
-            z-index: 1000; /* Üstte görünmesi için */
+            z-index: 1000; 
             width: 150px;
         }
 
@@ -123,8 +130,9 @@
         .category-item:hover .sub-category {
             display: block; /* Hover olduğunda göster */
         }
+
         .category-item {
-            position: relative; /* Alt kategorilerin düzgün görünmesi için */
+            position: relative;
         }
 
         .sub-category-panel {
@@ -133,7 +141,7 @@
             background-color: white;
             border: 1px solid #ddd;
             margin-top: 5px;
-            z-index: 1000; /* Üstte görünmesi için */
+            z-index: 1000; 
             width: 200px; /* Alt kategori paneli genişliği */
         }
 
@@ -153,15 +161,19 @@
 </head>
 
 <body>
+
     <link href="~/Content/css/navbar/css/styles.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
 
     <div id="toaster"></div>
 
+    <div id="loading" style="display: none;">
+        <span class="loader" id="spinner"></span>
+    </div>
     <header class="header">
         <div class="global-notification">
             <p>
-                @Model.company_details.FirstOrDefault().homepage_top_text<a href="/Home/Shop">ALİSVERİS YAP</a>
+                @Model.company_details.FirstOrDefault().homepage_top_text<a href="/Home/Shop"> ALIŞVERİŞ YAP</a>
             </p>
         </div>
 
@@ -170,10 +182,12 @@
 
 
 
-        <nav class="nav container " >
+        <nav class="nav  ">
             <div class="nav__data">
                 <a href="~/Home/Index" class="nav__logo">
-                    <i class="ri-store-2-line"></i> Çobanlar Market
+                    @*<i class="ri-store-2-line"></i> Çobanlar Market*@
+                    <img src="~/img/logo.png" style="height:50px;" />
+
                 </a>
 
                 <div class="nav__toggle" id="nav-toggle">
@@ -234,14 +248,14 @@
 
                             <li class="dropdown__item">
                                 <div class="nav__link user-btn" style="justify-content:left;">
-                                    <span>@user.first_name</span>  <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                                    <span class="m-0">@user.first_name</span>  <i class="ri-arrow-down-s-line dropdown__arrow"></i>
 
 
                                 </div>
 
                                 <ul class="dropdown__menu">
                                     <li>
-                                        <a href="#" class="dropdown__link">
+                                        <a href="/Home/MyAccount/@user.id" class="dropdown__link">
                                             <i class="ri-user-line"></i> Hesabım
                                         </a>
                                     </li>
@@ -320,7 +334,8 @@
                 Aradığınız ürünleri görmek için yazmaya başlayın.
             </p>
             <form class="search-form">
-                <input type="text" id="search-product" placeholder="Size ne lazım?" /><button>
+                <input type="text" id="search-product" placeholder="Size ne lazım?" />
+                <button onclick="return false;">
                     <i class="bi bi-search"></i>
                 </button>
             </form>
@@ -335,6 +350,68 @@
 
     @RenderBody()
 
+<style>
+    .modal {
+        display: none; 
+        position: fixed; 
+        z-index: 1; 
+        left: 0;
+        top: 0;
+        width: 100%; 
+        height: 100%;
+        overflow: auto; 
+        background-color: rgb(0,0,0); 
+        background-color: rgba(0,0,0,0.4); 
+    }
+  
+    .modal-content {
+        background-color: #fefefe;
+        position-area:center;
+        padding: 30px;
+        border: 1px solid #888;
+        width: fit-content;
+    }
+
+  
+    .close-modal {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+    <div class="modal" id="modal-unsubscribe" style="display:none;">
+        <div class="modal-content">
+            <form id="bultenUnsubscribeForm" action="/Home/Unsubscribe" method="post">
+                <input type="text"
+                       placeholder="E-Posta" id="unsubscribemail" style="height:48px;" />
+                <button id="unsubscribesubmitbtn" class="btn btn-red" style="height:48px;">Abonelikten çık</button>
+            </form>
+
+            <a class="close-modal"><i class="bi bi-x" id="close-unsubscribe"></i></a>
+        </div>
+          
+       
+
+         
+      
+        <div class="modal-overlay" style="display:none;"></div>
+    </div>
+
+ 
+
+
     <footer class="footer">
         <div class="subscribe-row">
             <div class="container">
@@ -343,7 +420,7 @@
                         <div class="footer-subscribe">
                             <div class="footer-subscribe-top">
                                 <h3 class="subscribe-title">
-                                    Get our emails for info on new items, sales and more
+                                    Yeni ürünlerden ve kampanyalardan haberdar olun.
                                 </h3>
                                 <p class="subscribe-desc">
                                     Yeni ürünler, indirimler ve daha fazlası hakkında
@@ -351,14 +428,15 @@
                                 </p>
                             </div>
                             <div class="footer-subscribe-buttom">
-                                <form>
+                                <form id="bultenForm" action="/Home/eBulten" method="post">
                                     <input type="text"
-                                           placeholder="Enter Your email adres." /><button class="btn btn-red">Subscribe</button>
+                                           placeholder="E-Posta" id="bultenmail" /><button id="bultensubmitbtn" class="btn btn-red">Abone Ol</button>
                                 </form>
                                 <div class="privacy-text">
                                     <p>
-                                        yeni ürünler, indirimler ve daha
-                                        <a href="#"> Kanunlara buradan göz atabilirsiniz</a>
+                                        
+                                        Onayınızı istediğiniz zaman geri çekebilirsiniz (<a id="modalunsubscribe">Abonelikten çık</a>). Kişisel verilerinizi nasıl işlediğimizi <a href="/Home/GizlilikPolitikasi">Gizlilik Politikamızdan</a> okuyun.
+
                                     </p>
                                 </div>
                             </div>
@@ -367,9 +445,8 @@
                     <div class="footer-contact-wrapper">
                         <div class="footer-contact-top">
                             <h3 class="contact-title">
-                                Need help? <br />(+90) 545 260 00 00
+                                <span>Yardıma mı ihtiyacınız var?</span> <br /><a style="color:white !important" href="tel:Telefon: 0462 512 36 66">0462 512 36 66</a>
                             </h3>
-                            <p class="contact-desc">We are eveliby 08:00 - 07:00</p>
                         </div>
                     </div>
                 </div>
@@ -380,78 +457,63 @@
                 <div class="footer-widgets">
                     <div class="brand-info">
                         <div class="footer-logo">
-                            <a href="#" class="logo">LOGO</a>
+                            <a href="/Home/Index" class="logo">
+                                <img src="~/img/logo.png" style="height:50px;" />
+                            </a>
                         </div>
                         <div class="footer-desc">
                             <p>
-                                Lorem ipsum dolor sit, amet consectetur adipisicing
-                                elit. Ab, officiis?
+                                Pzt - Cmt: 09.00 - 18.00
                             </p>
                         </div>
                         <div class="footer-contact">
                             <p>
-                                <a href="tel:555 555 55 55">(+800) 1234 5478 90</a><a href="mailto:info@gmail.com">info@gmail.com</a>
+                                <a href="tel:Telefon: 0462 512 36 66">0462 512 36 66</a><br /><br /><a href="mailto:Email:iletisim@cobanlarmarket.com">iletisim@cobanlarmarket.com</a>
                             </p>
                         </div>
                     </div>
                     <div class="widget-nav-menu">
-                        <h4>Information</h4>
+                        <h4>Çobanlar Market</h4>
                         <ul class="menu-list">
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="/Home/GizlilikPolitikasi">Gizlilik Politikası</a></li>
+                            <li><a href="/Home/MesafeliSatisSozlesmesi">Mesafeli Satış Sözleşmesi</a></li>
+                            <li><a href="/Home/KVKKPolitikasi">KVKK Politikası</a></li>
+                            <li><a href="/Home/TeslimatIadeSartlari">Teslimat-İade Şartları</a></li>
+                            <li><a href="/Home/Hakkimizda">Hakkımızda</a></li>
+                            <li><a href="/Home/Contact">İletişim</a></li>
+
                         </ul>
                     </div>
                     <div class="widget-nav-menu">
-                        <h4>Information</h4>
-                        <ul class="menu-list">
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
+                        <h4>Kategoriler</h4>
+                        <ul class="cat-list">
                         </ul>
                     </div>
                     <div class="widget-nav-menu">
-                        <h4>Information</h4>
+                        <h4>Sosyal Medya</h4>
                         <ul class="menu-list">
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
+                            <li><a href="https://www.instagram.com/cobanlarmarket61/" target="_blank"><i class="mdi mdi-instagram"></i> Instagram</a></li>
+                            <li><a href="https://www.facebook.com/people/%C3%87OBANLAR-MARKET/100068926406643/" target="_blank"><i class="mdi mdi-facebook"></i>Facebook</a></li>
+
                         </ul>
                     </div>
+
                     <div class="widget-nav-menu">
-                        <h4>Information</h4>
-                        <ul class="menu-list">
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                            <li><a href="#">Yazilacak</a></li>
-                        </ul>
+                        <img src="~/img/yurticikargologo.png" style="height:36px;" />
                     </div>
+
                 </div>
             </div>
         </div>
         <div class="copyright-row">
             <div class="container">
                 <div class="footer-copyright">
-                    <div class="site-copyright">
+                    <div class="footer-menu">
+                        <a href="#"><img src="~/Content/theme/images/logo_band_colored@1X.png" alt="" style="height:25px;" /></a>
 
                     </div>
-                    <a href="#"><img src="/img/footer/cards.png" alt="" /></a>
-                    <div class="footer-menu">
-                        <ul class="footer-menu-list">
-                            <li class="list-item"><a href="#">Privacy Policy</a></li>
-                            <li class="list-item">
-                                <a href="#">Terms and Conditions</a>
-                            </li>
-                            <li class="list-item"><a href="#">Returns Policy</a></li>
-                        </ul>
+                    <div class="site-copyright">
+                        <p>Copyright &#169;2024 Çobanlar Market</p>
                     </div>
                 </div>
             </div>
@@ -485,7 +547,7 @@
             "closeButton": false,
             "debug": false,
             "newestOnTop": true,
-            "progressBar": true,
+            "progressBar": false,
             "positionClass": "toast-top-right",
             "preventDuplicates": false,
             "onclick": null,
@@ -530,16 +592,29 @@
             var categoryList = $('#categoryList');
             if (categoryList.children().length === 0) {  // Eğer kategoriler daha önce yüklenmemişse
                 $.ajax({
-                    url: '/Home/GetCategories',  // Kategorileri getiren API endpoint
+                    url: '/Home/GetCategories',  
                     type: 'GET',
                     success: function (categories) {
-                        categoryList.empty(); // Mevcut listeyi temizle
+                        categoryList.empty();
+                        var j = 1;
+                        var footerCat = $('.cat-list')
+                        categories.forEach(function (category) {
+                            if (j <= 6) {
+                                var a = $('<a></a>').attr('href', '/Home/Shop#category-' + category.id)
+                                    .text(category.name);
+                                footerCat.append(a);
+                                j++;
+                            } else {
+                                return true;
+                            }
+
+                        });
                         categories.forEach(function (category) {
                             var listItem = $('<li></li>').addClass('dropdown__subitem').attr('categoryid', category.id).attr('categorytype', 0);
                             var link = $('<div></div>')
 
                                 .addClass('dropdown__link')
-                                  /*  .attr('onclick', 'filterCategory(' + category.id + ', 0, this)')*/;
+                                                              /*  .attr('onclick', 'filterCategory(' + category.id + ', 0, this)')*/;
 
 
                             var a = $('<a></a>').attr('href', '/Home/Shop#category-' + category.id)
@@ -550,7 +625,7 @@
 
                             // Alt kategorileri getir ve ekle
                             $.ajax({
-                                url: '/Home/GetSubCategories',  // Alt kategorileri getiren API endpoint
+                                url: '/Home/GetSubCategories',  
                                 type: 'GET',
                                 data: { categoryId: category.id },
                                 success: function (subCategories) {
@@ -564,7 +639,7 @@
                                             var subLink = $('<div></div>')
 
                                                 .addClass('dropdown__sublink')
-                                                    /*.attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)')*/;
+                                                                                /*.attr('onclick', 'filterCategory(' + subCategory.id + ', 1, this)')*/;
                                             var a = $('<a></a>').attr('href', '/Home/Shop#subcategory-' + subCategory.id)
                                                 .text(subCategory.name);
                                             subLink.append(a);
@@ -573,7 +648,7 @@
 
                                             // Alt-alt kategorileri getir ve ekle
                                             $.ajax({
-                                                url: '/Home/GetSubSubCategories',  // Alt-alt kategorileri getiren API endpoint
+                                                url: '/Home/GetSubSubCategories', 
                                                 type: 'GET',
                                                 data: { subcategoryId: subCategory.id },
                                                 success: function (subsubCategories) {
@@ -595,7 +670,7 @@
                                                         var icon = $('<i class="ri-add-line dropdown__add"></i>');
 
                                                         subLink.append(icon);
-                                                        subListItem.append(subsubCategoryList); // Alt-alt kategoriyi doğru yere ekle
+                                                        subListItem.append(subsubCategoryList); 
                                                     } else {
 
                                                     }
@@ -620,8 +695,118 @@
                 });
             }
         });
+       
+        $(document).on("click", "#close-unsubscribe", function (e) {
+            e.preventDefault();
+           
+            $('#modal-unsubscribe').css("display", "none");
+        });
+
+        $(document).on("click", "#modalunsubscribe", function (e) {
+            e.preventDefault();
+          
+            $('#modal-unsubscribe').css("display", "block");
+        });
+
+        $(document).on("click", "#bultensubmitbtn", function (e) {
+
+            e.preventDefault();
+
+            if ($('#bultenForm').valid()) {
+
+                var formData = new FormData();
 
 
+
+                var email = $('#bultenmail').val() || "";
+
+
+
+                formData.append('Email', email);
+
+                $.ajax({
+                    url: '/Home/eBulten/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message);
+
+                        } else {
+                            toastr.error(result.message, 'Hata');
+                        }
+
+
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
+                    error: function (xhr, status, error) {
+
+                        window.location.href = "/Home/Auth";
+
+                        console.error('AJAX Error: ' + error);
+                    }
+                });
+            }
+        });
+
+
+
+
+
+        $(document).on("click", "#unsubscribesubmitbtn", function (e) {
+
+            e.preventDefault();
+
+            if ($('#bultenUnsubscribeForm').valid()) {
+
+                var formData = new FormData();
+
+
+
+                var email = $('#unsubscribemail').val() || "";
+
+
+
+                formData.append('Email', email);
+
+                $.ajax({
+                    url: '/Home/Unsubscribe/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message);
+
+                        } else {
+                            toastr.error(result.message, 'Hata');
+                        }
+
+
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    },
+                    error: function (xhr, status, error) {
+
+                        window.location.href = "/Home/Auth";
+
+                        console.error('AJAX Error: ' + error);
+                    }
+                });
+            }
+        });
 
         //$(document).ready(function () {
         //    // Kategorileri getir ve listele
@@ -763,5 +948,87 @@
         });
 
     </script>
+    @*<script>
+        $(document).ready(function () {
+            // SEO ayarlarını almak için AJAX isteği
+            $.ajax({
+                url: '/Management/GetSeoSettings', // Controller ve metot ismi
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    const seoData = JSON.parse(data); // JSON verisini ayrıştır
+
+                    // Geçerli sayfanın adını alın
+                    const currentPage = window.location.pathname;
+                    if (currentPage=== "/") {
+                        currentPage ="/Home/Index"
+                    }
+                    console.log(currentPage);
+                    // JSON'da mevcut sayfa için meta etiketlerini ekleyin
+                    if (seoData[currentPage]) {
+                        const meta = seoData[currentPage];
+
+                        // Meta etiketlerini ayarlayın
+                        if (meta.Title) {
+                            document.title = meta.Title; // Sayfa başlığını güncelle
+                        }
+
+                        if (meta.Keywords) {
+                            let keywordsMeta = document.querySelector('meta[name="keywords"]');
+                            if (keywordsMeta) {
+                                keywordsMeta.setAttribute('content', meta.Keywords);
+                            } else {
+                                keywordsMeta = document.createElement('meta');
+                                keywordsMeta.name = "keywords";
+                                keywordsMeta.content = meta.Keywords;
+                                document.head.appendChild(keywordsMeta);
+                            }
+                        }
+
+                        if (meta.Description) {
+                            let descriptionMeta = document.querySelector('meta[name="description"]');
+                            if (descriptionMeta) {
+                                descriptionMeta.setAttribute('content', meta.Description);
+                            } else {
+                                descriptionMeta = document.createElement('meta');
+                                descriptionMeta.name = "description";
+                                descriptionMeta.content = meta.Description;
+                                document.head.appendChild(descriptionMeta);
+                            }
+                        }
+
+                        // NoIndex ve NoFollow ayarları
+                        if (meta.NoIndex) {
+                            let robotsMeta = document.querySelector('meta[name="robots"]');
+                            if (robotsMeta) {
+                                robotsMeta.setAttribute('content', 'noindex');
+                            } else {
+                                robotsMeta = document.createElement('meta');
+                                robotsMeta.name = "robots";
+                                robotsMeta.content = 'noindex';
+                                document.head.appendChild(robotsMeta);
+                            }
+                        }
+
+                        if (meta.NoFollow) {
+                            let robotsMeta = document.querySelector('meta[name="robots"]');
+                            if (robotsMeta) {
+                                robotsMeta.setAttribute('content', (robotsMeta.content || '') + ', nofollow');
+                            } else {
+                                robotsMeta = document.createElement('meta');
+                                robotsMeta.name = "robots";
+                                robotsMeta.content = 'nofollow';
+                                document.head.appendChild(robotsMeta);
+                            }
+                        }
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('SEO settings could not be loaded:', error);
+                }
+            });
+        });
+        </script>*@
+
 </body>
 </html>

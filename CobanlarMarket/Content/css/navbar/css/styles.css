@@ -54,7 +54,11 @@ a {
 
 /*=============== NAV ===============*/
 .nav {
-  height: var(--header-height);
+    height: var(--header-height);
+  
+    max-width: 1320px;
+    margin-inline: 1.5rem;
+    margin-inline:auto;
 }
 
 .nav__logo, 
@@ -64,10 +68,12 @@ a {
 }
 
 .nav__data {
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+ 
+    
 }
 
 .nav__logo {
@@ -112,11 +118,11 @@ a {
 }
 /* Navigation for mobile devices */
 @media screen and (max-width: 1320px) {
-    .nav__data{
-        width:auto !important;
-        margin-inline:1.5rem !important;
-        padding-right:0 !important;
-
+    .nav__data {
+        width: auto !important;
+        margin-inline: 1.5rem !important;
+        padding-right: 0 !important;
+        min-width: -webkit-fill-available;
     }
     .nav__menu {
         position: absolute;
@@ -276,7 +282,7 @@ a {
 }
 
 /* For large devices */
-@media screen and (min-width: 1328px) {
+@media screen and (min-width: 1320px) {
   .container {
     margin-inline: auto;
   }

@@ -11,8 +11,7 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class sub_categories
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -25,11 +24,7 @@ namespace CobanlarMarket.Models
     
         public int id { get; set; }
         public Nullable<int> parent_id { get; set; }
-        [Required(ErrorMessage = "Alt kategori adý gereklidir.")]
-        [StringLength(30, ErrorMessage = "Alt kategori adý en fazla 30 karakter olmalýdýr.")]
         public string name { get; set; }
-
-        [StringLength(50, ErrorMessage = "Açýklama en fazla 50 karakter olmalýdýr.")]
         public string description { get; set; }
         public Nullable<System.DateTime> created_at { get; set; }
         public Nullable<System.DateTime> deleted_at { get; set; }

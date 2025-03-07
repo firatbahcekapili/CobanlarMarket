@@ -39,7 +39,7 @@
                                 }
                                 @foreach (var item in Model.categories)
                                 {
-                                    <tr CatId="@item.id">
+                                    <tr catid="@item.id">
                                         <td>@item.id</td>
                                         <td>
                                             @if (item.cover != null)
@@ -117,7 +117,7 @@
 
                                 @foreach (var item in Model.sub_categories)
                                 {
-                                    <tr subCatId="@item.id">
+                                    <tr subcatid="@item.id">
                                         <td>@item.id</td>
 
                                         <td>@item.name</td>
@@ -181,7 +181,7 @@
 
                                 @foreach (var item in Model.sub_subcategories)
                                 {
-                                    <tr subSubCatId="@item.id">
+                                    <tr subsubcatid="@item.id">
                                         <td>@item.id</td>
 
                                         <td>@item.name</td>
@@ -237,10 +237,13 @@
                     Onaylamanız halinde kategori silinip kategori altındaki ürünler kategorisiz olarak kalacaktır. Eğer ürünler alt kategorilere sahipse bunlar saklanacaktır. İlgili kategorilere üst kategori seçerek ürünleri yeniden kategorilendirebilirsiniz.
                 </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-                <button type="button" class="btn btn-danger btn-pill">Sil!</button>
-            </div>
+            <form id="RemoveCategoryForm" action="/Management/RemoveCategory" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -261,10 +264,13 @@
                     Onaylamanız halinde kategori silinip kategori altındaki ürünler kategorisiz olarak kalacaktır. Eğer ürünler alt alt kategoriye sahipse bu kategorinin üst kategorisini değiştirerek ürünleri yeniden kategorilendirebilirsiniz.
                 </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-                <button type="button" class="btn btn-danger btn-pill">Sil!</button>
-            </div>
+            <form id="RemoveSubCategoryForm" action="/Management/RemoveSubCategory" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -284,9 +290,12 @@
                     Onaylamanız halinde kategori silinip kategori altındaki ürünler bir üst kategoriye taşınacaktır.
                 </p>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-            </div>
+            <form id="RemoveSubSubCategoryForm" action="/Management/RemoveSubSubCategory" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -294,10 +303,12 @@
 <script>
     function Remove(id) {
 
+        var token = $('#RemoveCategoryForm input[name="__RequestVerificationToken"]').val();
+
         $.ajax({
             url: '/Management/RemoveCategory/',
             type: 'POST',
-            data: { Id: id },
+            data: { __RequestVerificationToken: token, Id: id },
             success: function (result) {
 
 
@@ -306,11 +317,13 @@
                     toastr.success('Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                    var tbody = $("#categoryTable tbody");
+                    //var tbody = $("#categoryTable tbody");
 
-                    tbody.find('[CatId=' + id + ']').remove();
+                    //tbody.find('[CatId=' + id + ']').remove();
+                    var row = $('[catid=' + id + ']');
 
-
+                    var table = $('#categoryTable').DataTable();
+                    table.row(row).remove().draw();
                     $('#RemoveCModal').modal('hide');
                 } else {
                     toastr.error('Kategori Silinirken Bir Hata Oluştu', 'Başarısız');
@@ -330,20 +343,27 @@
 
     }
     function RemoveSub(id) {
-
+        var token = $('#RemoveSubCategoryForm input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: '/Management/RemoveSubCategory/',
             type: 'POST',
-            data: { Id: id },
+            data: { __RequestVerificationToken: token, Id: id },
             success: function (result) {
 
                 if (result.success) {
                     toastr.success('Alt Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                    var tbody = $("#subCategoryTable tbody");
+                    //var tbody = $("#subCategoryTable tbody");
 
-                    tbody.find('[subCatId=' + id + ']').remove();
+                    //tbody.find('[subCatId=' + id + ']').remove();
+
+
+                    var row = $('[subcatid=' + id + ']');
+
+                    var table = $('#subCategoryTable').DataTable();
+
+                    table.row(row).remove().draw();
 
                     $('#RemoveSCModal').modal('hide');
                 } else {
@@ -362,11 +382,11 @@
 
     }
     function RemoveSubSub(id) {
-
+        var token = $('#RemoveSubSubCategoryForm input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: '/Management/RemoveSubSubCategory/',
             type: 'POST',
-            data: { Id: id },
+            data: { __RequestVerificationToken: token, Id: id },
             success: function (result) {
 
 
@@ -374,14 +394,18 @@
                     toastr.success('Alt Alt Kategori Başarıyla Silindi', 'Başarılı');
 
 
-                    var tbody = $("#subsubCategoryTable tbody");
+                    //var tbody = $("#subsubCategoryTable tbody");
 
-                    tbody.find('[subSubCatId=' + id + ']').remove();
+                    //tbody.find('[subSubCatId=' + id + ']').remove();
+                    var row = $('[subsubcatid=' + id + ']');
 
-                    $('#RemoveSCCModal').modal('hide');
+                    var table = $('#subsubCategoryTable').DataTable();
+                    table.row(row).remove().draw();
+
+                    $('#RemoveSSCModal').modal('hide');
                 } else {
                     toastr.error('Alt Alt Kategori Silinirken Bir Hata Oluştu', 'Başarısız');
-                    $('#RemoveSCCModal').modal('hide');
+                    $('#RemoveSSCModal').modal('hide');
 
                 }
                

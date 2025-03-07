@@ -11,8 +11,7 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class products_skus
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -27,8 +26,6 @@ namespace CobanlarMarket.Models
         public Nullable<int> size_attribute_id { get; set; }
         public Nullable<int> color_attribute_id { get; set; }
         public string sku { get; set; }
-        [Required(ErrorMessage = "Fiyat gereklidir")]
-
         public Nullable<decimal> price { get; set; }
         public Nullable<decimal> old_price { get; set; }
         public Nullable<int> quantity { get; set; }

@@ -11,8 +11,7 @@ namespace CobanlarMarket.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
+    
     public partial class products
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -28,30 +27,16 @@ namespace CobanlarMarket.Models
         }
     
         public int id { get; set; }
-        [Required(ErrorMessage = "Ürün adý gereklidir")]
-        [StringLength(50, ErrorMessage = "Ürün adý en fazla 50 karakter olmalýdýr")]
-        [MinLength(2,ErrorMessage ="Ürün adý en az 2 karakterden oluþmalýdýr")]
         public string name { get; set; }
-
-        [StringLength(500, ErrorMessage = "Açýklama en fazla 500 karakter olmalýdýr")]
         public string description { get; set; }
-
         public string summary { get; set; }
-
         public string cover { get; set; }
         public Nullable<int> subcategory_id { get; set; }
-        public int? subcategory { get; set; }
-
-        public string sub_subcategory_id { get; set; } 
-
-        [Range(0, 2, ErrorMessage = "Kategori tipi 0, 1 veya 2 olmalýdýr")]
-        public int? category_type { get; set; }
-
-        public DateTime? created_at { get; set; }
-
-        public DateTime? deleted_at { get; set; }
-    
-    public Nullable<bool> status { get; set; }
+        public string sub_subcategory_id { get; set; }
+        public Nullable<int> category_type { get; set; }
+        public Nullable<System.DateTime> created_at { get; set; }
+        public Nullable<System.DateTime> deleted_at { get; set; }
+        public Nullable<bool> status { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<campaign_products> campaign_products { get; set; }

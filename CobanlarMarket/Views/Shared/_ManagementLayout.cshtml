@@ -1,10 +1,11 @@
 ﻿@{
-    var currentPage = $"{ViewContext.RouteData.Values["controller"]}/{ViewContext.RouteData.Values["action"]}";
-
+    
+        var currentPage = string.Concat(ViewContext.RouteData.Values["controller"], "/", ViewContext.RouteData.Values["action"]);
+  
 
 
     var u = Session["User"] as CobanlarMarket.Models.users;
-    if (u==null)
+    if (u == null)
     {
         Response.Redirect("~/Home/Auth");
     }
@@ -16,6 +17,10 @@
 <html lang="tr" dir="ltr">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Yönetim Paneli - Çobanlar Market</title>
+    <meta name="robots" content="noindex, follow">
+
     <link href="https://fonts.googleapis.com/css?family=Karla:400,700|Roboto" rel="stylesheet">
 
 
@@ -32,7 +37,7 @@
 
 
 
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    @*<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">*@
 
 
 
@@ -44,8 +49,7 @@
     <link id="main-css-href" rel="stylesheet" href="~/Content/theme/css/style.css" />
 
 
-    <!-- FAVICON -->
-    <link href="~/Content/theme/images/favicon.png" rel="shortcut icon" />
+    <link href="~/favicon.ico" rel="shortcut icon" />
 
 
     <script src="~/Scripts/jquery-3.7.1.min.js"></script>
@@ -58,9 +62,8 @@
 
 
 
-    <script type="text/javascript">
 
-    </script>
+
 </head>
 
 
@@ -69,38 +72,49 @@
         .card-body {
             width: -webkit-fill-available;
         }
+
         .field-validation-error {
             color: #fe5461 !important;
         }
-        .removeNotification{
-            right:3px;
-            position:absolute;
-            top:0;
+
+        .removeNotification {
+            right: 3px;
+            position: absolute;
+            top: 0;
         }
+
         .readNotification {
             right: 35px;
             position: absolute;
             top: 0;
-            
         }
+
             .readNotification span {
                 color: #27c1ff;
             }
 
             .readNotification .mdi-eye-remove-outline {
-            color:#b71818ff;
+                color: #b71818ff;
             }
 
-            .media {
-                position: relative;
-            }
-        .dropdown-notify-footer a{
-            padding:0 5px 0 5px !important;
+        .media {
+            position: relative;
+        }
+
+        .dropdown-notify-footer a {
+            padding: 0 5px 0 5px !important;
+        }
+        td img {
+            width: 40px;
+            height: 40px;
+        }
+        .table.table-product tbody td img{
+            object-fit:contain !important;
         }
     </style>
     <script>
-       
-        
+
+
         NProgress.start();
 
         window.addEventListener('load', function () {
@@ -127,14 +141,20 @@
                 <!-- Aplication Brand -->
                 <div class="app-brand">
                     <a href="/Management/Dashboard">
-                        <img src="~/Content/theme/images/logo.png" alt="Mono" />
-                        <span class="brand-name">Çobanlar Market</span>
+                        <img src="~/img/logo2.png" alt="cobanlarmarket" />
+                        @*<span class="brand-name">Çobanlar Market</span>*@
                     </a>
                 </div>
                 <!-- begin sidebar scrollbar -->
                 <div class="sidebar-left" data-simplebar style="height: 100%">
                     <!-- sidebar menu -->
                     <ul class="nav sidebar-inner" id="sidebar-menu">
+                        <li class="">
+                            <a class="sidenav-item-link" href="/Home/Index" target="_blank">
+                                <i class="mdi mdi-open-in-new"></i>
+                                <span class="nav-text">Web siteye git</span>
+                            </a>
+                        </li>
                         <li class=" @(currentPage.EndsWith("Dashboard") ? "active" : "")">
                             <a class="sidenav-item-link" href="/Management/Dashboard">
                                 <i class="mdi mdi-briefcase-account-outline"></i>
@@ -168,102 +188,137 @@
                                         <span class="nav-text">Sayfa Yönetimi</span>
                                     </a>
                                 </li>
-                                </div>
-
-                                
-                            </ul>
-                        </li>
-
-
-
-
-                <li class="has-sub">
-                    <a class="sidenav-item-link"
-                       href="javascript:void(0)"
-                       data-toggle="collapse"
-                       data-target="#product-menu"
-                       aria-expanded="false"
-                       aria-controls="product-menu">
-                        <i class="mdi mdi-cart-outline"></i>
-                        <span class="nav-text">Ürünler</span> <b class="caret"></b>
-                    </a>
-                    <ul class="collapse" id="product-menu" data-parent="#sidebar-menu">
-                        <div class="sub-menu">
-                        <li>
-                            <a class="sidenav-item-link" href="/Management/AddProduct">
-                                <span class="nav-text">Ürün Ekle</span>
-                            </a>
-                        </li>
-
-                        <li>
-                            <a class="sidenav-item-link" href="/Management/ProductList">
-                                <span class="nav-text">Ürün Listesi</span>
-                            </a>
-                        </li>
+                                <li>
+                                    <a class="sidenav-item-link" href="/Management/SeoSettings">
+                                        <span class="nav-text">Seo Ayarları</span>
+                                    </a>
+                                </li>
+                </div>
 
 
-            </div>
-                            </ul>
-                      </li>
+                </ul>
+                </li>
+
 
 
                 <li class="has-sub">
                     <a class="sidenav-item-link"
                        href="javascript:void(0)"
                        data-toggle="collapse"
-                       data-target="#category-menu"
+                       data-target="#mail-menu"
                        aria-expanded="false"
-                       aria-controls="category-menu">
-                        <i class="mdi mdi-layers-outline"></i>
-                        <span class="nav-text">Kategori</span> <b class="caret"></b>
+                       aria-controls="mail-menu">
+                        <i class="mdi mdi-email-outline"></i>
+                        <span class="nav-text">Mail</span> <b class="caret"></b>
                     </a>
-                    <ul class="collapse" id="category-menu" data-parent="#sidebar-menu">
+                    <ul class="collapse" id="mail-menu" data-parent="#sidebar-menu">
                         <div class="sub-menu">
                         <li>
-                            <a class="sidenav-item-link" href="/Management/AddCategory">
-                                <span class="nav-text">Kategori Ekle</span>
+                            <a class="sidenav-item-link" href="/Management/EBulten">
+                                <span class="nav-text">E-Bülten</span>
                             </a>
                         </li>
-
                         <li>
-                            <a class="sidenav-item-link" href="/Management/CategoryList">
-                                <span class="nav-text">Kategori Listesi</span>
+                            <a class="sidenav-item-link" href="/Management/TopluMesaj">
+                                <span class="nav-text">Toplu Mail Gönder</span>
                             </a>
                         </li>
 
 
-            </div>
+
+
+</div>
             </ul>
             </li>
 
-            @*<li class="has-sub">
+
+            <li class="has-sub">
                 <a class="sidenav-item-link"
                    href="javascript:void(0)"
                    data-toggle="collapse"
-                   data-target="#attributes-menu"
+                   data-target="#product-menu"
                    aria-expanded="false"
-                   aria-controls="attributes-menu">
-                    <i class="mdi mdi-cube-outline"></i>
-                    <span class="nav-text">Özellikler</span> <b class="caret"></b>
+                   aria-controls="product-menu">
+                    <i class="mdi mdi-cart-outline"></i>
+                    <span class="nav-text">Ürünler</span> <b class="caret"></b>
                 </a>
-                <ul class="collapse" id="attributes-menu" data-parent="#sidebar-menu">
+                <ul class="collapse" id="product-menu" data-parent="#sidebar-menu">
                     <div class="sub-menu">
                     <li>
-                        <a class="sidenav-item-link" href="/Management/AddAttribute">
-                            <span class="nav-text">Özellik Ekle</span>
+                        <a class="sidenav-item-link" href="/Management/AddProduct">
+                            <span class="nav-text">Ürün Ekle</span>
                         </a>
                     </li>
 
                     <li>
-                        <a class="sidenav-item-link" href="/Management/AttributeList">
-                            <span class="nav-text">Özellik Listesi</span>
+                        <a class="sidenav-item-link" href="/Management/ProductList">
+                            <span class="nav-text">Ürün Listesi</span>
+                        </a>
+                    </li>
+
+
+</div>
+                        </ul>
+            </li>
+
+
+            <li class="has-sub">
+                <a class="sidenav-item-link"
+                   href="javascript:void(0)"
+                   data-toggle="collapse"
+                   data-target="#category-menu"
+                   aria-expanded="false"
+                   aria-controls="category-menu">
+                    <i class="mdi mdi-layers-outline"></i>
+                    <span class="nav-text">Kategori</span> <b class="caret"></b>
+                </a>
+                <ul class="collapse" id="category-menu" data-parent="#sidebar-menu">
+                    <div class="sub-menu">
+                    <li>
+                        <a class="sidenav-item-link" href="/Management/AddCategory">
+                            <span class="nav-text">Kategori Ekle</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="sidenav-item-link" href="/Management/CategoryList">
+                            <span class="nav-text">Kategori Listesi</span>
                         </a>
                     </li>
 
 
     </div>
     </ul>
-    </li>*@
+    </li>
+
+    @*<li class="has-sub">
+                    <a class="sidenav-item-link"
+                       href="javascript:void(0)"
+                       data-toggle="collapse"
+                       data-target="#attributes-menu"
+                       aria-expanded="false"
+                       aria-controls="attributes-menu">
+                        <i class="mdi mdi-cube-outline"></i>
+                        <span class="nav-text">Özellikler</span> <b class="caret"></b>
+                    </a>
+                    <ul class="collapse" id="attributes-menu" data-parent="#sidebar-menu">
+                        <div class="sub-menu">
+                        <li>
+                            <a class="sidenav-item-link" href="/Management/AddAttribute">
+                                <span class="nav-text">Özellik Ekle</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="sidenav-item-link" href="/Management/AttributeList">
+                                <span class="nav-text">Özellik Listesi</span>
+                            </a>
+                        </li>
+
+
+        </div>
+        </ul>
+        </li>*@
 
 
     <li class="has-sub">
@@ -278,7 +333,7 @@
         </a>
         <ul class="collapse" id="order-menu" data-parent="#sidebar-menu">
             <div class="sub-menu">
-          
+
             <li>
                 <a class="sidenav-item-link" href="/Management/OrderList">
                     <span class="nav-text">Sipariş Listesi</span>
@@ -395,23 +450,23 @@
     </div>
 
     @*<div class="sidebar-footer">
-        <div class="sidebar-footer-content">
-            <ul class="d-flex">
-                <li>
-                    <a href="#"
-                       data-toggle="tooltip"
-                       title="Profile settings">
-                        <i class="mdi mdi-settings"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-toggle="tooltip" title="No chat messages">
-                        <i class="mdi mdi-chat-processing"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>*@
+            <div class="sidebar-footer-content">
+                <ul class="d-flex">
+                    <li>
+                        <a href="#"
+                           data-toggle="tooltip"
+                           title="Profile settings">
+                            <i class="mdi mdi-settings"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="tooltip" title="No chat messages">
+                            <i class="mdi mdi-chat-processing"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>*@
     </div>
     </aside>
 
@@ -435,41 +490,41 @@
                 <div class="navbar-right ">
 
                     @* <!-- search form -->
-        <div class="search-form">
-            <form action="index.html" method="get">
-                <div class="input-group input-group-sm" id="input-group-search">
-                    <input type="text" autocomplete="off" name="query" id="search-input" class="form-control" placeholder="Search..." />
-                    <div class="input-group-append">
-                        <button class="btn" type="button">/</button>
-                    </div>
-                </div>
-            </form>
-            <ul class="dropdown-menu dropdown-menu-search">
+                        <div class="search-form">
+                            <form action="index.html" method="get">
+                                <div class="input-group input-group-sm" id="input-group-search">
+                                    <input type="text" autocomplete="off" name="query" id="search-input" class="form-control" placeholder="Search..." />
+                                    <div class="input-group-append">
+                                        <button class="btn" type="button">/</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <ul class="dropdown-menu dropdown-menu-search">
 
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Morbi leo risus</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Dapibus ac facilisis in</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Porta ac consectetur ac</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Vestibulum at eros</a>
-                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Morbi leo risus</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Dapibus ac facilisis in</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Porta ac consectetur ac</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.html">Vestibulum at eros</a>
+                                </li>
 
-            </ul>
+                            </ul>
 
-        </div>*@
+                        </div>*@
 
                     <ul class="nav navbar-nav">
                         <!-- Offcanvas -->
-                        <li class="custom-dropdown">
+                        @*<li class="custom-dropdown">
                             <a class="offcanvas-toggler active custom-dropdown-toggler" data-offcanvas="contact-off" href="javascript:">
                                 <i class="mdi mdi-contacts icon"></i>
                             </a>
-                        </li>
+                        </li>*@
                         <li class="custom-dropdown">
                             <button class="notify-toggler custom-dropdown-toggler">
                                 <i class="mdi mdi-bell-outline icon"></i>
@@ -482,55 +537,55 @@
                                         <a class="nav-item nav-link active" id="all-tabs" data-toggle="tab" href="#all" role="tab" aria-controls="nav-home"
                                            aria-selected="true">Bildirimler (5)</a>
                                         @*<a class="nav-item nav-link" id="message-tab" data-toggle="tab" href="#message" role="tab" aria-controls="nav-profile"
-                                           aria-selected="false">Msgs (4)</a>
-                                        <a class="nav-item nav-link" id="other-tab" data-toggle="tab" href="#other" role="tab" aria-controls="nav-contact"
-                                           aria-selected="false">Others (3)</a>*@
+                                               aria-selected="false">Msgs (4)</a>
+                                            <a class="nav-item nav-link" id="other-tab" data-toggle="tab" href="#other" role="tab" aria-controls="nav-contact"
+                                               aria-selected="false">Others (3)</a>*@
                                     </div>
                                 </header>
 
                                 <div class="" data-simplebar style="height: 325px;">
                                     <div class="tab-content" id="myTabContent">
 
-                                         <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tabs">
+                                        <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tabs">
 
-                                          @*  <div class="media media-sm bg-warning-10 p-4 mb-0">
-                                                <div class="media-sm-wrapper">
-                                                    <a href="user-profile.html">
-                                                        <img src="~/Content/theme/images/user/user-sm-02.jpg" alt="User Image">
-                                                    </a>
+                                            @*  <div class="media media-sm bg-warning-10 p-4 mb-0">
+                                                    <div class="media-sm-wrapper">
+                                                        <a href="user-profile.html">
+                                                            <img src="~/Content/theme/images/user/user-sm-02.jpg" alt="User Image">
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">John Doe</span>
+                                                            <span class="discribe">Extremity sweetness difficult behaviour he of. On disposal of as landlord horrible. Afraid at highly months do things on at.</span>
+                                                            <span class="time">
+                                                                <time>Just now</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <div class="media-body">
-                                                    <a href="user-profile.html">
-                                                        <span class="title mb-0">John Doe</span>
-                                                        <span class="discribe">Extremity sweetness difficult behaviour he of. On disposal of as landlord horrible. Afraid at highly months do things on at.</span>
-                                                        <span class="time">
-                                                            <time>Just now</time>...
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                            </div>
 
 
-                                            <div class="media media-sm p-4 mb-0">
-                                                <div class="media-sm-wrapper bg-info-dark">
-                                                    <a href="user-profile.html">
-                                                        <i class="mdi mdi-account-multiple-check"></i>
-                                                    </a>
-                                                </div>
-                                                <div class="media-body">
-                                                    <a href="user-profile.html">
-                                                        <span class="title mb-0">Add request</span>
-                                                        <span class="discribe">Add Dany Jones as your contact.</span>
-                                                        <div class="buttons">
-                                                            <a href="#" class="btn btn-sm btn-success shadow-none text-white">accept</a>
-                                                            <a href="#" class="btn btn-sm shadow-none">delete</a>
-                                                        </div>
-                                                        <span class="time">
-                                                            <time>6 hrs ago</time>...
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                            </div>*@
+                                                <div class="media media-sm p-4 mb-0">
+                                                    <div class="media-sm-wrapper bg-info-dark">
+                                                        <a href="user-profile.html">
+                                                            <i class="mdi mdi-account-multiple-check"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">Add request</span>
+                                                            <span class="discribe">Add Dany Jones as your contact.</span>
+                                                            <div class="buttons">
+                                                                <a href="#" class="btn btn-sm btn-success shadow-none text-white">accept</a>
+                                                                <a href="#" class="btn btn-sm shadow-none">delete</a>
+                                                            </div>
+                                                            <span class="time">
+                                                                <time>6 hrs ago</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>*@
 
 
 
@@ -538,136 +593,136 @@
 
                                         @*<div class="tab-pane fade" id="message" role="tabpanel" aria-labelledby="message-tab">
 
-            <div class="media media-sm p-4 mb-0">
-                <div class="media-sm-wrapper">
-                    <a href="user-profile.html">
-                        <img src="~/Content/theme/images/user/user-sm-01.jpg" alt="User Image">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">Selena Wagner</span>
-                        <span class="discribe">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
-                        <span class="time">
-                            <time>15 min ago</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm p-4 mb-0">
+                                                    <div class="media-sm-wrapper">
+                                                        <a href="user-profile.html">
+                                                            <img src="~/Content/theme/images/user/user-sm-01.jpg" alt="User Image">
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">Selena Wagner</span>
+                                                            <span class="discribe">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</span>
+                                                            <span class="time">
+                                                                <time>15 min ago</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-            <div class="media media-sm p-4 mb-0">
-                <div class="media-sm-wrapper">
-                    <a href="user-profile.html">
-                        <img src="~/Content/theme/images/user/user-sm-03.jpg" alt="User Image">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">Sagge Hudson</span>
-                        <span class="discribe">On disposal of as landlord Afraid at highly months do things on at.</span>
-                        <span class="time">
-                            <time>1 hrs ago</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm p-4 mb-0">
+                                                    <div class="media-sm-wrapper">
+                                                        <a href="user-profile.html">
+                                                            <img src="~/Content/theme/images/user/user-sm-03.jpg" alt="User Image">
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">Sagge Hudson</span>
+                                                            <span class="discribe">On disposal of as landlord Afraid at highly months do things on at.</span>
+                                                            <span class="time">
+                                                                <time>1 hrs ago</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-            <div class="media media-sm bg-warning-10 p-4 mb-0">
-                <div class="media-sm-wrapper">
-                    <a href="user-profile.html">
-                        <img src="~/Content/theme/images/user/user-sm-02.jpg" alt="User Image">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">John Doe</span>
-                        <span class="discribe">
-                            Extremity sweetness difficult behaviour he of. On disposal of as landlord horrible. Afraid
-                            at highly months do things on at.
-                        </span>
-                        <span class="time">
-                            <time>Just now</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm bg-warning-10 p-4 mb-0">
+                                                    <div class="media-sm-wrapper">
+                                                        <a href="user-profile.html">
+                                                            <img src="~/Content/theme/images/user/user-sm-02.jpg" alt="User Image">
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">John Doe</span>
+                                                            <span class="discribe">
+                                                                Extremity sweetness difficult behaviour he of. On disposal of as landlord horrible. Afraid
+                                                                at highly months do things on at.
+                                                            </span>
+                                                            <span class="time">
+                                                                <time>Just now</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-            <div class="media media-sm p-4 mb-0">
-                <div class="media-sm-wrapper">
-                    <a href="user-profile.html">
-                        <img src="~/Content/theme/images/user/user-sm-04.jpg" alt="User Image">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">Albrecht Straub</span>
-                        <span class="discribe"> Beatae quia natus assumenda laboriosam, nisi perferendis aliquid consectetur expedita non tenetur.</span>
-                        <span class="time">
-                            <time>Just now</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm p-4 mb-0">
+                                                    <div class="media-sm-wrapper">
+                                                        <a href="user-profile.html">
+                                                            <img src="~/Content/theme/images/user/user-sm-04.jpg" alt="User Image">
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">Albrecht Straub</span>
+                                                            <span class="discribe"> Beatae quia natus assumenda laboriosam, nisi perferendis aliquid consectetur expedita non tenetur.</span>
+                                                            <span class="time">
+                                                                <time>Just now</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-        </div>
-        <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="contact-tab">
+                                            </div>
+                                            <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="contact-tab">
 
-            <div class="media media-sm p-4 bg-light mb-0">
-                <div class="media-sm-wrapper bg-primary">
-                    <a href="user-profile.html">
-                        <i class="mdi mdi-calendar-check-outline"></i>
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">New event added</span>
-                        <span class="discribe">1/3/2014 (1pm - 2pm)</span>
-                        <span class="time">
-                            <time>10 min ago...</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm p-4 bg-light mb-0">
+                                                    <div class="media-sm-wrapper bg-primary">
+                                                        <a href="user-profile.html">
+                                                            <i class="mdi mdi-calendar-check-outline"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">New event added</span>
+                                                            <span class="discribe">1/3/2014 (1pm - 2pm)</span>
+                                                            <span class="time">
+                                                                <time>10 min ago...</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-            <div class="media media-sm p-4 mb-0">
-                <div class="media-sm-wrapper bg-info-dark">
-                    <a href="user-profile.html">
-                        <i class="mdi mdi-account-multiple-check"></i>
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">Add request</span>
-                        <span class="discribe">Add Dany Jones as your contact.</span>
-                        <div class="buttons">
-                            <a href="#" class="btn btn-sm btn-success shadow-none text-white">accept</a>
-                            <a href="#" class="btn btn-sm shadow-none">delete</a>
-                        </div>
-                        <span class="time">
-                            <time>6 hrs ago</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm p-4 mb-0">
+                                                    <div class="media-sm-wrapper bg-info-dark">
+                                                        <a href="user-profile.html">
+                                                            <i class="mdi mdi-account-multiple-check"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">Add request</span>
+                                                            <span class="discribe">Add Dany Jones as your contact.</span>
+                                                            <div class="buttons">
+                                                                <a href="#" class="btn btn-sm btn-success shadow-none text-white">accept</a>
+                                                                <a href="#" class="btn btn-sm shadow-none">delete</a>
+                                                            </div>
+                                                            <span class="time">
+                                                                <time>6 hrs ago</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-            <div class="media media-sm p-4 mb-0">
-                <div class="media-sm-wrapper bg-info">
-                    <a href="user-profile.html">
-                        <i class="mdi mdi-playlist-check"></i>
-                    </a>
-                </div>
-                <div class="media-body">
-                    <a href="user-profile.html">
-                        <span class="title mb-0">Task complete</span>
-                        <span class="discribe">Afraid at highly months do things on at.</span>
-                        <span class="time">
-                            <time>1 hrs ago</time>...
-                        </span>
-                    </a>
-                </div>
-            </div>
+                                                <div class="media media-sm p-4 mb-0">
+                                                    <div class="media-sm-wrapper bg-info">
+                                                        <a href="user-profile.html">
+                                                            <i class="mdi mdi-playlist-check"></i>
+                                                        </a>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <a href="user-profile.html">
+                                                            <span class="title mb-0">Task complete</span>
+                                                            <span class="discribe">Afraid at highly months do things on at.</span>
+                                                            <span class="time">
+                                                                <time>1 hrs ago</time>...
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
 
-        </div>*@
+                                            </div>*@
                                     </div>
                                 </div>
 
@@ -698,13 +753,13 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-right">
 
-                                        <li>
+                                        @*<li>
                                             <a class="dropdown-link-item" href="email-inbox.html">
                                                 <i class="mdi mdi-email-outline"></i>
                                                 <span class="nav-text">Message</span>
                                                 <span class="badge badge-pill badge-primary">24</span>
                                             </a>
-                                        </li>
+                                        </li>*@
 
                                         <li class="dropdown-footer">
                                             @*<a class="dropdown-link-item" href="Home/LogOut"> <i class="mdi mdi-logout"></i> Çıkış Yap </a>*@
@@ -715,7 +770,7 @@
                                     </ul>
                                 </li>
                             }
-                           
+
                         }
 
 
@@ -743,7 +798,7 @@
 
     </div>
     </div>
-
+    @*
     <!-- Card Offcanvas -->
     <div class="card card-offcanvas" id="contact-off">
         <div class="card-header">
@@ -848,7 +903,7 @@
         </div>
     </div>
 
-
+        *@
 
 
 
@@ -872,7 +927,7 @@
 
     <script src="~/Content/theme/plugins/daterangepicker/moment.min.js"></script>
     <script src="~/Content/theme/plugins/daterangepicker/daterangepicker.js"></script>
-   
+
     <script src="https://cdn.datatables.net/rowgroup/1.5.0/js/dataTables.rowGroup.min.js"></script>
     <link href="https://cdn.datatables.net/rowreorder/1.5.0/css/rowReorder.dataTables.min.css" rel="stylesheet">
 
@@ -921,12 +976,12 @@
 
 
 
-      
+
 
     </script>
 
 
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    @*<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>*@
 
 
 

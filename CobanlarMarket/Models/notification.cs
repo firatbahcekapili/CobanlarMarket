@@ -21,6 +21,9 @@ namespace CobanlarMarket.Models
         public Nullable<bool> is_read { get; set; }
         public Nullable<bool> status { get; set; }
         public Nullable<int> order_id { get; set; }
+        public string type { get; set; }
+        public Nullable<int> campaign_id { get; set; }
+        public Nullable<int> product_id { get; set; }
     
         public virtual users users { get; set; }
     }

@@ -15,225 +15,327 @@
         tbody tr:nth-last-child(1) {
             border-bottom: none !important;
         }
-
-     
+    .border {
+    
+    overflow-x:auto;
+    }
 </style>
 
 
-<div class="row p-3">
-    <div class="col-12">
-        <div class="card card-default ">
-            <div class="card-header">
-                <h2>Sipariş #@order.id</h2>
+<div class="container p-0" style="max-width:100%;">
+    <div class="row p-3">
+        <div class="col-12">
+            <div class="card card-default ">
 
-                <div class="sub-title">
-                    <span class=" badge badge-info ">@Model.payment_details.FirstOrDefault().status</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <span class="badge badge-light">Oluşturulma Tarihi:@order.created_at</span>
-            </div>
-        </div>
-    </div>
+                <div class="container" style="max-width:100%;">
+                    <div class="row">
 
+                        <div class="col-lg">
+                            <div class="card-header">
+                                <h2>Sipariş #@order.id</h2>
 
-    <div class="container col-12 m-0 p-0 mb-5">
-        <div class="row p-0 m-0">
-            <div class="col-xl-4 ">
-                <div class="card h-100 p-5 d-flex justify-content-center">
+                                <div class="sub-title">
+                                    <span class=" badge badge-info ">@Model.payment_details.FirstOrDefault().status</span>
+                                </div>
+                            </div>
+                            <div class="card-body" style="display:flex;justify-content:space-between;">
+                                <span class="badge badge-light" style="height:fit-content;">Oluşturulma Tarihi:@order.created_at</span>
 
 
-                    <div class="border" style="border-radius:10px;">
-                        <table class="table table-borderless" id="dtable">
-                            <tr>
-                                <td><h3>Kullanıcı</h3></td>
-                                <td></td>
+                            </div>
+
+                        </div>
+                        <div class="col-lg d-flex justify-content-lg-end align-items-end">
+                            <form id="referenceForm" action="/Management/EditReferenceId" method="post">
+                                @Html.AntiForgeryToken()
 
 
-                            </tr>
-                            <tr>
-                                <td>Adı</td>
-                                <td>@user.first_name</td>
-                            </tr>
-                            <tr>
-                                <td>Soyadı</td>
-                                <td>@user.last_name</td>
-                            </tr>
-                            <tr>
-                                <td>Kullanıcı Adı</td>
-                                <td>@user.username</td>
-                            </tr>
-                            <tr>
-                                <td>Telefon Numarası</td>
-                                <td>@user.phone_number</td>
-                            </tr>
-                            <tr>
-                                <td>Email</td>
-                                <td>@user.email</td>
-                            </tr>
+                                <div class="form-group pr-lg-5 pl-5 pl-lg-0 ">
 
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-4">
+                                    <div class="form-row">
+                                        <div class="col-12">
 
-                <div class="card h-100 p-5 d-flex justify-content-center">
+                                            <label for="name">Yurtiçi Kargo Takip Kodu </label>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-8">
+                                            @*<input type="text" class="form-control" id="name" placeholder="Kategori İsmi">*@
+                                            @Html.EditorFor(model => Model.order_details.FirstOrDefault().reference_id, "Kargo Takip Kodu", new { htmlAttributes = new { name = "referenceid", @class = "form-control", placeholder = "Kargo Takip Kodu", id = "referenceid" } })
+                                            @Html.ValidationMessageFor(model => Model.order_details.FirstOrDefault().reference_id, "")
 
 
-                    <div class="border" style="border-radius:10px;">
-                        <table class="table table-borderless" id="dtable">
-                            <tr>
-                                <td><h3>Adres Bilgileri</h3></td>
-                                <td></td>
+                                        </div>
+                                        <div class="form-group col-4 d-flex align-items-center ">
+                                            <button class="btn btn-outline-primary float-right" id="submitbtn">Kaydet</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </form>
 
 
-                            </tr>
+                        </div>
 
 
 
-                            <tr>
-                                <td class="text-dark font-weight-bold">Adres Başlığı</td>
-                                <td class="">@order.shipping_title</td>
-                            </tr>
-                            <tr>
-                                <td class="text-dark font-weight-bold">Adres</td>
-                                <td class="">@order.shipping_address</td>
-                            </tr>
-
-                            <tr>
-                                <td class="text-dark font-weight-bold">İl/İlçe/Posta Kodu</td>
-                                <td class="">@order.shipping_city / @order.shipping_country / @order.shipping_postal_code </td>
-                            </tr>
-                            <tr>
-                                <td class="text-dark font-weight-bold">Ad/Soyad</td>
-                                <td class="">@order.shipping_name @order.shipping_surname</td>
-                            </tr>
-                            <tr>
-                                <td class="text-dark font-weight-bold">İletişim Numarası</td>
-                                <td class="">@order.shipping_phone_number</td>
-                            </tr>
-                        </table>
                     </div>
                 </div>
 
+
+
             </div>
-            <div class="col-xl-4">
-
-                <div class="card h-100 p-5 d-flex justify-content-center">
 
 
-                    <div class="border" style="border-radius:10px;">
-                        <table class="table table-borderless" id="dtable">
-                            <tr>
-                                <td><h3>Ödeme Bilgileri</h3></td>
-                                <td></td>
+        </div>
 
 
-                            </tr>
+        <div class="container col-12 m-0 p-0 mb-5">
+            <div class="row p-0 m-0">
+                <div class="col-xl-4 ">
+                    <div class="card h-100 p-5 d-flex justify-content-center">
 
 
+                        <div class="border" style="border-radius:10px;">
+                            <table class="table table-borderless" id="dtable">
+                                <tr>
+                                    <td><h3>Kullanıcı</h3></td>
+                                    <td></td>
 
-                            <tr>
-                                <td class="text-dark font-weight-bold">Ödeme Durumu</td>
-                                <td class="">@Model.payment_details.FirstOrDefault().status</td>
-                            </tr>
-                            <tr>
-                                <td class="text-dark font-weight-bold">Taksit Sayısı</td>
-                                <td class="">@Model.payment_details.FirstOrDefault().installment</td>
-                            </tr>
-                            <tr>
-                                <td class="text-dark font-weight-bold">Kart Tipi</td>
-                                <td class="">@Model.payment_details.FirstOrDefault().cardType</td>
-                            </tr>
 
-                        </table>
+                                </tr>
+                                <tr>
+                                    <td>Adı</td>
+                                    <td>@user.first_name</td>
+                                </tr>
+                                <tr>
+                                    <td>Soyadı</td>
+                                    <td>@user.last_name</td>
+                                </tr>
+                                <tr>
+                                    <td>Kullanıcı Adı</td>
+                                    <td>@user.username</td>
+                                </tr>
+                                <tr>
+                                    <td>Telefon Numarası</td>
+                                    <td>@user.phone_number</td>
+                                </tr>
+                                <tr>
+                                    <td>Email</td>
+                                    <td>@user.email</td>
+                                </tr>
+
+                            </table>
+                        </div>
                     </div>
                 </div>
+                <div class="col-xl-4">
 
+                    <div class="card h-100 p-5 d-flex justify-content-center">
+
+
+                        <div class="border" style="border-radius:10px;">
+                            <table class="table table-borderless" id="dtable">
+                                <tr>
+                                    <td><h3>Adres Bilgileri</h3></td>
+                                    <td></td>
+
+
+                                </tr>
+
+
+
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Adres Başlığı</td>
+                                    <td class="">@order.shipping_title</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Adres</td>
+                                    <td class="">@order.shipping_address</td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Mahalle / İlçe / İl / Posta Kodu</td>
+                                    <td class="">@order.shipping_quarter / @order.shipping_district / @order.shipping_city / @order.shipping_postal_code </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Ad/Soyad</td>
+                                    <td class="">@order.shipping_name @order.shipping_surname</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-dark font-weight-bold">İletişim Numarası</td>
+                                    <td class="">@order.shipping_phone_number</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-xl-4">
+
+                    <div class="card h-100 p-5 d-flex justify-content-center">
+
+
+                        <div class="border" style="border-radius:10px">
+                            <table class="table table-borderless" id="dtable">
+                                <tr>
+                                    <td><h3>Ödeme Bilgileri</h3></td>
+                                    <td></td>
+
+
+                                </tr>
+
+
+                                <tr>
+                                    <td class="text-dark font-weight-bold">PaymentId</td>
+                                    <td class="">@Model.payment_details.FirstOrDefault().paymentId</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Ödeme Durumu</td>
+                                    <td class="">@Model.payment_details.FirstOrDefault().status</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Taksit Sayısı</td>
+                                    <td class="">@Model.payment_details.FirstOrDefault().installment</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-dark font-weight-bold">Kart Tipi</td>
+                                    <td class="">@Model.payment_details.FirstOrDefault().cardType</td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-12">
-        <div class="card p-5">
-
-
-            <div class=" border overflow-x-auto" style="border-radius:10px;">
-                <table class="table table-borderless " id="dtable">
-                    <tr>
-                        <td><h3>Sipariş</h3></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-
-                    </tr>
-
-                    <tr class="thead-light">
-                        <th>Ürün</th>
-                        <th>SKU</th>
-                        <th>Adet</th>
-                        <th>Tutar</th>
-
-                    </tr>
+        <div class="col-12">
+            <div class="card p-5">
 
 
-                    <tbody>
-                        @foreach (var item in Model.order_item)
-                        {
-                            <tr>
-                                <td>
-                                    <img src="@item.products.cover" style="width:40px;" />
-                                    @item.products.name
-                                </td>
-                                <td>@item.products.products_skus.FirstOrDefault().sku</td>
-                                <td>@item.quantity</td>
-                                <td>@(item.quantity * item.ordered_price)</td>
-
-                            </tr>
-                        }
-
+                <div class="border" style="border-radius:10px;">
+                    <table class="table table-borderless " id="dtable">
                         <tr>
+                            <td><h3>Sipariş</h3></td>
                             <td></td>
                             <td></td>
-                            <td>Ara Toplam</td>
-                            <td>@Model.order_item.Sum(x => x.ordered_price * x.quantity)</td>
-                        </tr>
-                        <tr>
                             <td></td>
-                            <td></td>
-                            <td>Kargo Ücreti</td>
-                            <td>@Model.payment_details.FirstOrDefault().cargoPrice</td>
+
                         </tr>
 
-                        @if (order.coupon_id.HasValue)
-                        {
+                        <tr class="thead-light">
+                            <th>Ürün</th>
+                            <th>SKU</th>
+                            <th>Adet</th>
+                            <th>Tutar ₺</th>
+
+                        </tr>
+
+
+                        <tbody>
+                            @foreach (var item in Model.order_item)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@item.products.cover" />
+                                        @item.products.name
+                                    </td>
+                                    <td>@item.products.products_skus.FirstOrDefault().sku</td>
+                                    <td>@item.quantity</td>
+                                    <td>@(item.quantity * item.ordered_price)</td>
+
+                                </tr>
+                            }
+
                             <tr>
                                 <td></td>
-                                <td>Kupon Kodu: <span class="badge badge-success"> @Model.coupons.FirstOrDefault(x => x.Id == order.coupon_id).Code</span></td>
-                                <td class="text-dark font-weight-bold">İndirim Tutarı</td>
-                                <td>-@Model.payment_details.FirstOrDefault().couponDiscountValue</td>
+                                <td></td>
+                                <td>Ara Toplam</td>
+                                <td>@Model.order_item.Sum(x => x.ordered_price * x.quantity)</td>
                             </tr>
-                        }
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td>Kargo Ücreti</td>
+                                <td>@Model.payment_details.FirstOrDefault().cargoPrice</td>
+                            </tr>
 
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td class="text-dark font-weight-bold">Toplam</td>
-                            <td class="text-dark font-weight-bold">@Model.payment_details.FirstOrDefault().paidPrice</td>
-                        </tr>
-                    </tbody>
-                </table>
+                            @if (order.coupon_id.HasValue)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>Kupon Kodu: <span class="badge badge-success"> @Model.coupons.FirstOrDefault(x => x.Id == order.coupon_id).Code</span></td>
+                                    <td class="text-dark font-weight-bold">İndirim Tutarı</td>
+                                    <td>-@Model.payment_details.FirstOrDefault().couponDiscountValue</td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="text-dark font-weight-bold">Toplam</td>
+                                <td class="text-dark font-weight-bold">@Model.payment_details.FirstOrDefault().paidPrice</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
         </div>
 
-    </div>
 
-  
+    </div>
 </div>
+    <script src="https://cdn.datatables.net/2.1.5/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.5/js/dataTables.jqueryui.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.jqueryui.js"></script>
 
-<script src="https://cdn.datatables.net/2.1.5/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.1.5/js/dataTables.jqueryui.js"></script>
-<script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
-<script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.jqueryui.js"></script>
+    <script>
 
+
+
+        $('#submitbtn').on("click", function (e) {
+            e.preventDefault();
+
+            if ($('#referenceForm').valid()) {
+                var formData = new FormData();
+
+                var referenceid = $('#referenceid').val() || "";
+                var orderid = '@Model.order_details.FirstOrDefault().id'
+
+                formData.append('ReferenceId', referenceid);
+                formData.append('OrderId', orderid);
+
+                formData.append("__RequestVerificationToken", $('#referenceForm input[name="__RequestVerificationToken"]').val());
+
+                $.ajax({
+                    url: '/Management/EditReferenceId/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        if (result.success) {
+                            toastr.success(result.message, 'Başarılı');
+                        } else {
+                            toastr.error(result.message, 'Hata');
+                        }
+
+
+                    },
+                    error: function (xhr, status, error) {
+                        //toastr.error('Kullanıcı Düzenlenirken Bir Hata Oluştu', 'Hata');
+                        window.location.reload();
+
+                        console.error('AJAX Error: ' + error);
+                    }
+                });
+            }
+        });
+
+    </script>

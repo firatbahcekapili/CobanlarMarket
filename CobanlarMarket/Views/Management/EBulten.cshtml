@@ -1,0 +1,166 @@
+﻿@model CobanlarMarket.Models.AllViewModel
+@{
+    ViewBag.Title = "EBulten";
+    Layout = "~/Views/Shared/_ManagementLayout.cshtml";
+}
+
+<style>
+    .mdi {
+        font-size: 22px;
+        margin: 0 5px 0 5px;
+    }
+
+    .couponTable th, .couponTable td {
+        font-size: 13px;
+    }
+</style>
+<div class=" mt-5 ml-5 mr-5">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <h2>E-Bülten</h2>
+                   
+                </div>
+                <div class="card-body">
+                    <table id="mailTable" class="table table-hover table-product couponTable" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Mail</th>
+                                <th>token</th>
+                                <th>Token Zaman Aşım Tarihi</th>
+                                <th>Durum</th>
+                               
+
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int i = 1;
+                            }
+                            @foreach (var item in Model.newsletters)
+                            {
+                                <tr mailid="@item.id">
+                                    <td class="">
+                                        @item.email
+                                    </td>
+                                    <td>
+                                        @item.token
+                                    </td>
+                                    <td>@item.token_expiration_date</td>
+                                  
+                                    <td> <span class="badge @(item.status==true?"badge-success":"badge-danger")">@(item.status==true?"Aktif":"Pasif")</span> </td>
+
+                                    <td>
+
+                                    
+                                        <a onclick="ShowModal(@item.id)">
+                                            <span class="mdi mdi-trash-can-outline text-danger"></span>
+
+                                        </a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+
+
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="RemoveModal" tabindex="-1" role="dialog" aria-labelledby="RemoveModal"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLongTitle2">Maili silmek istediğinize emin misiniz</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Onaylamanız halinde mail silinecektir. Onaylıyor musunuz?
+                    </p>
+                </div>
+                <form id="RemoveMailForm" action="/Management/RemoveMail" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                        <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    function Remove(Id) {
+        var token = $('#RemoveMailForm input[name="__RequestVerificationToken"]').val();
+
+        $.ajax({
+            url: '/Management/RemoveMail/',
+            type: 'Post',
+            data: { __RequestVerificationToken: token, Id: Id },
+            success: function (response) {
+
+
+                if (response.success) {
+                    toastr.success(response.message);
+
+
+                    var row = $('[mailid=' + Id + ']');
+
+                    var table = $('#mailTable').DataTable();
+
+                    table.row(row).remove().draw();
+
+
+
+                    $('#RemoveModal').modal('hide');
+
+
+
+                } else {
+                    toastr.error(response.message);
+                    $('#RemoveModal').modal('hide');
+
+                }
+
+
+
+            }, error: function (e) {
+                console.log(e)
+                toastr.error('Mail Silinirken Bir Hata Oluştu', 'Hata');
+
+            }
+
+
+
+        });
+
+    }
+
+
+
+    function ShowModal(id) {
+        $('#RemoveModal').modal('show');
+
+        var btn = '<button type= "button" class="btn btn-primary btn-pill" data-dismiss="modal" > İptal Et</button > ' +
+            " <a class='btn btn-danger btn-pill' onclick='Remove(" + id + ")'>Sil!</a>";
+        $('#RemoveModal .modal-footer').empty();
+        $('#RemoveModal .modal-footer').append(btn);
+    }
+</script>

@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_ManagementLayout.cshtml";
 }
 @{
-    var thisYearTotal = Model.order_details
-        .Where(x => x.created_at.HasValue && x.created_at.Value.Year == DateTime.Now.Year)
-        .Sum(x => x.total);
+    var thisYearTotal = Model.payment_details
+        .Where(x => x.created_at.HasValue && x.created_at.Value.Year == DateTime.Now.Year && x.status=="success")
+        .Sum(x => x.paidPrice);
     var monthlySales = new decimal[12];
 
     foreach (var order in Model.order_details)
@@ -381,25 +381,68 @@
                             <thead>
                                 <tr>
                                     <th>İsim</th>
+                                    <th>Kullanıcı Adı</th>
                                     <th class="text-right">Harcama</th>
                                 </tr>
                             </thead>
                             <tbody id="customerTableBody">
-                                @foreach (var item in Model.users.OrderByDescending(x => x.order_details.Sum(x => x.total)).Take(5))
+                                @foreach (var user in Model.users
+.OrderByDescending(u => u.order_details
+.Where(od => od.payment_details != null &&
+                          od.payment_details.FirstOrDefault() != null && // Null kontrolü eklendi
+                          od.payment_details.FirstOrDefault().status == "success")
+.Sum(od => od.payment_details.FirstOrDefault() != null
+                           ? od.payment_details.FirstOrDefault().paidPrice
+                           : 0)) // Null kontrolü
+.Take(5))
                                 {
                                     <tr class="customer-row">
-                                        <td class="text-dark font-weight-bold">@item.first_name @item.last_name</td>
-                                        <td class="text-right">@item.order_details.Where(x => x.user_id == item.id).Sum(x => x.total) &#8378;</td>
+                                        <td class="text-dark font-weight-bold">@user.first_name @user.last_name</td>
+                                        <td class="text-dark font-weight-bold">@user.username</td>
+
+                                        <td class="text-right">
+                                            &#8378;
+                                            @(user.order_details != null ?
+                    user.order_details
+                        .Where(od => od.user_id == user.id &&
+                                     od.payment_details != null &&
+                                     od.payment_details.FirstOrDefault() != null && // Null kontrolü
+                                     od.payment_details.FirstOrDefault().status == "success")
+                        .Sum(od => od.payment_details.FirstOrDefault() != null
+                                      ? od.payment_details.FirstOrDefault().paidPrice
+                                      : 0) : 0)
+                                        </td>
                                     </tr>
                                 }
-
                             </tbody>
+
                             <tbody id="moreRows" style="display: none;">
-                                @foreach (var item in Model.users.OrderByDescending(x => x.order_details.Sum(x => x.total)).Skip(5))
+                                @foreach (var user in Model.users
+                                    .OrderByDescending(u => u.order_details
+                                        .Where(od => od.payment_details != null &&
+                                                     od.payment_details.FirstOrDefault() != null && // Null kontrolü
+                                                     od.payment_details.FirstOrDefault().status == "success")
+                                        .Sum(od => od.payment_details.FirstOrDefault() != null
+                                                      ? od.payment_details.FirstOrDefault().paidPrice
+                                                      : 0))
+                                    .Skip(5))
                                 {
                                     <tr class="customer-row">
-                                        <td class="text-dark font-weight-bold">@item.first_name @item.last_name</td>
-                                        <td class="text-right">@item.order_details.Where(x => x.user_id == item.id).Sum(x => x.total) &#8378;</td>
+                                        <td class="text-dark font-weight-bold">@user.first_name @user.last_name</td>
+                                        <td class="text-dark font-weight-bold">@user.username</td>
+
+                                        <td class="text-right">
+                                            &#8378;
+                                            @(user.order_details != null ?
+                    user.order_details
+                        .Where(od => od.user_id == user.id &&
+                                     od.payment_details != null &&
+                                     od.payment_details.FirstOrDefault() != null && // Null kontrolü
+                                     od.payment_details.FirstOrDefault().status == "success")
+                        .Sum(od => od.payment_details.FirstOrDefault() != null
+                                      ? od.payment_details.FirstOrDefault().paidPrice
+                                      : 0) : 0)
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
@@ -441,10 +484,9 @@
 
                 <!-- Sales by Product -->
                 <div class="card card-default">
-                    @*<div class="card-header align-items-center">
+                    <div class="card-header align-items-center">
                             <h2 class="">Ürün Satışları</h2>
-                            <a href="#" class="btn btn-primary btn-pill" data-toggle="modal" data-target="#modal-stock">Add Stock</a>
-                        </div>*@
+                        </div>
                     <div class="card-body">
                         <div class="tab-content">
                             <table id="product-sale" class="table table-product " style="width:100%">
@@ -463,8 +505,8 @@
                                     {
                                         <tr>
                                             <td>@item.name</td>
-                                            <td>@item.order_item.Sum(x => x.quantity)</td>
-                                            <td>&#8378; @(item.order_item.Sum(x => x.quantity) * item.products_skus.FirstOrDefault().price)</td>
+                                            <td>@item.order_item.Where(o=>o.status=="success").Sum(x => x.quantity)</td>
+                                            <td>&#8378; @(item.order_item.Where(o => o.status == "success").Sum(x => x.quantity) * item.products_skus.FirstOrDefault().price)</td>
                                             @*<td>35.28%</td>
                                                 <td>
                                                     <div class="progress progress-md rounded-0">

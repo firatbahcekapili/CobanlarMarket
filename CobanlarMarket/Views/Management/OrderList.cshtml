@@ -53,7 +53,7 @@
                                         <td>@item.order_details.users.username</td>
                                         <td>@item.products.name</td>
                                         <td>@item.quantity</td>
-                                        <td>@(Model.products_skus.FirstOrDefault(p => p.product_id == item.product_id).price * item.quantity)</td>
+                                        <td>@(item.ordered_price * item.quantity)</td>
                                         <td class="paymentstatus">@Model.payment_details.FirstOrDefault(x=>x.order_id==item.order_id).status</td>
                                         <td>@item.created_at</td>
 
@@ -87,46 +87,6 @@
 
 <script src="https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.min.js"></script>
 <script>
-
-
-    function Refund(payId) {
-
-        $.ajax({
-            url: '/Management/Refund/',
-            type: 'POST',
-            data: { PaymentId: payId },
-            success: function (result) {
-                if (result.success) {
-                    toastr.success(result.message, 'İşlem Başarılı');
-
-                    var tr = $("#orderTable tbody [orderId='"+ result.list[0].order_id +"']");
-
-                    tr.find(".paymentstatus").text(result.list[0].paymentstatus);
-                    
-                  
-
-
-
-
-                } else {
-                    toastr.error(result.message, 'İşlem Başarısız');
-
-                }
-
-           
-
-
-
-
-            }
-
-
-        });
-
-
-
-
-    }
 
    
 

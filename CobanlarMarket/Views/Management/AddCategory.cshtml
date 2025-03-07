@@ -10,6 +10,9 @@
         overflow-y: auto;
         max-height: 300px;
     }
+    img {
+        object-fit: contain;
+    }
 
     .remove-img-btn {
         position: absolute;
@@ -31,8 +34,8 @@
 <div class=" mt-5 ml-5 mr-5">
 
 
-    <form id="categoryForm">
-
+    <form id="categoryForm" action="/Management/AddCategory" method="post">
+        @Html.AntiForgeryToken()
         @{
             CobanlarMarket.Models.categories c = new CobanlarMarket.Models.categories();
             CobanlarMarket.Models.sub_categories sc = new CobanlarMarket.Models.sub_categories();
@@ -93,102 +96,106 @@
 
 <div class=" mt-5 ml-5 mr-5 mb-5">
 
-    <form id="subCategoryForm">
-        <div class="row justify-content-center">
-            <div class="col-12 bg-white p-5">
-                <div class="col-12 pt-4 pb-4 pl-0 ">
-                    <h3>Alt Kategori Ekle</h3>
+  
+        <form id="subCategoryForm" action="/Management/AddSubCategory" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row justify-content-center">
+                <div class="col-12 bg-white p-5">
+                    <div class="col-12 pt-4 pb-4 pl-0 ">
+                        <h3>Alt Kategori Ekle</h3>
 
-                </div>
-                <div class="form-group">
-                    <label for="parentcategory">Kategori *</label>
-                    <select class="form-control" id="category">
-                        <option disabled selected>Kategori Seçiniz</option>
-
-
-                        @foreach (var item in Model.categories)
-                        {
-                            <option pid="@item.id">@item.name</option>
-                        }
-
-                    </select>
-                </div>
-
-                <div class="form-row ">
-                    <div class="form-group col-md-6">
-                        <label for="subname">Alt Kategori İsmi *</label>
-                        @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
-                        @Html.EditorFor(model => sc.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subname", @class = "form-control", placeholder = "Alt Kategori İsmi", id = "subname" } })
-                        @Html.ValidationMessageFor(model => sc.name, "")
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="subdescription">Alt Kategori Açıklaması </label>
-                        @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
-                        @Html.EditorFor(model => sc.description, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subdescription" } })
-                        @Html.ValidationMessageFor(model => sc.description, "")
+                    <div class="form-group">
+                        <label for="parentcategory">Kategori *</label>
+                        <select class="form-control" id="category">
+                            <option disabled selected>Kategori Seçiniz</option>
+
+
+                            @foreach (var item in Model.categories)
+                            {
+                                <option pid="@item.id">@item.name</option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <div class="form-row ">
+                        <div class="form-group col-md-6">
+                            <label for="subname">Alt Kategori İsmi *</label>
+                            @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
+                            @Html.EditorFor(model => sc.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subname", @class = "form-control", placeholder = "Alt Kategori İsmi", id = "subname" } })
+                            @Html.ValidationMessageFor(model => sc.name, "")
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="subdescription">Alt Kategori Açıklaması </label>
+                            @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
+                            @Html.EditorFor(model => sc.description, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subdescription" } })
+                            @Html.ValidationMessageFor(model => sc.description, "")
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary float-right" id="subsubmitbtn">Kaydet</button>
                     </div>
                 </div>
 
-
-                <div class="form-group">
-                    <button class="btn btn-outline-primary float-right" id="subsubmitbtn">Kaydet</button>
-                </div>
             </div>
 
-        </div>
-
-    </form>
+        </form>
 </div>
 
 
 
 <div class=" mt-5 ml-5 mr-5 mb-5">
 
-    <form id="subsubCategoryForm">
-        <div class="row justify-content-center">
-            <div class="col-12 bg-white p-5">
-                <div class="col-12 pt-4 pb-4 pl-0 ">
-                    <h3>Alt Alt Kategori Ekle</h3>
+  
+        <form id="subsubCategoryForm" action="/Management/AddSubSubCategory" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row justify-content-center">
+                <div class="col-12 bg-white p-5">
+                    <div class="col-12 pt-4 pb-4 pl-0 ">
+                        <h3>Alt Alt Kategori Ekle</h3>
 
-                </div>
-                <div class="form-group">
-                    <label for="parentsubcategory">AltKategori *</label>
-                    <select class="form-control" id="subcategory">
-                        <option disabled selected>Alt Kategori Seçiniz</option>
-
-
-                        @foreach (var item in Model.sub_categories)
-                        {
-                            <option pid="@item.id">@item.name</option>
-                        }
-
-                    </select>
-                </div>
-
-                <div class="form-row ">
-                    <div class="form-group col-md-6">
-                        <label for="subsubname">Alt Alt Kategori İsmi *</label>
-                        @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
-                        @Html.EditorFor(model => ssc.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subsubname", @class = "form-control", placeholder = "Alt Alt Kategori İsmi", id = "subsubname" } })
-                        @Html.ValidationMessageFor(model => ssc.name, "")
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="subsubdescription">Alt Alt Kategori Açıklaması </label>
-                        @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
-                        @Html.EditorFor(model => ssc.description, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subsubdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subsubdescription" } })
-                        @Html.ValidationMessageFor(model => ssc.description, "")
+                    <div class="form-group">
+                        <label for="parentsubcategory">AltKategori *</label>
+                        <select class="form-control" id="subcategory">
+                            <option disabled selected>Alt Kategori Seçiniz</option>
+
+
+                            @foreach (var item in Model.sub_categories)
+                            {
+                                <option pid="@item.id">@item.name</option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <div class="form-row ">
+                        <div class="form-group col-md-6">
+                            <label for="subsubname">Alt Alt Kategori İsmi *</label>
+                            @*<input type="text" class="form-control" id="subname" placeholder="Alt Kategori İsmi">*@
+                            @Html.EditorFor(model => ssc.name, "Alt Kategori İsmi", new { htmlAttributes = new { name = "subsubname", @class = "form-control", placeholder = "Alt Alt Kategori İsmi", id = "subsubname" } })
+                            @Html.ValidationMessageFor(model => ssc.name, "")
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="subsubdescription">Alt Alt Kategori Açıklaması </label>
+                            @*<input type="text" class="form-control" id="subdescription" placeholder="Alt Kategori Açıklaması">*@
+                            @Html.EditorFor(model => ssc.description, "Alt Kategori Açıklaması", new { htmlAttributes = new { name = "subsubdescription", @class = "form-control", placeholder = "Alt Kategori Açıklaması", id = "subsubdescription" } })
+                            @Html.ValidationMessageFor(model => ssc.description, "")
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <button class="btn btn-outline-primary float-right" id="subsubsubmitbtn">Kaydet</button>
                     </div>
                 </div>
 
-
-                <div class="form-group">
-                    <button class="btn btn-outline-primary float-right" id="subsubsubmitbtn">Kaydet</button>
-                </div>
             </div>
 
-        </div>
-
-    </form>
+        </form>
 </div>
 
 <script>
@@ -210,14 +217,14 @@
 
             formData.append("Name", name);
             formData.append("Description", description);
-
+            formData.append("__RequestVerificationToken", $('#categoryForm input[name="__RequestVerificationToken"]').val());
 
             if ($('#categoryForm').valid()) {
 
                 $.ajax({
                     url: '/Management/AddCategory/',
                     type: 'POST',
-                    data: formData,
+                    data: formData ,
                     processData: false,
                     contentType: false,
                     success: function (response) {
@@ -268,13 +275,14 @@
             var description = $('#subdescription').val();
             var selectedOption = $("#category").find('option:selected');
             var categoryId = parseInt(selectedOption.attr('pid'));;
+            var token = $('#subCategoryForm input[name="__RequestVerificationToken"]').val();
             console.log(categoryId);
             if ($('#subCategoryForm').valid()) {
 
                 $.ajax({
                     url: '/Management/AddSubCategory/',
                     type: 'POST',
-                    data: { ParentId: categoryId, Name: name, Description: description },
+                    data: { __RequestVerificationToken: token, ParentId: categoryId, Name: name, Description: description },
                     success: function (result) {
 
 
@@ -316,13 +324,15 @@
             var description = $('#subsubdescription').val();
             var selectedOption = $("#subcategory").find('option:selected');
             var categoryId = parseInt(selectedOption.attr('pid'));;
+            var token = $('#subsubCategoryForm input[name="__RequestVerificationToken"]').val();
+
             console.log(categoryId);
             if ($('#subsubCategoryForm').valid()) {
 
                 $.ajax({
                     url: '/Management/AddSubSubCategory/',
                     type: 'POST',
-                    data: { ParentId: categoryId, Name: name, Description: description },
+                    data: { __RequestVerificationToken: token, ParentId: categoryId, Name: name, Description: description },
                     success: function (result) {
 
 

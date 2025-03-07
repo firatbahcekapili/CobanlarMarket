@@ -8,6 +8,9 @@
     .img-pre {
         position: relative;
     }
+    img{
+        object-fit:contain;
+    }
 
     .img-thumbnail {
         position: relative;
@@ -50,75 +53,64 @@
             color: darkred;
         }
 </style>
-<div class=" mt-5 ml-5 mr-5">
-
-    <form id="ProductForm">
+<div class="mt-5 ml-5 mr-5">
+    <form id="ProductForm" action="/Management/EditProduct" method="post">
+        @Html.AntiForgeryToken()
         @{
             CobanlarMarket.Models.products p = new CobanlarMarket.Models.products();
             CobanlarMarket.Models.products_skus ps = new CobanlarMarket.Models.products_skus();
-        }
-        <div class="row justify-content-center  bg-white mb-5">
-            <div class="col-12 col-xl-10  pt-4 pb-4 pl-5 ">
-                <h3>Ürün Ekle</h3>
 
+            var product = Model.products.FirstOrDefault();
+            var productSku = product != null ? product.products_skus.FirstOrDefault() : null;
+            var price = productSku != null && productSku.price != null ? productSku.price.ToString().Replace(",", ".") : "";
+        }
+        <div class="row justify-content-center bg-white mb-5">
+            <div class="col-12 col-xl-10 pt-4 pb-4 pl-5">
+                <h3>Ürün Düzenle</h3>
             </div>
             <!-- Left Column -->
             <div class="col-xl-5 mr-xl-5 mb-xl-0 mb-5 bg-white p-5">
                 <div class="form-group">
                     <label for="productName">Ürün Adı *</label>
-                    @*<input type="text" class="form-control" id="productName" placeholder="Ürün Adı Giriniz">*@
-                    @Html.EditorFor(model => Model.products.FirstOrDefault().name, "Ürün Adı", new { htmlAttributes = new { name = "productName", @class = "form-control", placeholder = "Ürün Adı Giriniz", id = "productName" } })
-                    @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().name, "")
-
+                    @Html.EditorFor(model => product.name, new { htmlAttributes = new { name = "productName", @class = "form-control", placeholder = "Ürün Adı Giriniz", id = "productName" } })
+                    @Html.ValidationMessageFor(model => product.name, "")
                     <small class="form-text text-muted">Ürün adı en az 2 harften oluşmalıdır.</small>
-
                 </div>
                 <div class="form-row">
                     <div class="form-group col-lg-4 col-md-6">
                         <label for="category">Kategori *</label>
                         <select class="form-control" id="category">
                             <option disabled>Kategori Seçiniz</option>
-
                         </select>
-
                     </div>
                     <div class="form-group col-lg-4 col-md-6">
                         <label for="gender">Alt Kategori *</label>
                         <select class="form-control" id="subCategory" disabled>
                             <option disabled>Alt Kategori Seçiniz</option>
-
                         </select>
                     </div>
                     <div class="form-group col-lg-4 col-md-12">
-                        <label for="gender">Alt Alt Kategori </label>
+                        <label for="gender">Alt Alt Kategori</label>
                         <select class="form-control" id="subsubCategory">
                             <option disabled>Alt Alt Kategori Seçiniz</option>
-
                         </select>
                     </div>
-                    <small class="form-text text-muted col-12">Kategori ve Alt Kategori alanlarının seçilmesi zorunludur. Yoksa ekleyebilirsiniz <a href="/Management/AddCategory">Ekle</a> </small>
-
+                    <small class="form-text text-muted col-12">Kategori ve Alt Kategori alanlarının seçilmesi zorunludur. Yoksa ekleyebilirsiniz <a href="/Management/AddCategory">Ekle</a></small>
                 </div>
-
                 <div class="form-group">
                     <label for="description">Açıklama</label>
-                    @*<textarea class="form-control" id="description" rows="3"></textarea>*@
-                    @Html.TextAreaFor(model => Model.products.FirstOrDefault().description, new { name = "description", @class = "form-control", placeholder = "Açıklama", id = "description" })
-                    @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().description, "")
-
+                    @Html.TextAreaFor(model => product.description, new { name = "description", @class = "form-control", placeholder = "Açıklama", id = "description" })
+                    @Html.ValidationMessageFor(model => product.description, "")
                 </div>
             </div>
             <!-- Right Column -->
             <div class="col-xl-5 mb-xl-0 mb-5 bg-white p-5">
                 <div class="form-group">
                     <label>Resim Yükle *</label>
-
-
                     <div class="form-group">
                         <div class="d-flex img-pre row" id="image-containerr">
                             <!-- Resimler buraya eklenecek -->
-
-                            @foreach (var item in Model.products.FirstOrDefault().product_images)
+                            @foreach (var item in product.product_images)
                             {
                                 <div class="p-2 position-relative col-auto" imgid="@item.id">
                                     <img src="@item.image_path" alt="" class="img-thumbnail" />
@@ -130,24 +122,20 @@
                         </div>
                         <div class="d-flex img-pre" id="image-container">
                             <!-- Resimler buraya eklenecek -->
-
                         </div>
                         <div class="input-div">
                             <input type="file" class="form-control" id="productImg" accept=".jpg,.jpeg,.png" multiple aria-describedby="userImg" onchange="dosyaOnizlemeNew(this);">
-
                         </div>
-
                     </div>
                     <small class="form-text text-muted">
                         En az 1 resim eklemeniz gerekiyor. Eklediğiniz resimlerin kalitesine dikkat edin, arka plan rengi standartlarına uyun. Ürünün tüm ayrıntıları gösterdiğine dikkat edin.
                     </small>
                 </div>
                 <div class="form-row">
-
                     <div class="form-group col-md-12">
                         <label for="size">Stok Adeti</label>
-                        @Html.EditorFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().quantity, "Stok Adeti", new { htmlAttributes = new { type = "number", name = "quantity", @class = "form-control", placeholder = "Stok Adeti Giriniz", id = "quantity" } })
-                        @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().quantity, "")
+                        @Html.EditorFor(model => productSku.quantity, new { htmlAttributes = new { type = "number", name = "quantity", @class = "form-control", placeholder = "Stok Adeti Giriniz", id = "quantity", min = "0" } })
+                        @Html.ValidationMessageFor(model => productSku.quantity, "")
                     </div>
                     <div class="form-group col-md-12">
                         <label for="price">Fiyat *</label>
@@ -156,32 +144,25 @@
                                name="price"
                                class="form-control"
                                placeholder="Fiyatı Giriniz"
-                               value="@(Model.products.FirstOrDefault().products_skus.FirstOrDefault()?.price?.ToString().Replace(",","."))" />
-
-                        @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().price, "")
+                               min="0"
+                               value="@(productSku != null && productSku.price != null ? productSku.price.ToString().Replace(",", ".") : "")" />
+                        @Html.ValidationMessageFor(model => productSku.price, "")
                     </div>
-
                     <div class="form-group col-md-12">
-                        <label for="price">Eski Fiyat</label>
+                        <label for="old_price">Eski Fiyat</label>
                         <input type="number"
                                id="old_price"
                                name="old_price"
                                class="form-control"
                                placeholder="Eski Fiyatı Giriniz"
-                               value="@(Model.products.FirstOrDefault().products_skus.FirstOrDefault()?.old_price?.ToString().Replace(",","."))" />
-
-                        @Html.ValidationMessageFor(model => Model.products.FirstOrDefault().products_skus.FirstOrDefault().old_price, "")
+                               min="0"
+                               value="@(productSku != null && productSku.old_price != null ? productSku.old_price.ToString().Replace(",", ".") : "")" />
+                        @Html.ValidationMessageFor(model => productSku.old_price, "")
                     </div>
-
-
-
-
-
                 </div>
                 <button type="submit" id="submitbtn" class="btn btn-primary">Onayla</button>
             </div>
         </div>
-
     </form>
 </div>
 
@@ -206,8 +187,8 @@
                             pid: item.id
                         }));
                     });
-                 var categoryId = '@(Model.products.FirstOrDefault().subcategory_id)';
-                 var parentId = '@(Model.products.FirstOrDefault().sub_categories?.parent_id)';
+                 var categoryId = '@(product.subcategory_id)';
+                 var parentId = '@(product.sub_categories !=null ? product.sub_categories.parent_id : null)';
 
                 if (categoryId === 'null') categoryId = null;
                 if (parentId === 'null') parentId = null;
@@ -226,8 +207,8 @@
                             setTimeout(function () {
 
                                $('#subCategory option').each(function () {
-                                    if ('@(Model.products.FirstOrDefault().category_type)'==='1'|| '@(Model.products.FirstOrDefault().category_type)' ==='2') {
-                                         if ($(this).val() === '@(Model.products.FirstOrDefault().subcategory_id)' ) {
+                                    if ('@(product.category_type)'==='1'|| '@(product.category_type)' ==='2') {
+                                         if ($(this).val() === '@(product.subcategory_id)' ) {
                                              $(this).prop('selected', true);
                                              console.log($(this).val());
 
@@ -308,18 +289,18 @@
                         $subsubcategories.append($option);
 
                         // Eğer category_type 2 ise kontrol yap
-                        if ('@(Model.products.FirstOrDefault().category_type)' === '2') {
-                            console.log('@(Model.products.FirstOrDefault()?.subcategory_id)');
+                        if ('@(product.category_type)' === '2') {
+                            console.log('@(product.subcategory_id)');
 
                             // Eklenen option'un value değeri ile category_id'yi karşılaştır
-                            if (item.id === '@(Model.products.FirstOrDefault()?.sub_subcategory_id)') {
+                            if (item.id === '@(product.sub_subcategory_id)') {
                                 $option.prop('selected', true);
                                 console.log($option.val()+ "ssssss");
                             }
                         }
                     });
 
-                           if ('@(Model.products.FirstOrDefault().category_type)'!=='2') {
+                           if ('@(product.category_type)'!=='2') {
                                $subsubcategories.find(`[cId='-1']`).prop('selected', true);
                            }
 
@@ -360,8 +341,8 @@
 
                });
 
-               var colorattr =@(Model.products.FirstOrDefault().products_skus.FirstOrDefault().color_attribute_id );
-               var sizeattr =@(Model.products.FirstOrDefault().products_skus.FirstOrDefault().size_attribute_id);
+               var colorattr =@(productSku.color_attribute_id );
+               var sizeattr =@(productSku.size_attribute_id);
 
                if (colorattr!=-1) {
                    $('#color option').each(function () {
@@ -418,7 +399,7 @@
                     event.preventDefault();
                     removeImage(file);
                 });
-                var wrapper = $('<div>').addClass('p-2 position-relative').append(img).append(removeBtn);
+                var wrapper = $('<div>').addClass('p-2 position-relative col-auto').append(img).append(removeBtn);
                 container.append(wrapper);
             };
             reader.readAsDataURL(file);
@@ -440,7 +421,7 @@
                     $(this).parent().remove();
                 }
             });
-
+            selectedFiles = [];
             updateFileInput();
         };
         reader.readAsDataURL(fileToRemove);
@@ -467,7 +448,9 @@
             console.error(xhr.responseText);
             alert(xhr.responseText);
              }
-         });
+        });
+        updateFileInput();
+
     }
 
 // FormData nesnesine tüm dosyaları ekle
@@ -515,7 +498,7 @@ function updateFileInput() {
                 console.log(newFile);
             });
             var name = $('#productName').val() || "";
-            var id = @Model.products.FirstOrDefault().id;
+            var id = @product.id;
             var subCategory = !isNaN(parseInt($("#subCategory").find('option:selected').val(), 10)) ? parseInt($("#subCategory").find('option:selected').val(), 10) : null;
             var description = $('#description').val() || "";
 
@@ -557,6 +540,8 @@ function updateFileInput() {
                     formData.append('Quantity', quantity);
                     formData.append('Price', price);
                     formData.append('OldPrice', oldprice);
+                    formData.append("__RequestVerificationToken", $('#ProductForm input[name="__RequestVerificationToken"]').val());
+
                     for (var pair of formData.entries()) {
                         console.log(pair[0] + ', ' + pair[1]);
                     }
@@ -615,7 +600,7 @@ function updateFileInput() {
                     });
                 }
             } else {
-
+                console.log("elssesesees");
                 formData.append('Name', name);
                 formData.append('Id', id);
                 formData.append('SubCategory', subCategory);
@@ -626,12 +611,11 @@ function updateFileInput() {
                 formData.append('OldPrice', oldprice);
 
                 formData.append('SubSubCategory', subsubCategory);
-
+                formData.append("__RequestVerificationToken", $('#ProductForm input[name="__RequestVerificationToken"]').val());
                 if (subsubCategory !== null && subsubCategory !== undefined && subsubCategory !== '') {
                     //formData.append('SubCategory', subsubCategory);
                     formData.append('CategoryType', 2);
                 } else {
-                    console.log("elseee");
                     //formData.append('SubCategory', subCategory);
                     formData.append('CategoryType', 1);
                 }
@@ -647,6 +631,9 @@ function updateFileInput() {
                     success: function (result) {
                         if (result.success) {
                             toastr.success(result.message);
+                            if (result.skippedFiles.length != 0) {
+                                toastr.error("Aynı ada sahip bazı resimler zaten kayıtlı: " + result.skippedFiles);
+                            }
                         } else {
                             toastr.error(result.message);
 
@@ -660,11 +647,21 @@ function updateFileInput() {
                         imgprebody.empty();
 
                         var i = 1;
+                      
+
+
                         result.files.forEach(function (product) {
-                            var row = "<div class='p-2' imgid='" + product.id + "'> <img src='" + product.image_path + "' class='img-thumbnail'/><a class='remove-img-btn btn' onclick='removeImgDatabase(" + product.id + ")'>x</a></div>"
+                            var row = "<div class='p-2 position-relative col-auto' imgid='" + product.id + "'>" +
+                                "<img src='" + product.image_path + "' class='img-thumbnail'/>" +
+                                "<button type='button' class='remove-img-btn' onclick='removeImgDatabase(" + product.id + ")'>" +
+                                "<i class='mdi mdi-trash-can icon'></i>" +
+                                "</button>" +
+                                "</div>";
+
                             imgbody.append(row);
                             i++;
                         });
+
 
                         $(".input-div").empty();
                         var input = "<input type='file' class='form-control' id='productImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>";
@@ -690,11 +687,14 @@ function updateFileInput() {
 
         files.forEach(filePath => {
             var img = $('<img>').attr('src', filePath).addClass('img-thumbnail');
-            var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+            var removeBtn = $('<button>').addClass('remove-btn').on('click', function (event) {
                 event.preventDefault();
                 removeImgDatabase(filePath);
             });
-            var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+
+
+            removeBtn.append('<i class="mdi mdi-trash-can icon"></i>');
+            var wrapper = $('<div>').addClass('p-2 position-relative col-auto').append(img).append(removeBtn);
             container.append(wrapper);
         });
     }

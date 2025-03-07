@@ -38,6 +38,9 @@ namespace CobanlarMarket.Models
         public string shipping_phone_number { get; set; }
         public string shipping_postal_code { get; set; }
         public Nullable<bool> is_delivered { get; set; }
+        public string shipping_district { get; set; }
+        public string shipping_quarter { get; set; }
+        public Nullable<long> reference_id { get; set; }
     
         public virtual coupons coupons { get; set; }
         public virtual users users { get; set; }

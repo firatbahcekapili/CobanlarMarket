@@ -1,29 +1,15 @@
 ﻿
 @{
-    ViewBag.Title = "Payment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @Html.Raw(TempData["Iyzico"])
 
-<style>
-    #iyzipay-checkout-form {
-        padding: 30px;
-    }
-
-        #iyzipay-checkout-form > div > div > div > div {
-            border-radius: 20px;
-            box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
-        }
-
-    .loader {
-        position: absolute;
-    }
-</style>
-
-<div class="container" style="text-align:center;align-content:center; min-height:700px;" >
+<link href="~/Content/css/payment.css" rel="stylesheet" />
 
 
-    <span class="loader" id="spinner"></span>
+<div class="container cf-parent" style="text-align:center;align-content:center; min-height:700px;" >
+
+
     <div id="iyzipay-checkout-form" class="responsive">
 
 

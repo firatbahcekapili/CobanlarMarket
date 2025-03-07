@@ -1,0 +1,23 @@
+﻿/*Payment page*/
+
+#iyzipay-checkout-form {
+    padding: 30px;
+}
+
+    #iyzipay-checkout-form > div > div > div > div {
+        border-radius: 20px;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    }
+
+
+
+.cf-parent {
+    margin: 0;
+    min-width:100%;
+}
+
+@media (max-width:730px) {
+    #iyzipay-checkout-form {
+        padding:30px 10px;
+    }
+}

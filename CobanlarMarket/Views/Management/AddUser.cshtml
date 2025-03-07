@@ -3,15 +3,20 @@
     ViewBag.Title = "AddUser";
     Layout = "~/Views/Shared/_ManagementLayout.cshtml";
 }
+<style>
+    img {
+        object-fit: contain;
+    }
 
+</style>
 <div class=" mt-5 ml-5 mr-5">
-  
-    <form id="UserForm">
 
+    <form id="UserForm" action="/Management/AddUser" method="post">
+        @Html.AntiForgeryToken()
         @{
             CobanlarMarket.Models.users u = new CobanlarMarket.Models.users();
         }
-        <div class="row justify-content-center  bg-white mb-5" >
+        <div class="row justify-content-center  bg-white mb-5">
             <div class="col-12  pt-4 pb-4 pl-5  ">
                 <h3>Kullanıcı Ekle</h3>
 
@@ -118,6 +123,7 @@
                 formData.append('Email', email);
                 formData.append('Tel', tel);
                 formData.append('Birthdate', birthdate);
+                formData.append("__RequestVerificationToken", $('#UserForm input[name="__RequestVerificationToken"]').val());
 
                 $.ajax({
                     url: '/Management/AddUser/',

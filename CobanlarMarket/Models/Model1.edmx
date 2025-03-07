@@ -17,6 +17,8 @@
           <Property Name="address" Type="varchar" MaxLength="255" />
           <Property Name="country" Type="varchar" MaxLength="255" />
           <Property Name="city" Type="varchar" MaxLength="255" />
+          <Property Name="district" Type="varchar" MaxLength="255" />
+          <Property Name="quarter" Type="varchar" MaxLength="255" />
           <Property Name="postal_code" Type="varchar" MaxLength="255" />
           <Property Name="landmark" Type="varchar" MaxLength="255" />
           <Property Name="phone_number" Type="varchar" MaxLength="255" />
@@ -131,6 +133,16 @@
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="Status" Type="bit" />
         </EntityType>
+        <EntityType Name="newsletter">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="50" />
+          <Property Name="token" Type="varchar" MaxLength="250" />
+          <Property Name="token_expiration_date" Type="datetime" />
+          <Property Name="status" Type="bit" />
+        </EntityType>
         <EntityType Name="notification">
           <Key>
             <PropertyRef Name="id" />
@@ -138,10 +150,13 @@
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="user_id" Type="int" />
           <Property Name="order_id" Type="int" />
+          <Property Name="campaign_id" Type="int" />
+          <Property Name="product_id" Type="int" />
           <Property Name="title" Type="varchar" MaxLength="50" />
           <Property Name="text" Type="varchar" MaxLength="250" />
           <Property Name="is_read" Type="bit" />
           <Property Name="status" Type="bit" />
+          <Property Name="type" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="order_details">
           <Key>
@@ -157,13 +172,16 @@
           <Property Name="address_id" Type="int" />
           <Property Name="shipping_address" Type="varchar" MaxLength="255" />
           <Property Name="shipping_title" Type="varchar" MaxLength="255" />
-          <Property Name="shipping_city" Type="varchar" MaxLength="255" />
           <Property Name="shipping_country" Type="varchar" MaxLength="255" />
+          <Property Name="shipping_city" Type="varchar" MaxLength="255" />
+          <Property Name="shipping_district" Type="varchar" MaxLength="255" />
+          <Property Name="shipping_quarter" Type="varchar" MaxLength="255" />
           <Property Name="shipping_name" Type="varchar" MaxLength="50" />
           <Property Name="shipping_surname" Type="varchar" MaxLength="50" />
           <Property Name="shipping_phone_number" Type="varchar" MaxLength="50" />
           <Property Name="shipping_postal_code" Type="varchar" MaxLength="50" />
           <Property Name="is_delivered" Type="bit" />
+          <Property Name="reference_id" Type="bigint" />
         </EntityType>
         <EntityType Name="order_item">
           <Key>
@@ -271,16 +289,6 @@
           <Property Name="created_at" Type="date" />
           <Property Name="deleted_at" Type="date" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
         <EntityType Name="users">
           <Key>
             <PropertyRef Name="id" />
@@ -298,6 +306,12 @@
           <Property Name="deleted_at" Type="datetime" />
           <Property Name="role" Type="bit" />
           <Property Name="status" Type="bit" Nullable="false" />
+          <Property Name="token" Type="varchar" MaxLength="250" />
+          <Property Name="token_expiration_date" Type="datetime" />
+          <Property Name="email_change_token" Type="varchar" MaxLength="250" />
+          <Property Name="email_change_token_expiry" Type="datetime" />
+          <Property Name="ban_expiry_date" Type="datetime" />
+          <Property Name="attempt_count" Type="int" />
         </EntityType>
         <EntityType Name="wishlist">
           <Key>
@@ -680,6 +694,7 @@
           <EntitySet Name="coupon_categories" EntityType="Self.coupon_categories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="coupon_products" EntityType="Self.coupon_products" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="coupons" EntityType="Self.coupons" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="newsletter" EntityType="Self.newsletter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="notification" EntityType="Self.notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="order_details" EntityType="Self.order_details" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="order_item" EntityType="Self.order_item" Schema="dbo" store:Type="Tables" />
@@ -690,7 +705,6 @@
           <EntitySet Name="products_skus" EntityType="Self.products_skus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sub_categories" EntityType="Self.sub_categories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sub_subcategories" EntityType="Self.sub_subcategories" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="users" EntityType="Self.users" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="wishlist" EntityType="Self.wishlist" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_addresses_user_id" Association="Self.FK_addresses_user_id">
@@ -836,6 +850,8 @@
           <Property Name="created_at" Type="DateTime" Precision="3" />
           <Property Name="deleted_at" Type="DateTime" Precision="3" />
           <NavigationProperty Name="users" Relationship="Self.FK_addresses_user_id" FromRole="addresses" ToRole="users" />
+          <Property Name="district" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="quarter" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="campaign_products">
           <Key>
@@ -947,6 +963,9 @@
           <Property Name="shipping_phone_number" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="shipping_postal_code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="is_delivered" Type="Boolean" />
+          <Property Name="shipping_district" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="shipping_quarter" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="reference_id" Type="Int64" />
         </EntityType>
         <EntityType Name="order_item">
           <Key>
@@ -1087,6 +1106,12 @@
           <NavigationProperty Name="order_details" Relationship="Self.FK_order_details_user_id" FromRole="users" ToRole="order_details" />
           <NavigationProperty Name="wishlist" Relationship="Self.FK_wishlist_user_id" FromRole="users" ToRole="wishlist" />
           <NavigationProperty Name="notification" Relationship="CobanlarMarketModel.FK_notification_users" FromRole="users" ToRole="notification" />
+          <Property Name="token" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="token_expiration_date" Type="DateTime" Precision="3" />
+          <Property Name="email_change_token" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="email_change_token_expiry" Type="DateTime" Precision="3" />
+          <Property Name="ban_expiry_date" Type="DateTime" Precision="3" />
+          <Property Name="attempt_count" Type="Int32" />
         </EntityType>
         <EntityType Name="wishlist">
           <Key>
@@ -1471,7 +1496,6 @@
             <End Role="wishlist" EntitySet="wishlist" />
           </AssociationSet>
           <EntitySet Name="sub_subcategories" EntityType="CobanlarMarketModel.sub_subcategories" />
-          <EntitySet Name="sysdiagrams" EntityType="CobanlarMarketModel.sysdiagrams" />
           <AssociationSet Name="FK_products_sub_subcategories" Association="CobanlarMarketModel.FK_products_sub_subcategories">
             <End Role="sub_subcategories" EntitySet="sub_subcategories" />
             <End Role="products" EntitySet="products" />
@@ -1508,6 +1532,7 @@
             <End Role="campaign_products" EntitySet="campaign_products" />
           </AssociationSet>
           <EntitySet Name="company_details" EntityType="CobanlarMarketModel.company_details" />
+          <EntitySet Name="newsletter" EntityType="CobanlarMarketModel.newsletter" />
         </EntityContainer>
         <EntityType Name="sub_subcategories">
           <Key>
@@ -1522,16 +1547,6 @@
           <NavigationProperty Name="products" Relationship="CobanlarMarketModel.FK_products_sub_subcategories" FromRole="sub_subcategories" ToRole="products" />
           <NavigationProperty Name="sub_categories" Relationship="CobanlarMarketModel.FK_sub_subcategories_sub_categories" FromRole="sub_subcategories" ToRole="sub_categories" />
           <NavigationProperty Name="coupon_categories" Relationship="CobanlarMarketModel.FK_coupon_categories_sub_subcategories" FromRole="sub_subcategories" ToRole="coupon_categories" />
-        </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <Association Name="FK_products_sub_subcategories">
           <End Type="CobanlarMarketModel.sub_subcategories" Role="sub_subcategories" Multiplicity="0..1" />
@@ -1632,6 +1647,9 @@
           <Property Name="status" Type="Boolean" />
           <NavigationProperty Name="users" Relationship="CobanlarMarketModel.FK_notification_users" FromRole="notification" ToRole="users" />
           <Property Name="order_id" Type="Int32" />
+          <Property Name="type" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="campaign_id" Type="Int32" />
+          <Property Name="product_id" Type="Int32" />
         </EntityType>
         <Association Name="FK_notification_users">
           <End Type="CobanlarMarketModel.users" Role="users" Multiplicity="0..1" />
@@ -1687,6 +1705,16 @@
           <Property Name="homepage_bottom_img" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
           <Property Name="homepage_bottom_link" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="newsletter">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="token" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="token_expiration_date" Type="DateTime" Precision="3" />
+          <Property Name="status" Type="Boolean" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1696,6 +1724,8 @@
           <EntitySetMapping Name="addresses">
             <EntityTypeMapping TypeName="CobanlarMarketModel.addresses">
               <MappingFragment StoreEntitySet="addresses">
+                <ScalarProperty Name="quarter" ColumnName="quarter" />
+                <ScalarProperty Name="district" ColumnName="district" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="name" ColumnName="name" />
@@ -1788,6 +1818,9 @@
           <EntitySetMapping Name="order_details">
             <EntityTypeMapping TypeName="CobanlarMarketModel.order_details">
               <MappingFragment StoreEntitySet="order_details">
+                <ScalarProperty Name="reference_id" ColumnName="reference_id" />
+                <ScalarProperty Name="shipping_quarter" ColumnName="shipping_quarter" />
+                <ScalarProperty Name="shipping_district" ColumnName="shipping_district" />
                 <ScalarProperty Name="is_delivered" ColumnName="is_delivered" />
                 <ScalarProperty Name="shipping_postal_code" ColumnName="shipping_postal_code" />
                 <ScalarProperty Name="shipping_phone_number" ColumnName="shipping_phone_number" />
@@ -1913,6 +1946,12 @@
           <EntitySetMapping Name="users">
             <EntityTypeMapping TypeName="CobanlarMarketModel.users">
               <MappingFragment StoreEntitySet="users">
+                <ScalarProperty Name="attempt_count" ColumnName="attempt_count" />
+                <ScalarProperty Name="ban_expiry_date" ColumnName="ban_expiry_date" />
+                <ScalarProperty Name="email_change_token_expiry" ColumnName="email_change_token_expiry" />
+                <ScalarProperty Name="email_change_token" ColumnName="email_change_token" />
+                <ScalarProperty Name="token_expiration_date" ColumnName="token_expiration_date" />
+                <ScalarProperty Name="token" ColumnName="token" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="avatar" ColumnName="avatar" />
                 <ScalarProperty Name="first_name" ColumnName="first_name" />
@@ -1952,17 +1991,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="CobanlarMarketModel.sysdiagrams">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="definition" ColumnName="definition" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="cart_item">
             <EntityTypeMapping TypeName="CobanlarMarketModel.cart_item">
               <MappingFragment StoreEntitySet="cart_item">
@@ -1979,6 +2007,9 @@
           <EntitySetMapping Name="notification">
             <EntityTypeMapping TypeName="CobanlarMarketModel.notification">
               <MappingFragment StoreEntitySet="notification">
+                <ScalarProperty Name="product_id" ColumnName="product_id" />
+                <ScalarProperty Name="campaign_id" ColumnName="campaign_id" />
+                <ScalarProperty Name="type" ColumnName="type" />
                 <ScalarProperty Name="order_id" ColumnName="order_id" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="is_read" ColumnName="is_read" />
@@ -2016,6 +2047,17 @@
                 <ScalarProperty Name="min_amonunt_for_free_shipping" ColumnName="min_amonunt_for_free_shipping" />
                 <ScalarProperty Name="shipping_cost" ColumnName="shipping_cost" />
                 <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="newsletter">
+            <EntityTypeMapping TypeName="CobanlarMarketModel.newsletter">
+              <MappingFragment StoreEntitySet="newsletter">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="token_expiration_date" ColumnName="token_expiration_date" />
+                <ScalarProperty Name="token" ColumnName="token" />
+                <ScalarProperty Name="email" ColumnName="email" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

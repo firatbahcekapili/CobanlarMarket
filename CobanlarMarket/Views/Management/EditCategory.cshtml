@@ -13,6 +13,9 @@
         width: 100px; 
         height: 100px; 
     }
+    img {
+        object-fit: contain;
+    }
 
         .img-thumbnail .remove-btn {
             position: absolute;
@@ -51,10 +54,11 @@
 </style>
 
 <div class=" mt-5 ml-5 mr-5 mb-5">
-   
-    <form id="categoryForm">
 
-    
+
+    <form id="categoryForm" action="/Management/AddCategory" method="post">
+        @Html.AntiForgeryToken()
+
         <div class="row justify-content-center">
 
             <div class="col-12 bg-white p-5">
@@ -73,9 +77,9 @@
                                 <div class="p-2 position-relative col-auto" imgid="@Model.id">
                                     <img src="@Model.cover" alt="" class="img-thumbnail" style="width:200px" />
                                     @*<a class="remove-img-btn btn" onclick="removeImgDatabase(@Model.id)">x</a>*@
-                                    <button type="button" class="remove-img-btn" onclick="removeImgDatabase(@Model.id)">
-                                        <i class="mdi mdi-trash-can icon"></i>
-                                    </button>
+                                    @*<button type="button" class="remove-img-btn" onclick="removeImgDatabase(@Model.id)">
+                                            <i class="mdi mdi-trash-can icon"></i>
+                                        </button>*@
                                 </div>
                             }
 
@@ -117,7 +121,7 @@
                 </div>
             </div>
 
-            </div>
+        </div>
 
     </form>
 </div>
@@ -144,6 +148,8 @@
 
             formData.append("Name", name);
             formData.append("Description", description);
+            formData.append("__RequestVerificationToken", $('#categoryForm input[name="__RequestVerificationToken"]').val());
+
             if ($('#categoryForm').valid()) {
 
                 $.ajax({
@@ -156,7 +162,7 @@
                         if (response.success) {
                             toastr.success(response.message);
                             $("#image-container").empty();
-                            $("#image-container").append("<div class='p-2 position-relative col-auto' imgid='" + response.category[0].id + "'><img src='" + response.category[0].cover + "' alt='' class='img-thumbnail' style='width:200px' /> <button type='button' class='remove-img-btn' onclick='removeImgDatabase("+response.category[0].id+")'> <i class='mdi mdi-trash-can icon'></i></button></div>");
+                            $("#image-container").append("<div class='p-2 position-relative col-auto' imgid='" + response.category[0].id + "'><img src='" + response.category[0].cover + "' alt='' class='img-thumbnail' style='width:200px' /> </div>");
                         } else {
                             toastr.error(response.message);
                         }
@@ -245,10 +251,17 @@
             url: '/Management/RemoveCategoryImg/',
             type: 'POST',
             data: { Id: id },
-            success: function (data) {
-                $("#image-container").empty();
-                $("#categoryImg").remove();
-                $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>")
+            success: function (response) {
+               
+                if (response.success) {
+                    toastr.success(response.message);
+                    $("#image-container").empty();
+                    $("#categoryImg").remove();
+                    $(".img-parent").append("  <input type='file' class='form-control' id='categoryImg' accept='.jpg,.jpeg,.png' multiple aria-describedby='userImg' onchange='dosyaOnizlemeNew(this);'>")
+                } else {
+                    toastr.error(response.message);
+
+                }
             },
             error: function (xhr, status, error) {
                 console.error(xhr.responseText);
@@ -264,11 +277,11 @@
 
         files.forEach(filePath => {
             var img = $('<img>').attr('src', filePath).addClass('img-thumbnail');
-            var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
-                event.preventDefault();
-                removeImgDatabase(filePath);
-            });
-            var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+            //var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+            //    event.preventDefault();
+            //    removeImgDatabase(filePath);
+            //});
+            var wrapper = $('<div>').addClass('p-2').append(img);
             container.append(wrapper);
         });
     }
@@ -285,11 +298,11 @@
             var reader = new FileReader();
             reader.onload = function (e) {
                 var img = $('<img>').attr('src', e.target.result).addClass('img-thumbnail').css("width", "200px");
-                var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
-                    event.preventDefault(); 
-                    removeImage(file);
-                });
-                var wrapper = $('<div>').addClass('p-2').append(img).append(removeBtn);
+                //var removeBtn = $('<button>').text('x').addClass('remove-btn').on('click', function (event) {
+                //    event.preventDefault(); 
+                //    removeImage(file);
+                //});
+                var wrapper = $('<div>').addClass('p-2').append(img);
                 container.append(wrapper);
             };
             reader.readAsDataURL(file);

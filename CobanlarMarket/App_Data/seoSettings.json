@@ -1,0 +1,26 @@
+{
+  "/Home/Index": {
+    "Page": "/Home/Index",
+    "Title": "Anasayfa - Firmasa",
+    "Keywords": "ürünler, alışveriş, mods",
+    "Description": "Anasayfamızda en yeni ürünleri keşds",
+    "NoIndex": true,
+    "NoFollow": false
+  },
+  "/Home/Shop": {
+    "Page": "/Home/Shop",
+    "Title": "Ürünlerimiz - Firmanız",
+    "Keywords": "kaliteli ürünler, uygun fiyat, alışveriş",
+    "Description": "Kaliteli ve uygun fiyatlı ürünler için ürün sayfamızı ziyaret edin.",
+    "NoIndex": false,
+    "NoFollow": false
+  },
+  "/Home/Product/64": {
+    "Page": "/Home/Product/64",
+    "Title": "Patates",
+    "Keywords": "patates",
+    "Description": "patates",
+    "NoIndex": false,
+    "NoFollow": false
+  }
+}

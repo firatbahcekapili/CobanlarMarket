@@ -14,29 +14,28 @@
 
 
 
-
     <div id="root">
 
         <div class="main-layout">
 
             @*<section class="slider">
-            <div class="slider-elements">
-                <div class="slider-item fade">
-                    <div class="slider-image">
-                        <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" />
+                    <div class="slider-elements">
+                        <div class="slider-item fade">
+                            <div class="slider-image">
+                                <img src="@(company.homepage_slider_img != null ? company.homepage_slider_img : "/img/12.jpg")" class="img-fluid" alt="" />
 
-                        <div class="" style="margin-left:80px;">
-                            <p class="slider-title">@company.homepage_slider_title</p>
-                            <h2 class="slider-heading">@company.homepage_slider_text</h2>
-                            <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
+                                <div class="" style="margin-left:80px;">
+                                    <p class="slider-title">@company.homepage_slider_title</p>
+                                    <h2 class="slider-heading">@company.homepage_slider_text</h2>
+                                    <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
+                                </div>
+                            </div>
+
+
                         </div>
+
                     </div>
-
-
-                </div>
-
-            </div>
-        </section>*@
+                </section>*@
 
 
 
@@ -49,7 +48,7 @@
                         <div class="slider-text">
                             <p class="slider-title">@company.homepage_slider_title</p>
                             <h2 class="slider-heading">@company.homepage_slider_text</h2>
-                            <a href="#" class="btn btn-lg btn-red">Alişveriş Yap</a>
+                            <a href="/Home/Shop" class="btn btn-lg btn-red">Alişveriş Yap</a>
                         </div>
                     </div>
 
@@ -103,8 +102,8 @@
 
                         @foreach (var product in Model.order_item
 .GroupBy(x => x.product_id)
-.Select(g => new { Product = g.First().products, TotalSold = g.Sum(x => x.quantity) })
-.Where(x => x.Product.status == true).OrderByDescending(x => x.TotalSold)
+.Select(g => new { Product = g.First().products, TotalSold = g.Sum(s => s.quantity) })
+.Where(w => w.Product.status == true).OrderByDescending(or => or.TotalSold)
 .Take(10))
                         {
                             <div class="card-parent">
@@ -151,10 +150,12 @@
                                         @{
                                             // Mevcut protokol ve domaini al
                                             string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+
                                             // Ürün yolunu dinamik olarak oluştur
                                             string productPath = Url.Action("Product", "Home", new { id = product.Product.id });
+
                                             // Domain ile yolu birleştir
-                                            string fullUrl = $"{domain}{productPath}";
+                                            string fullUrl = string.Format("{0}{1}", domain, productPath); // string.Format kullanımı
                                         }
                                         <a class="shareBtn card__icon" link="@fullUrl">
                                             <i class="bi bi-share-fill"></i>
@@ -175,14 +176,14 @@
 
 
             <section class="middle-campaigns campaigns">
-                <div class="container " >
+                <div class="container ">
 
                     <div class="row w-100">
                         @foreach (var campaign in Model.campaigns.Where(x => x.is_active == true).OrderByDescending(x => x.id).Take(2))
                         {
 
 
-                            <div class="campaigns-wrapper col-12 col-md-6">
+                            <div class="campaigns-wrapper col-12 col-md-6 flex-md-grow-1">
 
 
 
@@ -222,13 +223,15 @@
                         @foreach (var product in Model.products.Where(x => x.products_skus.FirstOrDefault().old_price != null && x.status == true).Take(10))
                         {
 
+                            var discount = (product.products_skus.FirstOrDefault(x => x.product_id == product.id).price / product.products_skus.FirstOrDefault(x => x.product_id == product.id).old_price * 100);
+
                             <div class="card-parent">
 
                                 <article class="card">
                                     <div class="card__img" onclick="window.location.href = '/Home/Product/@product.id';">
                                         @if (product.cover != null)
                                         {
-                                            <img src="@product.cover" alt="" />
+                                            <img data-lazy="@product.cover" alt="" />
                                         }
                                         else
                                         {
@@ -266,17 +269,20 @@
                                         @{
                                             // Mevcut protokol ve domaini al
                                             string domain = Request.Url.Scheme + "://" + Request.Url.Authority;
+
                                             // Ürün yolunu dinamik olarak oluştur
                                             string productPath = Url.Action("Product", "Home", new { id = product.id });
+
                                             // Domain ile yolu birleştir
-                                            string fullUrl = $"{domain}{productPath}";
+                                            string fullUrl = string.Format("{0}{1}", domain, productPath); // string.Format kullanımı
                                         }
                                         <a class="shareBtn card__icon" link="@fullUrl">
                                             <i class="bi bi-share-fill"></i>
                                         </a>
                                     </div>
-                                </article>
+                                    <div class="product__discount__percent" style="z-index:2">-@(100-Math.Round((decimal)discount))%</div>
 
+                                </article>
 
                             </div>
                         }
@@ -290,8 +296,8 @@
 
 
 
-          
-          
+            @if (Model.campaigns.Where(x => x.is_active == true).OrderByDescending(x => x.id).Skip(2).Take(5).Any())
+            {
                 <div class="section-title">
                     <h2>Kampanyalar</h2>
                 </div>
@@ -299,6 +305,8 @@
                     <div class="container">
 
                         <div class="row w-100 ">
+
+
                             @foreach (var campaign in Model.campaigns.Where(x => x.is_active == true).OrderByDescending(x => x.id).Skip(2).Take(5))
                             {
 
@@ -325,71 +333,72 @@
                         </div>
 
                     </div>
-</section>
-           
+                </section>
+            }
+
             @*<section class="blogs blog-page">
-            <div class="container">
-                <div class="section-title">
-                    <h2>Blog</h2>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
-                </div>
-                <ul class="blog-list">
-                    <li class="blog-item">
-                        <a href="#" class="blog-image">
-                            <img src="~/img/blogs/blog1.jpg" alt="" />
-                        </a>
-                        <div class="blog-info">
-                            <div class="blog-info-top">
-                                <span>25 Feb,2024</span>-<span>0 Comment</span>
-                            </div>
-                            <div class="blog-info-center">
-                                <a href="#">Lorem ipsum dolor sit.</a>
-                            </div>
-                            <div class="blog-info-bottom">
-                                <a href="#">Read More</a>
-                            </div>
+                    <div class="container">
+                        <div class="section-title">
+                            <h2>Blog</h2>
+                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing.</p>
                         </div>
-                    </li>
-                    <li class="blog-item">
-                        <a href="#" class="blog-image">
-                            <img src="~/img/blogs/blog1.jpg" alt="" />
-                        </a>
-                        <div class="blog-info">
-                            <div class="blog-info-top">
-                                <span>25 Feb,2024</span>-<span>0 Comment</span>
-                            </div>
-                            <div class="blog-info-center">
-                                <a href="#">Lorem ipsum dolor sit.</a>
-                            </div>
-                            <div class="blog-info-bottom">
-                                <a href="#">Read More</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="blog-item">
-                        <a href="#" class="blog-image">
-                            <img src="~/img/blogs/blog1.jpg" alt="" />
-                        </a>
-                        <div class="blog-info">
-                            <div class="blog-info-top">
-                                <span>25 Feb,2024</span>-<span>0 Comment</span>
-                            </div>
-                            <div class="blog-info-center">
-                                <a href="#">Lorem ipsum dolor sit.</a>
-                            </div>
-                            <div class="blog-info-bottom">
-                                <a href="#">Read More</a>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </section>*@
+                        <ul class="blog-list">
+                            <li class="blog-item">
+                                <a href="#" class="blog-image">
+                                    <img src="~/img/blogs/blog1.jpg" alt="" />
+                                </a>
+                                <div class="blog-info">
+                                    <div class="blog-info-top">
+                                        <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                    </div>
+                                    <div class="blog-info-center">
+                                        <a href="#">Lorem ipsum dolor sit.</a>
+                                    </div>
+                                    <div class="blog-info-bottom">
+                                        <a href="#">Read More</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="blog-item">
+                                <a href="#" class="blog-image">
+                                    <img src="~/img/blogs/blog1.jpg" alt="" />
+                                </a>
+                                <div class="blog-info">
+                                    <div class="blog-info-top">
+                                        <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                    </div>
+                                    <div class="blog-info-center">
+                                        <a href="#">Lorem ipsum dolor sit.</a>
+                                    </div>
+                                    <div class="blog-info-bottom">
+                                        <a href="#">Read More</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="blog-item">
+                                <a href="#" class="blog-image">
+                                    <img src="~/img/blogs/blog1.jpg" alt="" />
+                                </a>
+                                <div class="blog-info">
+                                    <div class="blog-info-top">
+                                        <span>25 Feb,2024</span>-<span>0 Comment</span>
+                                    </div>
+                                    <div class="blog-info-center">
+                                        <a href="#">Lorem ipsum dolor sit.</a>
+                                    </div>
+                                    <div class="blog-info-bottom">
+                                        <a href="#">Read More</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>*@
             <section class="campaing-single" style="background-image:url(@(company.homepage_bottom_img != null ? company.homepage_bottom_img : "/img/single-campaign.png"))">
                 <div class="container">
                     <div class="campaing-wrapper">
                         <h2>@company.homepage_bottom_header</h2>
-                        <strong>@company.homepage_bottom_text</strong><span></span><a href="#" class="btn btn-lg btn-red">
+                        <strong>@company.homepage_bottom_text</strong><span></span><a href="/Home/Shop" class="btn btn-lg btn-red">
                             ALIŞVERIS YAP<i class="bi bi-arrow-right"></i>
                         </a>
                     </div>
@@ -398,6 +407,15 @@
         </div>
 
     </div>
+
+
+
+
+
+
+
+
+
 
 
     <link href="~/Content/css/slick.css" rel="stylesheet" />
@@ -442,8 +460,8 @@
 
     @*<link href="~/Content/css/slick.css" rel="stylesheet" />
 
-    <link href="~/Content/css/slick-theme.css" rel="stylesheet" />
-    <script src="~/Content/scripts/slick.js"></script>*@
+        <link href="~/Content/css/slick-theme.css" rel="stylesheet" />
+        <script src="~/Content/scripts/slick.js"></script>*@
 
 
 
@@ -455,6 +473,7 @@
         $('.product-slide').slick({
             slidesToShow: 4,
             slidesToScroll: 1,
+            lazyLoad: 'progressive',
             autoplay: false,
             autoplaySpeed: 2000,
             dots: true,
@@ -499,38 +518,46 @@
 
         $('.icon-container').slick({
             dots: true,
+            lazyLoad: 'progressive',
             infinite: false,
             arrows: true,
-            slidesToShow: 9,
+            slidesToShow: 6,
             slidesToScroll: 2,
             responsive: [
                 {
-                    breakpoint: 1024,
+                    breakpoint: 1200,
                     settings: {
-                        slidesToShow: 7,
-                        slidesToScroll: 3,
+                        slidesToShow: 5,
+                        slidesToScroll: 2,
                         infinite: true,
                         dots: true
                     }
                 },
                 {
-                    breakpoint: 845,
+                    breakpoint: 992,
                     settings: {
-                        slidesToShow: 5,
+                        slidesToShow: 4,
                         slidesToScroll: 2
                     }
                 },
                 {
-                    breakpoint: 600,
+                    breakpoint: 768,
                     settings: {
                         slidesToShow: 3,
-                        slidesToScroll: 2
+                        slidesToScroll: 1
                     }
                 },
                 {
-                    breakpoint: 380,
+                    breakpoint: 500,
                     settings: {
                         slidesToShow: 2,
+                        slidesToScroll: 1
+                    }
+                },
+                {
+                    breakpoint: 325,
+                    settings: {
+                        slidesToShow: 1,
                         slidesToScroll: 1
                     }
                 }
@@ -545,17 +572,20 @@
                 url: '/Home/AddCart/',
                 type: 'POST',
                 data: { Id: id, Adet: 1 },
+                beforeSend: function () {
+                    $('#loading').show();
+                },
 
                 success: function (response) {
 
                     if (response.success) {
                         toastr.success(
                             `
-                                         <div class="inline-elements" style="display:flex;align-items:center;">
-                                             <span>`+ response.message + `</span>
-                                             <a href="/Home/Cart" class="success-btn">Sepete Git</a>
-                                         </div>
-                                         `
+                                                             <div class="inline-elements" style="display:flex;align-items:center;">
+                                                                 <span>`+ response.message + `</span>
+                                                                 <a href="/Home/Cart" class="success-btn">Sepete Git</a>
+                                                             </div>
+                                                             `
                         );
                         $('#cartItemsList').html(response.cartItemsHtml);
                         var cartCount = $(response.cartItemsHtml).find(".cart-item").length;
@@ -564,7 +594,9 @@
                         toastr.error(response.message);
                     }
 
-                }
+                }, complete: function () {
+                    $('#loading').hide();
+                },
 
             });
         }

@@ -27,12 +27,10 @@
                                      <th></th>
                                      <th>Ürün Adı</th>
                                      <th>ID</th>
-                                     <th>Adet</th>
-                                     <th>Tür</th>
-                                     <th>Günlük Satış</th>
-                                     <th>Satılmış</th>
+                                     <th>Stok Kodu</th>
+                                     <th>Satılan</th>
                                      <th>Stokta</th>
-                                     <th>Action</th>
+                                     <th></th>
                                  </tr>
                              </thead>
                              <tbody>
@@ -41,7 +39,7 @@
                                  }
                                  @foreach (var item in Model.products)
                                  {
-                                     <tr>
+                                     <tr pid="@item.id">
                                          <td class="py-0">
                                              @if (item.cover != null)
                                              {
@@ -58,12 +56,11 @@
                                          </td>
                                          <td>@item.name</td>
                                          <td>@item.id</td>
-                                         <td>1</td>
-                                         <td>@item.products_skus.Where(x => x.product_id == item.id).Count()</td>
                                          <td>
-                                             <div id="tbl-chart-0@(i)"></div>
+                                             @item.products_skus.FirstOrDefault().sku
                                          </td>
-                                         <td>@Model.order_item.Where(o => o.product_id == item.id).Sum(x => x.quantity)</td>
+                                         <td>@(Model.order_item.Where(x=>x.status=="success" && x.product_id==item.id).Sum(y=>y.quantity))</td>
+                                       
                                          <td>@item.products_skus.FirstOrDefault().quantity</td>
                                          <td>
                                              <a href="/Home/Product/@item.id">
@@ -112,10 +109,13 @@
                          Onaylamanız halinde ürün silinecektir. Bir daha bu ürüne erişiminiz olmayacaktır. Onaylıyor musunuz?
                      </p>
                  </div>
-                 <div class="modal-footer">
-                     <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-                     <button type="button" class="btn btn-danger btn-pill">Sil!</button>
-                 </div>
+                 <form id="RemoveProductForm" action="/Management/RemoveProduct" method="post">
+                     @Html.AntiForgeryToken()
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                         <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                     </div>
+                 </form>
              </div>
          </div>
      </div>
@@ -124,37 +124,23 @@
  </div>
 <script>
     function Remove(id) {
+        var token = $('#RemoveProductForm input[name="__RequestVerificationToken"]').val();
 
         $.ajax({
             url: '/Management/RemoveProduct/',
             type: 'POST',
-            data: { Id: id },
+            data: { __RequestVerificationToken: token, Id: id },
             success: function (result) {
                 console.log("success");
                 toastr.success('Ürün Başarıyla Silindi', 'Başarılı');
 
 
-                var tbody = $("#productsTable tbody");
-                tbody.empty();
-                var i = 1;
-                result.forEach(function (product) {
-                    var row = "<tr>" + "<td class='py-0'> <img src='" + product.cover + "' alt='Product Image'></td>" +
-                        "<td>" + product.name + "</td>" +
-                        "<td>" + product.id + "</td>" +
-                        "<td>1</td>" +
-                        "<td>" + product.product_skus_count + "</td>" +
-                        "<td>2</td>" +
-                        "<td> <div id='tbl-chart-0"+i+"'></div></td> " +
-                        "<td>" + product.product_sku_quantity + "</td>" +
-                        "<td>" +
-                        "<a href='/Home/Product/"+product.id+"'><span class='mdi mdi-eye text-primary'></span></a>" +
-                        "<a href='/Management/EditProduct/" + product.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
-                        "<a onclick='Remove(" + product.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                        "</td>" +
-                        "</tr>";
-                    tbody.append(row);
-                    i++;
-                });
+               var row= $('[pid="' + id + '"]');
+              
+                var table = $('#productsTable').DataTable();
+
+                table.row(row).remove().draw();
+               
                 $('#RemoveModal').modal('hide');
 
 

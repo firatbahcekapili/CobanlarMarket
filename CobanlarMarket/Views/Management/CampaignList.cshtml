@@ -48,7 +48,7 @@
                             }
                             @foreach (var item in Model.campaigns.ToList())
                             {
-                                <tr>
+                                <tr camid="@item.id">
                                     <td class="">
 
                                         <img src="@item.campaign_cover" alt="Alternate Text" />
@@ -103,10 +103,13 @@
                         Onaylamanız halinde kampanya silinecektir. Bir daha bu kampanyaa erişiminiz olmayacaktır. Onaylıyor musunuz?
                     </p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
-                </div>
+                <form id="RemoveCampaignForm" action="/Management/RemoveCampaign" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                        <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -117,36 +120,27 @@
 <script>
 
     function Remove(Id) {
+        var token = $('#RemoveCampaignForm input[name="__RequestVerificationToken"]').val();
 
         $.ajax({
             url: '/Management/RemoveCampaign/',
             type: 'Post',
-            data: { Id: Id },
+            data: { __RequestVerificationToken: token, Id: Id },
             success: function (response) {
 
 
                 if (response.success) {
                     toastr.success(response.message);
 
-                    var tbody = $("#campaignTable tbody");
-                    tbody.empty();
+                   
 
+                    var row = $('[camid=' + Id + ']');
 
-                    response.campaigns.forEach(function (campaign) {
-                        var row = "<tr>" +
-                            "<td><img src='" + campaign.campaign_cover + "' alt='Kampanya Resmi'></td>" +
-                            "<td>" + campaign.campaign_title + "</td>" +
-                            "<td>" + campaign.StartDate + "</td>" +
-                            "<td>" + campaign.EndDate + "</td>" +
-                            "<td><span class='badge " + (campaign.is_active ? "badge-success" : "badge-danger") + "'>" +
-                            (campaign.is_active ? "Aktif" : "Pasif") + "</span></td>" +
-                            "<td>" +
-                            "<a href='/Management/EditCampaign/" + campaign.id + "'><span class='mdi mdi-pen text-success'></span></a>" +
-                            "<a onclick='Remove(" + campaign.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                            "</td>" +
-                            "</tr>";
-                        tbody.append(row);
-                    });
+                    var table = $('#campaignTable').DataTable();
+
+                    table.row(row).remove().draw();
+
+               
 
 
                     $('#RemoveModal').modal('hide');

@@ -1,4 +1,9 @@
 ﻿
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
 /*? subscribe start */
 .footer .subscribe-row {
     background-color: black;
@@ -35,6 +40,7 @@
         display: inherit;
         align-items: center;
         margin-bottom: 10px;
+        font-size:13px;
     }
 
         .footer .footer-subscribe-buttom form > input {
@@ -123,7 +129,8 @@
     }
 
     .widgets-row .footer-widgets > div {
-        flex: unset !important;
+        flex: auto !important;
+        text-align:center;
     }
 
     .footer .brand-info {
@@ -137,7 +144,13 @@
     }
 
         .footer-copyright .footer-menu {
-            margin-left: unset;
+            margin-right:unset !important;
+        }
+        .footer-copyright .site-copyright{
+            margin-left:unset !important;
+        }
+        .logo{
+            justify-content:center;
         }
 }
 
@@ -153,11 +166,11 @@
 
     .footer-copyright .site-copyright {
         font-size: 12px;
-        margin-right: 10px;
+        margin-left: auto;
     }
 
     .footer-copyright .footer-menu {
-        margin-left: auto;
+        margin-right: auto;
     }
 
     .footer-copyright .footer-menu-list {
@@ -529,9 +542,10 @@ header .menu-dropdown-content {
     }
 
 .modal-search .result {
-    display: grid;
+    display: flex;
     grid-template-columns: 1fr 1fr;
     border-left: 1px solid #dee0ea;
+    flex-wrap:wrap;
 }
 
     .modal-search .result .result-item {
@@ -542,6 +556,7 @@ header .menu-dropdown-content {
         border-bottom: 1px solid #dee0ea;
         border-right: 1px solid #dee0ea;
         transition: background-color 0.2s ease;
+        width:50%;
     }
 
         .modal-search .result .result-item:hover {
@@ -549,8 +564,9 @@ header .menu-dropdown-content {
         }
 
 .modal-search .result-item .search-thumb {
-    max-width: 65px;
-    width: 100%;
+    width:65px;
+    height:65px;
+    object-fit:contain;
 }
 
 .modal-search .search-info {
@@ -588,6 +604,11 @@ header .menu-dropdown-content {
 
     .modal-search .results {
         grid-template-columns: 1fr;
+    }
+
+    .modal-search .result .result-item {
+    
+    width:100%;    
     }
 }
 
@@ -703,7 +724,7 @@ header .menu-dropdown-content {
     flex: 1;
     color: white;
     margin-bottom: 40px;
-    border-radius:20px;
+    border-radius:0px;
 }
 
     .campaigns .campaign-item .campaign-title {
@@ -775,6 +796,7 @@ header .menu-dropdown-content {
         display: flex;
         align-items: center;
         flex-direction: column;
+        text-align:center;
     }
 
         .campaing-single .campaing-wrapper h2 {
@@ -931,6 +953,7 @@ header .menu-dropdown-content {
 
 .single-tabs {
     margin-bottom: 30px;
+    padding:25px;
 }
 
     .single-tabs .tab-list {
@@ -961,6 +984,7 @@ header .menu-dropdown-content {
 .site-main .product-info {
     padding-left: 15px;
     text-align:start;
+    gap:10px;
 }
 
 .site-main .product-title {
@@ -991,9 +1015,10 @@ header .menu-dropdown-content {
     }
 
 .site-main .product-price {
-    display: flex;
+    display: grid;
     align-items: center;
-    column-gap: 8px;
+    row-gap: 8px;
+    font-size:20px;
 }
 
     .site-main .product-price s {
@@ -1002,7 +1027,9 @@ header .menu-dropdown-content {
     }
 
     .site-main .product-price strong {
-        font-size: 20px;
+        font-size: 25px;
+        font-weight:600;
+        color:red;
     }
 
 .site-main .product-desc {
@@ -1248,13 +1275,18 @@ header .menu-dropdown-content {
 /*? progress end */
 
 /*? table start */
-
-.cart-form table img {
-    width: 60px;
-    height:60px;
-    object-fit:cover;
-    border-radius:10px;
+.privacy-text{
+    font-size:10px;
 }
+    .privacy-text a{
+        color:red;
+    }
+    .cart-form table img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        border-radius: 10px;
+    }
 
 /*.cart-form .shop-table-wrapper {
     overflow-x: auto;
@@ -1325,10 +1357,12 @@ header .menu-dropdown-content {
         display: flex;
         align-items: center;
         column-gap: 10px;
+        flex-wrap:wrap;
     }
 
         .actions-wrapper .coupon input {
-            height: 100%;
+            height: 42px;
+            
         }
 
 /*? actions end */
@@ -1786,10 +1820,10 @@ header .menu-dropdown-content {
 }
 
     .icon-item img {
-        width: 80px;
-        height: 80px;
-        min-height:80px;
-        min-width:80px;
+        width: 150px;
+        height: 150px;
+        min-height:150px;
+        min-width:150px;
         border-radius: 15px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 10px;
@@ -2551,6 +2585,7 @@ button {
     background-color: red !important;
     color: white !important;
     border: red !important;
+    border-radius:0px !important;
 }
 
 .btn-black {
@@ -2603,7 +2638,7 @@ textarea {
 /*! responsive end*/
 /*! react-slick-css*/
 .slick-slide > div {
-    margin: 0 10px;
+    
 }
 
 .slick-list {
@@ -2914,12 +2949,26 @@ textarea {
 }
 
 
-
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; 
+}
 
 .loader {
     animation: rotate 1s infinite;
     height: 50px;
     width: 50px;
+    position:fixed;
+    position-area:center;
+    z-index:9999;
 }
 
     .loader:before,
@@ -2995,8 +3044,65 @@ textarea {
 
 
 
+.account-container{
+    padding:100px 0;
+}
+
+    .account-container .nav-pills .nav-link.active, .nav-pills .show > .nav-link{
+        color:white;
+        background-color:red;
+    }
+    .account-container .nav-pills .nav-link {
+       color:black;
+    }
+@media (max-width: 991px) {
+
+    .account-container {
+        padding: 100px 30px !important;
+        min-width: -webkit-fill-available;
+    }
+}
+
+    @media (min-width: 991px) {
+        .sticky-sidebar {
+            position: sticky;
+            top: 40px;
+            align-self: flex-start;
+            max-height: fit-content;
+        }
+    }
 
 
+    @media (max-width: 991px) {
+        .sticky-sidebar {
+            position: static;
+            max-height: none;
+        }
+        .orderimg {
+            width: 70px !important;
+            height: 50px !important;
+        }
 
+      
+    }
+.field-validation-error{
+    color:red;
+}
 
+.img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
 
+.userImgContainer {
+    width: 70px;
+    height: 70px;
+    border-radius:50%;
+}
+    .userImgContainer img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+    }

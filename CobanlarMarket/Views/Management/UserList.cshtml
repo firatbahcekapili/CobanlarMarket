@@ -29,6 +29,7 @@
                             <tr>
                                 <th></th>
                                 <th>Kullanıcı</th>
+                                <th>Kullanıcı Adı</th>
                                 <th>Telefon No</th>
                                 <th>E-mail</th>
                                 <th>Toplam Harcama</th>
@@ -43,14 +44,27 @@
                             }
                             @foreach (var item in Model.users.Where(x => x.status == true))
                             {
-                                <tr>
+                               
+                                <tr userid="@item.id">
                                     <td class="py-0">
                                         <img src="@(item.avatar !=null ?item.avatar : "/Content/theme/images/User_Icon.png")" alt="user image">
                                     </td>
                                     <td>@item.first_name @item.last_name</td>
+                                    <td>@item.username</td>
+
                                     <td>@item.phone_number</td>
                                     <td>@item.email</td>
-                                    <td>Eklenecek</td>
+                                    <td>
+                                      @(item.order_details != null ?
+                                            item.order_details
+                                                .Where(od => od.user_id == item.id &&
+                                                             od.payment_details != null &&
+                                                             od.payment_details.FirstOrDefault() != null && // Null kontrolü
+                                                             od.payment_details.FirstOrDefault().status == "success")
+                                                .Sum(od => od.payment_details.FirstOrDefault() != null
+                                                              ? od.payment_details.FirstOrDefault().paidPrice
+                                                              : 0) : 0)₺ 
+                                    </td>
                                     <td>@item.created_at</td>
 
                                     <td>
@@ -96,10 +110,13 @@
                         Onaylamanız halinde kullanıcı silinecektir. Bir daha bu kullanıcıya erişiminiz olmayacaktır. Onaylıyor musunuz?
                     </p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
-                    <button type="button" class="btn btn-danger btn-pill">Sil!</button>
-                </div>
+                <form id="RemoveUserForm" action="/Management/RemoveUser" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btn-pill" data-dismiss="modal">İptal Et</button>
+                        <button type="button" class="btn btn-danger btn-pill">Sil!</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -110,38 +127,27 @@
 <script>
 
     function Remove(Id) {
+        var token = $('#RemoveUserForm input[name="__RequestVerificationToken"]').val();
 
         $.ajax({
             url: '/Management/RemoveUser/',
             type: 'Post',
-            data: { Id: Id },
+            data: { __RequestVerificationToken: token, Id: Id },
             success: function (response) {
 
 
                 toastr.success('Kullanıcı Başarıyla Silindi', 'Başarılı');
 
 
-                var tbody = $("#userTable tbody");
-                tbody.empty();
 
-                response.forEach(function (user) {
-                    var row = "<tr>" +
-                        "<td class='py-0'><img src='" + (user.avatar != null ? user.avatar : '/Content/theme/images/User_Icon.png') + "' alt='User Image'></td>" +
-                        "<td>" + user.first_name + " " + user.last_name + "</td>" +
-                        "<td>" + user.phone_number + "</td>" +
-                        "<td>" + user.email + "</td>" +
-                        "<td>Eklenecek</td>" +
-                        "<td>" + user.created_at + "</td>" +
-                        "<td>" +
-                        "<a href='#'><span class='mdi mdi-eye text-primary'></span></a>" +
-                        "<a  href='/Management/EditUser/"+user.id+"'> <span class='mdi mdi-pen text-success'></span></a>" +
-                        "<a onclick='Remove(" + user.id + ")'><span class='mdi mdi-trash-can-outline text-danger'></span></a>" +
-                        "</td>" +
-                        "</tr>";
-                    tbody.append(row);
+                var row = $('[userid="' + id + '"]');
+
+                var table = $('#userTable').DataTable();
+
+                table.row(row).remove().draw();
 
 
-                });
+              
                 $('#RemoveModal').modal('hide');
 
             }, error: function (e) {
