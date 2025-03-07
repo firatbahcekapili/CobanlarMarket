@@ -368,3 +368,4 @@ FodyWeavers.xsd
 /CobanlarMarket/Web.config
 /CobanlarMarket/Web.Debug.config
 /CobanlarMarket/Web.Release.config
+/CobanlarMarket/Classes/EmailService.cs
