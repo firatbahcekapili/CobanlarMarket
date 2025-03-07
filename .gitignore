@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+/Cobanlarmarket/Classes/EmailService.cs
+/Cobanlarmarket/Global.asax
+/Cobanlarmarket/Web.config
+
